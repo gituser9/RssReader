@@ -1,0 +1,116 @@
+.material-icons {
+  font-family: 'Material Icons';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;  /* Preferred icon size */
+  display: inline-block;
+  line-height: 1;
+  text-transform: none;
+  letter-spacing: normal;
+  word-wrap: normal;
+  white-space: nowrap;
+  direction: ltr;
+
+  /* Support for all WebKit browsers. */
+  -webkit-font-smoothing: antialiased;
+  /* Support for Safari and Chrome. */
+  text-rendering: optimizeLegibility;
+
+  /* Support for Firefox. */
+  -moz-osx-font-smoothing: grayscale;
+
+  /* Support for IE. */
+  font-feature-settings: 'liga';
+
+  color: #808080;
+}
+.material-icons.md-18 { font-size: 18px; }
+.material-icons.md-24 { font-size: 24px; }
+.material-icons.md-36 { font-size: 36px; }
+.material-icons.md-48 { font-size: 48px; }
+
+.feed-title,
+.article-title {
+    padding: 10px;
+}
+
+.feed-title:hover,
+.article-title:hover {
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.is-read {
+    font-weight: bold;
+}
+
+.inline {
+    display: inline-block;
+}
+
+.delete-feed {
+    font-size: 18px !important;
+    color: #808080;
+    cursor: pointer;
+}
+ .title-link,
+ .title-link:hover {
+     color: #808080;
+     font-weight: bold;
+ }
+
+ .delete-feed {
+     margin-top: 10px;
+ }
+
+ .hidden {
+     display: none;
+ }
+
+ .bookmark {
+     cursor: pointer;
+ }
+
+.center {
+    text-align: center;
+}
+
+.bookmark {
+    font-size: 18px !important;
+    width: 35px;
+    height: 35px;
+    padding-top: 8px;
+    padding-right: 30px;
+    margin-top: 3px;
+}
+
+.bookmark:hover {
+    background-color: #e2e2e2;
+    border: 1px solid #c3c3c3;
+}
+
+button {
+    font-family: Roboto,"Helvetica Neue",sans-serif !important;
+}
+
+#search-container {
+    float: right;
+}
+
+#search-container md-input-container {
+    margin: 0;
+}
+
+.button-icon {
+    cursor: pointer;
+}
+
+.title-buttons {
+    height: 80px !important;
+    width: 80px !important;
+}
+
+#feed-articles .title:hover,
+#feed-titles .row:hover {
+    background-color: #efefef;
+}

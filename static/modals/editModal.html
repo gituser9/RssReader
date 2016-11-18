@@ -1,0 +1,17 @@
+<md-dialog class="col-md-4">
+    <h3>Set new name</h3>
+    <p>
+        <md-input-container class="md-block">
+            <label>New name</label>
+            <input ng-model="modalData.Rss.RssName">
+        </md-input-container>
+    </p>
+    <md-dialog-actions layout="row">
+        <md-button ng-click="vm.cancel()" class="md-warn">
+            Cancel
+        </md-button>
+        <md-button class="md-primary" ng-click="vm.updateFeedName(feedUrl)">
+            Update
+        </md-button>
+    </md-dialog-actions>
+</md-dialog>

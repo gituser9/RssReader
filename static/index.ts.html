@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="app" data-framework="typescript">
+
+<head>
+    <meta charset="UTF-8">
+    <title>RSS Reader</title>
+
+    <!-- Material Design fonts -->
+    <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Roboto:300,400,500,700">
+    <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,400italic">
+
+
+    <!--<link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/angular_material/1.1.0/angular-material.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular-animate.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular-aria.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular-messages.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/angular_material/1.1.0/angular-material.min.js"></script>-->
+
+
+    <!-- rev-hash -->
+    <link rel="stylesheet" href="dist/app.css"/>
+    <!-- end -->
+</head>
+
+<body ng-controller="mainCtrl">
+<header class="col-md-12 col-xs-12">
+    <h1>RSS Reader</h1>
+    <!-- manage buttons -->
+    <md-button class="md-primary" ng-click="vm.openAdd()">
+        Add RSS
+    </md-button>
+    <md-button class="md-primary" ng-click="vm.updateAll()">
+        Update RSS
+    </md-button>
+    <md-button class="md-primary" ng-click="vm.openUploadFile()">
+        Upload OPML
+    </md-button>
+    <input id="upload-opml" type="file" class="hidden" ngf-select="uploadOpml($file)"/>
+    <md-button class="md-primary" ng-click="vm.openSettings()">
+        Settings
+    </md-button>
+    <md-button class="md-primary" aria-label="refresh" ng-click="vm.getBookmarks()">
+        Bookmarks
+    </md-button>
+    <md-button class="md-primary" ng-click="vm.createOpml()">
+        Download OPML
+    </md-button>
+
+    <div id="search-container">
+        <md-input-container>
+            <label>Search</label>
+            <input ng-model="searchText">
+        </md-input-container>
+        <md-button class="md-primary inline" ng-click="vm.search()">Search</md-button>
+        <md-select ng-model="searchFeed" class="inline" aria-label="Search in feed">
+            <md-option value="0">All feeds</md-option>
+            <md-option ng-repeat="feed in feeds" value="{{:: feed.Rss.ID }}">{{:: feed.Rss.RssName }}</md-option>
+        </md-select>
+        <md-checkbox ng-model="searchInBookmark" aria-label="In bookmarks">
+            in bookmarks
+        </md-checkbox>
+    </div>
+</header>
+
+<!-- left side -->
+<aside id="feed-titles" class="col-md-4 col-xs-4">
+    <md-button class="md-primary" ng-click="vm.getAll()">
+        Refresh
+    </md-button>
+    <md-progress-linear ng-show="showWaitBar" md-mode="indeterminate"></md-progress-linear>
+    <div ng-repeat="feed in feeds" class="row col-md-12 col-xs-12" ng-click="vm.getArticles(feed)">
+        <div class="col-md-9">
+            <div ng-if="!feed.ExistUnread" class="feed-title inline col-md-10" ng-bind="feed.Rss.RssName"
+                 ng-click="vm.getArticles(feed)"></div>
+            <div ng-if="feed.ExistUnread" class="feed-title inline col-md-10 is-read">
+                <span>{{:: feed.Rss.RssName }}</span>
+                <span ng-if="feed.ExistUnread" class="badge">{{ feed.ArticlesCount }}</span>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <i class="material-icons delete-feed col-md-1" ng-click="vm.openEditName(feed.Rss)">mode_edit</i>
+            <i class="material-icons delete-feed col-md-1" ng-click="vm.openDelete(feed.Rss)">delete_forever</i>
+        </div>
+    </div>
+</aside>
+
+<!-- right side -->
+<section id="feed-articles" class="col-md-8 col-xs-8">
+    <!-- titles list -->
+    <div ng-show="!showArticle" class="col-md-12 col-xs-12">
+        <h3>{{ currentFeedTitle }}</h3>
+        <md-button class="md-primary" ng-click="vm.markReadAll()" ng-show="articles.length > 0 && !hideMarkReadAll">Mark
+            read all
+        </md-button>
+        <article ng-repeat="article in articles" class="col-md-12 col-xs-12 title">
+            <i class="material-icons col-md-1 bookmark" ng-if="article.IsRead" ng-click="vm.toggleAsRead(article.ID, !article.IsRead)">label_outline</i>
+            <i class="material-icons col-md-1 bookmark" ng-if="!article.IsRead" ng-click="vm.toggleAsRead(article.ID, !article.IsRead)">label</i>
+
+            <!--<i class="material-icons col-md-1 bookmark" ng-if="article.IsBookmark" ng-click="vm.toggleBookmark(article)">bookmark</i>-->
+            <i class="material-icons col-md-1 bookmark" ng-if="article.IsBookmark" ng-click="vm.unsetBookmark(article.ID)">bookmark</i>
+            <i class="material-icons col-md-1 bookmark" ng-if="!article.IsBookmark" ng-click="vm.setBookmark(article.ID)">bookmark_border</i>
+            <div class="article-title" ng-bind="article.Title" ng-click="vm.getArticle(article)" ng-class="{ 'is-read': !article.IsRead }"></div>
+        </article>
+
+        <div class="col-md-12 center" ng-show="articles.length > 0">
+            <uib-pagination
+                    total-items="articlesCount"
+                    items-per-page="20"
+                    ng-model="currentPage"
+                    max-size="10"
+                    class="pagination-sm"
+                    boundary-links="true"
+                    force-ellipses="true"
+                    ng-change="vm.getArticlesByPage(currentPage)">
+            </uib-pagination>
+        </div>
+    </div>
+
+    <!-- one article -->
+    <article ng-show="showArticle" class="col-md-12 col-xs-12">
+        <h3>
+            <a class="title-link" ng-href="{{ article.Link }}" target="_blank" ng-bind="article.Title"></a>
+        </h3>
+        <md-button class="md-primary" ng-click="vm.stepBack()">Back to list</md-button>
+        <md-button class="md-primary" ng-click="vm.setBookmark(currentArticle.ID)">Set as bookmark</md-button>
+        <div ng-bind-html="article.Body"></div>
+    </article>
+</section>
+
+<!--
+    Modals
+-->
+<!-- Setting modal -->
+<div id="settings-modal" class="modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h4 class="modal-title">Settings</h4>
+            </div>
+            <div class="modal-body">
+                <div class="checkbox">
+                    <label>
+                        <input type="checkbox" ng-model="pageData.settings.unreadOnly" ng-change="toggleUnread()">
+                        Unread only
+                    </label>
+                </div>
+                <div class="checkbox">
+                    <label>
+                        <input type="checkbox" ng-model="pageData.settings.markSameRead" ng-change=""> Mark same read
+                    </label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" ng-click="saveSettings()">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- footer -->
+<footer>
+    <!-- rev-hash -->
+    <script src="dist/libs.js"></script>
+    <!--<script src="dist/output.js"></script>-->
+    <script src="dist/main.service.js"></script>
+    <script src="dist/main.modal.controller.js"></script>
+    <script src="dist/main.controller.js"></script>
+    <script src="dist/app.js"></script>
+    <script src="dist/_all.js"></script>
+    <!-- end -->
+
+    <div id="export-link"></div>
+</footer>
+</body>
+
+</html>

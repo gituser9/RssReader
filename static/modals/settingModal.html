@@ -1,0 +1,27 @@
+<md-dialog class="col-md-4">
+    <h3>Settings</h3>
+    <!-- todo: md-list -->
+    <p>
+        <md-checkbox ng-model="modalData.Settings.UnreadOnly">
+            Unread only
+        </md-checkbox>
+    </p>
+    <p>
+        <md-checkbox ng-model="modalData.Settings.MarkSameRead">
+            Mark Same Read
+        </md-checkbox>
+    </p>
+    <p>
+        <md-checkbox>
+            Monthly cleaning
+        </md-checkbox>
+    </p>
+    <md-dialog-actions layout="row">
+        <md-button ng-click="vm.cancel()">
+            Cancel
+        </md-button>
+        <md-button ng-click="vm.toggleUnread()">
+            Save
+        </md-button>
+    </md-dialog-actions>
+</md-dialog>

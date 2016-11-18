@@ -1,0 +1,13 @@
+{
+  "name": "RssReader",
+  "devDependencies": {
+    "gulp": "^3.9.0",
+    "gulp-clean-css": "~2.0.2",
+    "gulp-concat": "~2.6.0",
+    "gulp-rev-hash": "0.0.2",
+    "gulp-sourcemaps": "~1.6.0",
+    "gulp-typescript": "^3.0.2",
+    "gulp-uglify": "^1.5.1",
+    "typescript": "^2.0.6"
+  }
+}
