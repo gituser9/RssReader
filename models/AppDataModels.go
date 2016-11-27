@@ -1,13 +1,13 @@
 package models
 
 type Feed struct {
-	Rss           Rss
+	Feed          Feeds
 	ArticlesCount int
 	ExistUnread   bool
 }
 
 type ArticlesJSON struct {
-	Articles []RssArticle
+	Articles []Articles
 	Count    int
 }
 

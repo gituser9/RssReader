@@ -2,7 +2,7 @@ var gulp = require('gulp');
 var concat = require('gulp-concat');
 var cleanCSS = require('gulp-clean-css');
 var uglify = require('gulp-uglify');
-var rev = require('gulp-rev-hash');
+var rev = require('gulp-rev-simple-hash');
 var sourcemaps = require('gulp-sourcemaps');
 var ts = require('gulp-typescript');
 
@@ -20,7 +20,6 @@ gulp.task('jslibs', function() {
     ])
     .pipe(concat('libs.js'))
     .pipe(uglify())
-    //.pipe(gulp.dest('./static/js/'));
     .pipe(gulp.dest('dist'));
 });
 
@@ -30,27 +29,20 @@ gulp.task('csslibs', function () {
         bc + 'angular-material/angular-material.min.css'
     ])
     .pipe(concat('libs.css'))
-    .pipe(gulp.dest('./static/css/'));
+    .pipe(gulp.dest('dist'));
 });
 
-gulp.task('rev', function () {
-    gulp.src('static/index.html')
-        .pipe(rev())
-        .pipe(gulp.dest('dist'));
-});
-
-gulp.task('revts', function () {
+gulp.task('revts', ['jslibs', 'minifycss'], function () {
     gulp.src('static/index.ts.html')
         .pipe(rev())
         .pipe(gulp.dest('dist'));
 });
 
-gulp.task('compile', ['revts'], function () {
+gulp.task('compile', function () {
     gulp.src('static/typescript/*.ts')
         .pipe(sourcemaps.init())
         .pipe(ts({
             noImplicitAny: false,
-            // out: 'output.js',
             target: 'ES5',
             removeComments: true
         }))
@@ -59,27 +51,6 @@ gulp.task('compile', ['revts'], function () {
         .pipe(gulp.dest('dist'));
 });
 
-gulp.task('dist', ['revts', 'minifycss', 'jslibs', 'compile']/*, function () {
-    gulp.src('dist/*.js')
-        .pipe(concat('build.js'))
-        .pipe(gulp.dest('.'));
-}*/);
-
-gulp.task('clientlibs', ['jslibs', 'csslibs', 'revts']);
-
-
-//==============================================================================
-
-
-/*gulp.task('minifyjs', ['jslibs'], function () {
-    gulp.src('./static/js/!*.js')
-        .pipe(sourcemaps.init())
-        .pipe(concat('app.js'))
-        .pipe(uglify())
-        .pipe(sourcemaps.write('dist'))
-        .pipe(gulp.dest('dist'));
-});*/
-
 gulp.task('minifycss', ['csslibs'], function () {
     gulp.src('./static/css/*.css')
         .pipe(concat('app.css'))
@@ -87,9 +58,7 @@ gulp.task('minifycss', ['csslibs'], function () {
         .pipe(gulp.dest('dist'));
 });
 
-gulp.task('build', ['minifyjs', 'minifycss']);
-
-
+gulp.task('dist', ['minifycss', 'jslibs', 'compile', 'revts']);
 
 gulp.task('watch', function() {
     gulp.watch('static/typescript/*.ts', ['compile']);
