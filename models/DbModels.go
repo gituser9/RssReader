@@ -1,53 +1,34 @@
 package models
 
-import "github.com/jinzhu/gorm"
-
-// Rss - structure for DB
-type Rss struct {
-	ID       uint   `gorm:"column:Id;primary_key;AUTO_INCREMENT"`
-	RssName  string `gorm:"column:Name"`
-	RssURL   string `gorm:"column:Url"`
-	Articles []RssArticle
+type Feeds struct {
+	Id       uint   `gorm:"column:Id;primary_key;AUTO_INCREMENT"`
+	Name     string `gorm:"column:Name"`
+	Url      string `gorm:"column:Url"`
+	UserId   uint   `gorm:"column:UserId;index"`
+	Articles []Articles
 }
 
-func (Rss) TableName() string {
-	return "feeds"
-}
-
-// RssArticle - article in feed
-type RssArticle struct {
-	ID         uint   `gorm:"column:Id;primary_key;AUTO_INCREMENT"`
-	RssID      uint   `gorm:"column:FeedId;index"`
+type Articles struct {
+	Id         uint   `gorm:"column:Id;primary_key;AUTO_INCREMENT"`
+	FeedId     uint   `gorm:"column:FeedId;index"`
 	Title      string `gorm:"column:Title"`
-	Body       string `gorm:"column:Body"`
+	Body       string `gorm:"column:Body;size:8192"`
 	Link       string `gorm:"column:Link"`
 	Date       int64  `gorm:"column:Date"`
 	IsRead     bool   `gorm:"column:IsRead"`
 	IsBookmark bool   `gorm:"column:IsBookmark"`
 }
 
-func (RssArticle) TableName() string {
-	return "articles"
-}
-
-type User struct {
-	gorm.Model
-	ID       uint
-	Name     string
-	Password string
+type Users struct {
+	Id       uint   `gorm:"column:Id;primary_key;AUTO_INCREMENT"`
+	Name     string `gorm:"column:Name"`
+	Password string `gorm:"column:Password"`
 	Settings Settings
-}
-
-func (User) TableName() string {
-	return "users"
+	Feeds    []Feeds
 }
 
 type Settings struct {
-	gorm.Model
-	UserID     uint
-	UnreadOnly bool
-}
-
-func (Settings) TableName() string {
-	return "settings"
+	Id         uint `gorm:"column:Id;primary_key;AUTO_INCREMENT"`
+	UserId     uint `gorm:"column:UserId;index"`
+	UnreadOnly bool `gorm:"column:UnreadOnly"`
 }
