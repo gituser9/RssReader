@@ -1,12 +1,11 @@
 package models
 
-import "github.com/jinzhu/gorm"
-
 // Rss - structure for DB
 type Rss struct {
 	ID       uint   `gorm:"column:Id;primary_key;AUTO_INCREMENT"`
 	RssName  string `gorm:"column:Name"`
 	RssURL   string `gorm:"column:Url"`
+	UserId   uint   `gorm:"column:UserId;index"`
 	Articles []RssArticle
 }
 
@@ -31,11 +30,11 @@ func (RssArticle) TableName() string {
 }
 
 type User struct {
-	gorm.Model
-	ID       uint
-	Name     string
-	Password string
+	Id       uint   `gorm:"column:Id;primary_key;AUTO_INCREMENT"`
+	Name     string `gorm:"column:Name"`
+	Password string `gorm:"column:Password"`
 	Settings Settings
+	Feeds    []Rss
 }
 
 func (User) TableName() string {
@@ -43,9 +42,8 @@ func (User) TableName() string {
 }
 
 type Settings struct {
-	gorm.Model
-	UserID     uint
-	UnreadOnly bool
+	UserId     uint `gorm:"column:UserId;index"`
+	UnreadOnly bool `gorm:"column:UnreadOnly"`
 }
 
 func (Settings) TableName() string {

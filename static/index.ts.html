@@ -10,15 +10,6 @@
     <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/icon?family=Material+Icons">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,400italic">
 
-
-    <!--<link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/angular_material/1.1.0/angular-material.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular-animate.min.js"></script>
-    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular-aria.min.js"></script>
-    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular-messages.min.js"></script>
-    <script src="http://ajax.googleapis.com/ajax/libs/angular_material/1.1.0/angular-material.min.js"></script>-->
-
-
     <!-- rev-hash -->
     <link rel="stylesheet" href="dist/app.css"/>
     <!-- end -->
@@ -61,6 +52,29 @@
         <md-checkbox ng-model="searchInBookmark" aria-label="In bookmarks">
             in bookmarks
         </md-checkbox>
+        <md-button id="logout" class="md-primary inline" ng-click="vm.logout()">Logout</md-button>
+
+
+
+        <md-fab-speed-dial md-open="fabMenuOpen" md-direction="down" class="md-fling">
+            <md-fab-trigger>
+                <md-button aria-label="menu" class="md-fab md-warn">
+                    <!--<md-icon md-svg-src="img/icons/menu.svg"></md-icon>-->
+                </md-button>
+            </md-fab-trigger>
+
+            <md-fab-actions>
+                <md-button aria-label="Twitter" class="md-fab md-raised md-mini">
+                    <!--<md-icon md-svg-src="img/icons/twitter.svg" aria-label="Twitter"></md-icon>-->
+                </md-button>
+                <md-button aria-label="Facebook" class="md-fab md-raised md-mini">
+                    <!--<md-icon md-svg-src="img/icons/facebook.svg" aria-label="Facebook"></md-icon>-->
+                </md-button>
+                <md-button aria-label="Google Hangout" class="md-fab md-raised md-mini">
+                    <!--<md-icon md-svg-src="img/icons/hangout.svg" aria-label="Google Hangout"></md-icon>-->
+                </md-button>
+            </md-fab-actions>
+        </md-fab-speed-dial>
     </div>
 </header>
 

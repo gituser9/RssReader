@@ -9,6 +9,9 @@ module main {
         vm: ModalController;
         modalData: ModalData;
         feedUrl: string;
+        username: string;
+        password: string;
+        errorMessage: string;
     }
 
     export class ModalData {
@@ -69,6 +72,40 @@ module main {
         public toggleUnread(): void {
             this.mainService.setUnread(this.$scope.modalData.Settings.UnreadOnly);
             this.cancel();
+        }
+
+        public auth(): void {
+            this.mainService.auth(this.$scope.username, this.$scope.password).then((response: ng.IHttpPromiseCallbackArg<User>) => {
+                if (response.data != null) {
+                    this.cancel();
+                    this.mainService.currentUserId = (<User> response.data).Id;
+                    this.mainService.getAll(this.mainService.currentUserId);
+
+                    let storage = window.localStorage;
+                    storage.setItem("RssReaderUser", JSON.stringify(response.data));
+
+                }
+            });
+        }
+
+        public registration(): void {
+            this.mainService.registration(this.$scope.username, this.$scope.password).then((response: ng.IHttpPromiseCallbackArg<RegistrationData>) => {
+                if (response.data != null) {
+                    let data = <RegistrationData> response.data;
+
+                    if (data.User == null) {
+                        this.$scope.errorMessage = data.Message;
+                        return
+                    }
+
+                    this.cancel();
+
+                    this.$scope.errorMessage = "";
+                    this.mainService.currentUserId = data.User.Id;
+                    let storage = window.localStorage;
+                    storage.setItem("RssReaderUser", JSON.stringify(data.User));
+                }
+            });
         }
     }
 }

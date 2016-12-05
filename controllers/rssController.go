@@ -2,10 +2,11 @@ package controllers
 
 import (
 	"encoding/json"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"strconv"
+
+	"io/ioutil"
 
 	"../models"
 	"../services"
@@ -26,13 +27,13 @@ func (ctrl *RssController) Init(config *models.Config) *RssController {
 
 // Index - return page
 func (ctrl *RssController) Index(w http.ResponseWriter, r *http.Request) {
-	//http.ServeFile(w, r, "static/index.html")
 	http.ServeFile(w, r, "dist/index.ts.html")
 }
 
 // GetAll - get feed list
 func (ctrl *RssController) GetAll(w http.ResponseWriter, r *http.Request) {
-	feeds := ctrl.service.GetRss()
+	id, _ := strconv.ParseUint(r.URL.Query().Get("id"), 10, 32)
+	feeds := ctrl.service.GetRss(uint(id))
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(feeds)
@@ -67,7 +68,7 @@ func (ctrl *RssController) GetSettings(w http.ResponseWriter, r *http.Request) {
 func (ctrl *RssController) AddFeed(w http.ResponseWriter, r *http.Request) {
 	data := postClientData(r)
 
-	ctrl.service.AddFeed(data.Url)
+	ctrl.service.AddFeed(data.Url, data.UserId)
 	ctrl.GetAll(w, r)
 }
 
@@ -88,6 +89,8 @@ func (ctrl *RssController) UpdateAll(w http.ResponseWriter, r *http.Request) {
 // UploadOpml - upload, parse OPML and update feeds
 func (ctrl *RssController) UploadOpml(w http.ResponseWriter, r *http.Request) {
 	file, _, err := r.FormFile("file")
+	id, _ := strconv.Atoi(r.FormValue("userId"))
+	// todo: get user id
 
 	if err != nil {
 		log.Println(err)
@@ -99,12 +102,13 @@ func (ctrl *RssController) UploadOpml(w http.ResponseWriter, r *http.Request) {
 		log.Println(err)
 	}
 
-	ctrl.service.Import(data)
+	ctrl.service.Import(data, uint(id))
 	ctrl.GetAll(w, r)
 }
 
 func (ctrl *RssController) CreateOpml(w http.ResponseWriter, r *http.Request) {
-	ctrl.service.Export()
+	// todo: get user id
+	//ctrl.service.Export()
 }
 
 // SetNewFeedName - set new feed name

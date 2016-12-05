@@ -94,4 +94,5 @@ gulp.task('build', ['minifyjs', 'minifycss']);
 gulp.task('watch', function() {
     gulp.watch('static/typescript/*.ts', ['compile']);
     gulp.watch('static/index.ts.html', ['revts']);
+    // gulp.watch('static/css/*.css', ['minifycss']);
 });
