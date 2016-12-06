@@ -17,12 +17,15 @@ module main {
         showArticle: boolean;
         hideMarkReadAll: boolean;
         searchInBookmark: boolean;
+        fabMenuOpen: boolean;
         currentFeedTitle: string;
         searchText: string;
         currentLink: string;
+        username: string;
         searchFeed: number;
         articlesCount: number;
         currentPage: number;
+        currentUserId: number;
     }
 
     export class MainController {
@@ -33,7 +36,9 @@ module main {
             "mainService"
         ];
         private isBookmark: boolean;
+        private isAuth: boolean;
         private currentFeedId: number;
+        private userId: number;
 
         constructor(private $scope: IMainScope, private $mdDialog: IDialogService, private $upload: any, private mainService: MainService) {
             $scope.vm = this;
@@ -47,31 +52,48 @@ module main {
                 this.$scope.showWaitBar = mainService.showWaitbar;
                 this.$scope.showArticle = mainService.showArticle;
                 this.$scope.articlesCount = mainService.articlesCount;
+                this.userId = mainService.currentUserId;
             });
 
             this.isBookmark = false;
+            this.isAuth = false;
+            this.$scope.fabMenuOpen = false;
             this.currentFeedId = 0;
 
-            this.mainService.getAll();
+            let storage = window.localStorage;
+            let userStr = storage.getItem("RssReaderUser");
+
+            if (userStr != null) {
+                let user = <User> JSON.parse(userStr);
+
+                this.mainService.getAll(user.Id);
+
+                this.userId = user.Id;
+                this.isAuth = true;
+                this.$scope.username = user.Name;
+            } else {
+                // modal for auth
+                this.openAuthModal();
+            }
         }
 
         public getAll(): void {
-            this.mainService.getAll();
+            this.mainService.getAll(this.userId);
         }
 
         public getArticles(feed: Feed): void {
             this.$scope.hideMarkReadAll = false;
 
-            if (feed.Rss.ID != this.currentFeedId) {
+            if (feed.Feed.Id != this.currentFeedId) {
                 this.$scope.currentPage = 1;
             }
 
             this.isBookmark = false;
             this.$scope.currentFeed = feed;
-            this.currentFeedId = feed.Rss.ID;
-            this.$scope.currentFeedTitle = feed.Rss.RssName;
+            this.currentFeedId = feed.Feed.Id;
+            this.$scope.currentFeedTitle = feed.Feed.Name;
 
-            this.mainService.getArticles(feed.Rss.ID, this.$scope.currentPage);
+            this.mainService.getArticles(feed.Feed.Id, this.$scope.currentPage);
         }
 
         public stepBack(): void {
@@ -79,7 +101,7 @@ module main {
         }
 
         public getArticle(article: Article): void {
-            this.mainService.getArticle(article.ID);
+            this.mainService.getArticle(article.Id);
             this.setRead();
         }
 
@@ -190,18 +212,29 @@ module main {
 
             this.$upload.upload({
                 url: 'upload-opml',
-                data: { file: file }
+                data: { file: file, userId: this.userId }
             }).success((data: Feed[]) => {
                 selfScope.showWaitBar = false;
                 selfScope.feeds = data;
             });
         }
 
+        public logout(): void {
+            let storage = window.localStorage;
+            storage.removeItem("RssReaderUser");
+
+            this.mainService.feeds = [];
+            this.mainService.articles = [];
+            this.mainService.article = null;
+            this.$scope.currentFeedTitle = "";
+
+            this.openAuthModal();
+        }
 /*
 Modals
 ================================================================================
 */    
-        public openDelete(rss: Rss): void {
+        public openDelete(rss: Feeds): void {
             let modalData = new ModalData();
             modalData.Rss = rss;
             this.openModal("static/modals/deleteModal.html", modalData);
@@ -211,7 +244,7 @@ Modals
             this.openModal("static/modals/addModal.html", null);
         }
 
-        public openEditName(rss: Rss): void {
+        public openEditName(rss: Feeds): void {
             let modalData = new ModalData();
             modalData.Rss = rss;
             this.openModal("static/modals/editModal.html", modalData);
@@ -223,7 +256,18 @@ Modals
                 modalData.Settings = response;
                 this.openModal("static/modals/settingModal.html", modalData);
             });
+        }
 
+        public openAuthModal(): void {
+            this.$mdDialog.show({
+                controller: ModalController,
+                templateUrl: "static/modals/authModal.html",
+                parent: angular.element(document.body),
+                clickOutsideToClose: false,
+                locals: {
+                    modalData: null
+                }
+            });
         }
 
 /*

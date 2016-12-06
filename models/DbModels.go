@@ -1,11 +1,16 @@
 package models
 
+// Rss - structure for DB
 type Feeds struct {
 	Id       uint   `gorm:"column:Id;primary_key;AUTO_INCREMENT"`
 	Name     string `gorm:"column:Name"`
 	Url      string `gorm:"column:Url"`
 	UserId   uint   `gorm:"column:UserId;index"`
 	Articles []Articles
+}
+
+func (Feeds) TableName() string {
+	return "feeds"
 }
 
 type Articles struct {
@@ -19,6 +24,10 @@ type Articles struct {
 	IsBookmark bool   `gorm:"column:IsBookmark"`
 }
 
+func (Articles) TableName() string {
+	return "articles"
+}
+
 type Users struct {
 	Id       uint   `gorm:"column:Id;primary_key;AUTO_INCREMENT"`
 	Name     string `gorm:"column:Name"`
@@ -27,8 +36,16 @@ type Users struct {
 	Feeds    []Feeds
 }
 
+func (Users) TableName() string {
+	return "users"
+}
+
 type Settings struct {
 	Id         uint `gorm:"column:Id;primary_key;AUTO_INCREMENT"`
 	UserId     uint `gorm:"column:UserId;index"`
 	UnreadOnly bool `gorm:"column:UnreadOnly"`
+}
+
+func (Settings) TableName() string {
+	return "settings"
 }

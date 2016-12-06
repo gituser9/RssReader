@@ -6,18 +6,18 @@ module main {
     export class Feed {
         ArticlesCount: number;
         ExistUnread: boolean;
-        Rss: Rss;
+        Feed: Feeds;
     }
 
-    export class Rss {
-        ID: number;
-        RssURL: string;
-        RssName: string;
+    export class Feeds {
+        Id: number;
+        Url: string;
+        Name: string;
         Articles: Article[];
     }
 
     export class Article {
-        ID: number;
+        Id: number;
         Title: string;
         Body: string;
         Link: string;
@@ -36,8 +36,20 @@ module main {
         public Count: number;
     }
 
+    export class User {
+        public Id: number;
+        public Name: string;
+        public Password: string;
+    }
+
+    export class RegistrationData {
+        public User: User;
+        public Message: string;
+    }
+
     export class MainService {
         public articlesCount: number;
+        public currentUserId: number;
         public showArticle: boolean;
         public showWaitbar: boolean;
         public settings: Settings;
@@ -82,21 +94,24 @@ module main {
                 this.showArticle = true;
 
                 this.articles.forEach((item: Article) => {
-                    if (item.ID == this.article.ID) {
+                    if (item.Id == this.article.Id) {
                         item.IsRead = true;
                     }
                 });
             });
         }
 
-        public getAll(): void {
-            this.$http.get("/get-all").then((response: ng.IHttpPromiseCallbackArg<Feed[]>): void => {
+        public getAll(id: number): void {
+            let config: ng.IRequestShortcutConfig = {};
+            config.params = { id: id };
+
+            this.$http.get("/get-all", config).then((response: ng.IHttpPromiseCallbackArg<Feed[]>): void => {
                 this.feeds = response.data;
             });
         }
 
         public addFeed(url: string): void {
-            this.$http.post("/add-article", { url: url }).then((response: ng.IHttpPromiseCallbackArg<Feed[]>): void => {
+            this.$http.post("/add-article", { url: url, userId: this.currentUserId }).then((response: ng.IHttpPromiseCallbackArg<Feed[]>): void => {
                 this.feeds = response.data;
             });
         }
@@ -183,6 +198,14 @@ module main {
 
         public setUnread(isUnread: boolean): void {
             this.$http.post('/toggle-unread', { isUnread: isUnread });
+        }
+
+        public auth(username: string, password: string): ng.IHttpPromise<User> {
+            return this.$http.post('/auth', { username: username, password: password });
+        }
+
+        public registration(username: string, password: string): ng.IHttpPromise<RegistrationData> {
+            return this.$http.post('/registration', { username: username, password: password });
         }
     }
 }

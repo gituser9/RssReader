@@ -16,3 +16,8 @@ type AppSettings struct {
 	MarkSameRead  bool
 	UpdateMinutes int
 }
+
+type RegistrationData struct {
+	User    *Users
+	Message string
+}

@@ -37,7 +37,7 @@ func startTimers(config *models.Config) {
 			service.UpdateAllFeeds()
 		case <-weekTimer:
 			service.CleanOldArticles()
-			service.Export()
+			//			service.Export()
 			service.Backup()
 		}
 	}
@@ -74,7 +74,8 @@ func init() {
 }
 
 func main() {
-	controller := new(controllers.RssController).Init(&conf)
+	rssCtrl := new(controllers.RssController).Init(&conf)
+	userCtrl := new(controllers.UserController).Init(&conf)
 
 	go startTimers(&conf)
 
@@ -84,22 +85,29 @@ func main() {
 	log.Println("server start")
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./static/"))))
 	http.Handle("/dist/", http.StripPrefix("/dist/", http.FileServer(http.Dir("./dist/"))))
-	http.HandleFunc("/", controller.Index)
-	http.HandleFunc("/get-all", controller.GetAll)
-	http.HandleFunc("/get-articles", controller.GetArticles)
-	http.HandleFunc("/get-article", controller.GetArticle)
-	http.HandleFunc("/add-article", controller.AddFeed)
-	http.HandleFunc("/delete", controller.Delete)
-	http.HandleFunc("/set-new-name", controller.SetNewFeedName)
-	http.HandleFunc("/update-all", controller.UpdateAll)
-	http.HandleFunc("/upload-opml", controller.UploadOpml)
-	http.HandleFunc("/toggle-bookmark", controller.ToggleBookmark)
-	http.HandleFunc("/get-bookmarks", controller.GetBookmarks)
-	http.HandleFunc("/mark-read-all", controller.MarkAllRead)
-	http.HandleFunc("/create-opml", controller.CreateOpml)
-	http.HandleFunc("/toggle-unread", controller.ToggleUnread)
-	http.HandleFunc("/get-settings", controller.GetAppSettings)
-	http.HandleFunc("/search", controller.Search)
-	http.HandleFunc("/toggle-as-read", controller.ToggleAsRead)
-	http.ListenAndServe(":"+strconv.Itoa(conf.Port), nil)
+	http.HandleFunc("/", rssCtrl.Index)
+	http.HandleFunc("/get-all", rssCtrl.GetAll)
+	http.HandleFunc("/get-articles", rssCtrl.GetArticles)
+	http.HandleFunc("/get-article", rssCtrl.GetArticle)
+	http.HandleFunc("/add-article", rssCtrl.AddFeed)
+	http.HandleFunc("/delete", rssCtrl.Delete)
+	http.HandleFunc("/set-new-name", rssCtrl.SetNewFeedName)
+	http.HandleFunc("/update-all", rssCtrl.UpdateAll)
+	http.HandleFunc("/upload-opml", rssCtrl.UploadOpml)
+	http.HandleFunc("/toggle-bookmark", rssCtrl.ToggleBookmark)
+	http.HandleFunc("/get-bookmarks", rssCtrl.GetBookmarks)
+	http.HandleFunc("/mark-read-all", rssCtrl.MarkAllRead)
+	http.HandleFunc("/create-opml", rssCtrl.CreateOpml)
+	http.HandleFunc("/toggle-unread", rssCtrl.ToggleUnread)
+	http.HandleFunc("/get-settings", rssCtrl.GetAppSettings)
+	http.HandleFunc("/search", rssCtrl.Search)
+	http.HandleFunc("/toggle-as-read", rssCtrl.ToggleAsRead)
+	http.HandleFunc("/auth", userCtrl.Auth)
+	http.HandleFunc("/registration", userCtrl.Registration)
+
+	err := http.ListenAndServe(":"+strconv.Itoa(conf.Port), nil)
+
+	if err != nil {
+		log.Println("Start rror: ", err.Error())
+	}
 }

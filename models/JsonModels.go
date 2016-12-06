@@ -17,6 +17,7 @@ type Config struct {
 type ClientData struct {
 	FeedId       uint   `json:"feedId"`
 	ArticleId    uint   `json:"articleId"`
+	UserId       uint   `json:"userId"`
 	Page         int    `json:"page"`
 	SearchString string `json:"searchString"`
 	Url          string `json:"url"`
@@ -24,4 +25,10 @@ type ClientData struct {
 	IsRead       bool   `json:"isRead"`
 	IsBookmark   bool   `json:"isBookmark"`
 	IsUnread     bool   `json:"isUnread"`
+}
+
+type AuthData struct {
+	Id       uint   `json:"id"`
+	Name     string `json:"username"`
+	Password string `json:"password"`
 }

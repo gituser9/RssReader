@@ -114,3 +114,9 @@ button {
 #feed-titles .row:hover {
     background-color: #efefef;
 }
+
+#logout {
+    position: absolute;
+    right: 15px;
+    top: 15px;
+}

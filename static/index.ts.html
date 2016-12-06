@@ -10,15 +10,6 @@
     <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/icon?family=Material+Icons">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,400italic">
 
-
-    <!--<link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/angular_material/1.1.0/angular-material.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular-animate.min.js"></script>
-    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular-aria.min.js"></script>
-    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular-messages.min.js"></script>
-    <script src="http://ajax.googleapis.com/ajax/libs/angular_material/1.1.0/angular-material.min.js"></script>-->
-
-
     <!-- rev-hash -->
     <link rel="stylesheet" href="dist/app.css"/>
     <!-- end -->
@@ -61,6 +52,29 @@
         <md-checkbox ng-model="searchInBookmark" aria-label="In bookmarks">
             in bookmarks
         </md-checkbox>
+        <md-button id="logout" class="md-primary inline" ng-click="vm.logout()">Logout</md-button>
+
+
+
+        <!--<md-fab-speed-dial md-open="fabMenuOpen" md-direction="down" class="md-fling">
+            <md-fab-trigger>
+                <md-button aria-label="menu" class="md-fab md-warn">
+                    &lt;!&ndash;<md-icon md-svg-src="img/icons/menu.svg"></md-icon>&ndash;&gt;
+                </md-button>
+            </md-fab-trigger>
+
+            <md-fab-actions>
+                <md-button aria-label="Twitter" class="md-fab md-raised md-mini">
+                    &lt;!&ndash;<md-icon md-svg-src="img/icons/twitter.svg" aria-label="Twitter"></md-icon>&ndash;&gt;
+                </md-button>
+                <md-button aria-label="Facebook" class="md-fab md-raised md-mini">
+                    &lt;!&ndash;<md-icon md-svg-src="img/icons/facebook.svg" aria-label="Facebook"></md-icon>&ndash;&gt;
+                </md-button>
+                <md-button aria-label="Google Hangout" class="md-fab md-raised md-mini">
+                    &lt;!&ndash;<md-icon md-svg-src="img/icons/hangout.svg" aria-label="Google Hangout"></md-icon>&ndash;&gt;
+                </md-button>
+            </md-fab-actions>
+        </md-fab-speed-dial>-->
     </div>
 </header>
 
@@ -72,10 +86,10 @@
     <md-progress-linear ng-show="showWaitBar" md-mode="indeterminate"></md-progress-linear>
     <div ng-repeat="feed in feeds" class="row col-md-12 col-xs-12" ng-click="vm.getArticles(feed)">
         <div class="col-md-9">
-            <div ng-if="!feed.ExistUnread" class="feed-title inline col-md-10" ng-bind="feed.Rss.RssName"
+            <div ng-if="!feed.ExistUnread" class="feed-title inline col-md-10" ng-bind="feed.Feed.Name"
                  ng-click="vm.getArticles(feed)"></div>
             <div ng-if="feed.ExistUnread" class="feed-title inline col-md-10 is-read">
-                <span>{{:: feed.Rss.RssName }}</span>
+                <span>{{:: feed.Feed.Name }}</span>
                 <span ng-if="feed.ExistUnread" class="badge">{{ feed.ArticlesCount }}</span>
             </div>
         </div>

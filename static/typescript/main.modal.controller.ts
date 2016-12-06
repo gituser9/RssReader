@@ -9,10 +9,13 @@ module main {
         vm: ModalController;
         modalData: ModalData;
         feedUrl: string;
+        username: string;
+        password: string;
+        errorMessage: string;
     }
 
     export class ModalData {
-        Rss: Rss;
+        Rss: Feeds;
         Settings: Settings;
     }
 
@@ -40,7 +43,7 @@ module main {
         }
 
         public updateFeedName(): void {
-            this.mainService.setNewFeedName(this.modalData.Rss.ID, this.$scope.modalData.Rss.RssName);
+            this.mainService.setNewFeedName(this.modalData.Rss.Id, this.$scope.modalData.Rss.Name);
             this.cancel();
         }
 
@@ -62,13 +65,47 @@ module main {
         }
 
         public delete(): void {
-            this.mainService.delete(this.modalData.Rss.ID);
+            this.mainService.delete(this.modalData.Rss.Id);
             this.cancel();
         }
 
         public toggleUnread(): void {
             this.mainService.setUnread(this.$scope.modalData.Settings.UnreadOnly);
             this.cancel();
+        }
+
+        public auth(): void {
+            this.mainService.auth(this.$scope.username, this.$scope.password).then((response: ng.IHttpPromiseCallbackArg<User>) => {
+                if (response.data != null) {
+                    this.cancel();
+                    this.mainService.currentUserId = (<User> response.data).Id;
+                    this.mainService.getAll(this.mainService.currentUserId);
+
+                    let storage = window.localStorage;
+                    storage.setItem("RssReaderUser", JSON.stringify(response.data));
+
+                }
+            });
+        }
+
+        public registration(): void {
+            this.mainService.registration(this.$scope.username, this.$scope.password).then((response: ng.IHttpPromiseCallbackArg<RegistrationData>) => {
+                if (response.data != null) {
+                    let data = <RegistrationData> response.data;
+
+                    if (data.User == null) {
+                        this.$scope.errorMessage = data.Message;
+                        return
+                    }
+
+                    this.cancel();
+
+                    this.$scope.errorMessage = "";
+                    this.mainService.currentUserId = data.User.Id;
+                    let storage = window.localStorage;
+                    storage.setItem("RssReaderUser", JSON.stringify(data.User));
+                }
+            });
         }
     }
 }
