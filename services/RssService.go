@@ -28,12 +28,12 @@ type RssService struct {
 }
 
 // Migrate DB
-/*func Migrate(db *gorm.DB) {
+func Migrate(db *gorm.DB) {
 	db.AutoMigrate(&models.Feeds{}, &models.Articles{}, &models.Users{}, &models.Settings{})
-	db.Model(&models.Articles{}).AddForeignKey("FeedId", "feeds(id)", "RESTRICT", "RESTRICT")
-	db.Model(&models.Settings{}).AddForeignKey("UserId", "users(id)", "RESTRICT", "RESTRICT")
-	db.Model(&models.Feeds{}).AddForeignKey("UserId", "users(id)", "RESTRICT", "RESTRICT")
-}*/
+	db.Model(&models.Articles{}).AddForeignKey("FeedId", "feeds(Id)", "RESTRICT", "RESTRICT")
+	db.Model(&models.Settings{}).AddForeignKey("UserId", "users(Id)", "RESTRICT", "RESTRICT")
+	db.Model(&models.Feeds{}).AddForeignKey("UserId", "users(Id)", "RESTRICT", "RESTRICT")
+}
 
 // Init - create new struct pointer with collection
 func (service *RssService) Init(config *models.Config) *RssService {
@@ -43,7 +43,7 @@ func (service *RssService) Init(config *models.Config) *RssService {
 		log.Println(err)
 	}
 
-	//Migrate(db)
+	Migrate(db)
 
 	// set default settings
 	settings := models.AppSettings{
@@ -57,14 +57,18 @@ func (service *RssService) Init(config *models.Config) *RssService {
 // GetRss - get all rss
 func (service *RssService) GetRss(id uint) []models.Feed {
 	var rss []models.Feeds
-	service.dbp().Where(&models.Feeds{UserId: id}).Preload("Articles", "IsRead=?", "0").Find(&rss)
+	//service.dbp().Where(&models.Feeds{UserId: id}).Preload("Articles", "IsRead=?", "0").Find(&rss)
+	service.dbp().Where(&models.Feeds{UserId: id}).Find(&rss)
 	feeds := make([]models.Feed, len(rss))
 	var wg sync.WaitGroup
 
 	for i, item := range rss {
 		wg.Add(1)
 		go func(item models.Feeds, i int) {
-			count := len(item.Articles)
+			var articles []models.Articles
+			service.dbp().Where(&models.Articles{FeedId: item.Id}).Where("IsRead=?", "0").Find(&articles)
+			//count := len(item.Articles)
+			count := len(articles)
 			feeds[i] = models.Feed{Feed: item, ArticlesCount: count, ExistUnread: count > 0}
 
 			wg.Done()
@@ -127,16 +131,18 @@ func (service *RssService) UpdateAllFeeds() {
 
 	for _, feed := range feeds {
 		wg.Add(1)
-		go service.UpdateFeed(feed.Url, &wg, feed.UserId)
+		go func(feed models.Feeds) {
+			service.UpdateFeed(feed.Url, feed.UserId)
+			wg.Done()
+		}(feed)
 	}
 
 	wg.Wait()
 }
 
 // UpdateFeed - update one feed
-func (service *RssService) UpdateFeed(url string, wg *sync.WaitGroup, userId uint) {
-	// get xml by url
-	defer wg.Done()
+func (service *RssService) UpdateFeed(url string, userId uint) {
+	//defer wg.Done()
 	rssBody, err := service.getFeedBody(url)
 
 	if err != nil {
@@ -147,7 +153,8 @@ func (service *RssService) UpdateFeed(url string, wg *sync.WaitGroup, userId uin
 	// get feed from DB by url, if not - add
 	defer rssBody.Close()
 	var rss models.Feeds
-	service.dbp().Preload("Articles").Where(&models.Feeds{Url: url, UserId: userId}).First(&rss)
+	//service.dbp().Preload("Articles").Where(&models.Feeds{Url: url, UserId: userId}).Find(&rss)
+	service.dbp().Where(&models.Feeds{Url: url, UserId: userId}).First(&rss)
 
 	if rss.Url == "" {
 		service.AddFeed(url, userId)
@@ -187,7 +194,11 @@ func (service *RssService) Import(data []byte, userId uint) {
 	// update feeds
 	for _, item := range opml.Outlines {
 		wg.Add(1)
-		go service.UpdateFeed(item.URL, &wg, userId)
+		//go service.UpdateFeed(item.URL, &wg, userId)
+		go func(item models.OPMLOutline) {
+			service.UpdateFeed(item.URL, userId)
+			wg.Done()
+		}(item)
 	}
 
 	wg.Wait()
@@ -257,6 +268,7 @@ func (service *RssService) AddFeed(url string, userId uint) {
 	dbModel := service.fromXMLToDbStructure(&xmlModel, userId)
 	dbModel.Url = url
 	service.dbp().Create(&dbModel)
+	service.UpdateFeed(url, userId)
 
 	if err != nil {
 		log.Println("insert error", err.Error())
@@ -459,22 +471,21 @@ func (service *RssService) getFeedBody(url string) (io.ReadCloser, error) {
 }
 
 func (service *RssService) updateArticles(rss models.Feeds, xmlModel models.XMLFeed) {
-	links := make([]string, len(rss.Articles))
+	var articles []models.Articles
+	service.dbp().Where(&models.Articles{FeedId: rss.Id}).Find(&articles)
+
+	links := make([]string, len(articles))
 	var wg sync.WaitGroup
 
-	for i, article := range rss.Articles {
-		wg.Add(1)
-		go func(i int, article models.Articles) {
-			links[i] = article.Link
-			wg.Done()
-		}(i, article)
+	for i, article := range articles {
+		links[i] = article.Link
 	}
 
-	wg.Wait()
 	newArticles := make([]models.Articles, len(xmlModel.Articles))
 
 	for i, article := range xmlModel.Articles {
 		wg.Add(1)
+
 		go func(i int, article models.XMLArticle) {
 			defer wg.Done()
 			isExist := false
@@ -498,9 +509,9 @@ func (service *RssService) updateArticles(rss models.Feeds, xmlModel models.XMLF
 
 	wg.Wait()
 
-	for i, article := range newArticles {
+	for _, article := range newArticles {
 		if article.FeedId != 0 {
-			service.dbp().Create(&newArticles[i])
+			service.dbp().Create(&article)
 		}
 	}
 }
