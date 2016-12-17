@@ -177,8 +177,11 @@ module main {
         }
 
         // todo: type
-        public createOpml(): ng.IHttpPromise<any> {
-            return this.$http.get('/create-opml');
+        public createOpml(userId: number): ng.IHttpPromise<any> {
+            let config: ng.IRequestShortcutConfig = {};
+            config.params = { id: userId };
+
+            return this.$http.get('/create-opml', config);
         }
 
         //public setUnread

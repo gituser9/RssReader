@@ -17,7 +17,7 @@ module main {
         showArticle: boolean;
         hideMarkReadAll: boolean;
         searchInBookmark: boolean;
-        fabMenuOpen: boolean;
+        showArticleCount: boolean;
         currentFeedTitle: string;
         searchText: string;
         currentLink: string;
@@ -57,7 +57,7 @@ module main {
 
             this.isBookmark = false;
             this.isAuth = false;
-            this.$scope.fabMenuOpen = false;
+            this.$scope.showArticleCount = true;
             this.currentFeedId = 0;
 
             let storage = window.localStorage;
@@ -68,7 +68,7 @@ module main {
 
                 this.mainService.getAll(user.Id);
 
-                this.userId = user.Id;
+                mainService.currentUserId = user.Id;
                 this.isAuth = true;
                 this.$scope.username = user.Name;
             } else {
@@ -124,7 +124,7 @@ module main {
             this.$scope.currentFeedTitle = `Search: ${this.$scope.searchText}`;
         }
 
-        // todo: split this and unset 
+        // todo: split this and unset
         public setBookmark(articleId: number): void {
             this.mainService.toggleBookmark(
                 articleId,
@@ -178,11 +178,12 @@ module main {
             } else {
                 ++this.$scope.currentFeed.ArticlesCount;
                 this.$scope.currentFeed.ExistUnread = true;
-            }            
+            }
         }
 
         public createOpml(): void {
-            this.mainService.createOpml().then((): void => {
+            console.log(this.userId);
+            this.mainService.createOpml(this.userId).then((): void => {
                 let a = document.createElement("a");
                 a.download = name;
                 a.href = 'static/rss.opml';
@@ -233,10 +234,10 @@ module main {
 /*
 Modals
 ================================================================================
-*/    
+*/
         public openDelete(rss: Feeds): void {
             let modalData = new ModalData();
-            modalData.Rss = rss;
+            modalData.Feed = rss;
             this.openModal("static/modals/deleteModal.html", modalData);
         }
 
@@ -246,7 +247,7 @@ Modals
 
         public openEditName(rss: Feeds): void {
             let modalData = new ModalData();
-            modalData.Rss = rss;
+            modalData.Feed = rss;
             this.openModal("static/modals/editModal.html", modalData);
         }
 
@@ -273,7 +274,7 @@ Modals
 /*
 Private
 ================================================================================
-*/     
+*/
         private setRead(): void {
             if (this.isBookmark) {
                 return;

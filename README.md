@@ -27,8 +27,6 @@ $ npm install -g bower gulp && npm install
 $ bower install  
 $ gulp dist  
 $ go build  
-$ ./GoRSS  
+$ ./RssReader  
 
 ## License
-
-

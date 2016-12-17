@@ -90,9 +90,8 @@ func (ctrl *RssController) UpdateAll(w http.ResponseWriter, r *http.Request) {
 func (ctrl *RssController) UploadOpml(w http.ResponseWriter, r *http.Request) {
 	file, _, err := r.FormFile("file")
 	id, _ := strconv.Atoi(r.FormValue("userId"))
-	// todo: get user id
 
-	if err != nil {
+	if err != nil || file == nil {
 		log.Println(err)
 	}
 
@@ -107,8 +106,8 @@ func (ctrl *RssController) UploadOpml(w http.ResponseWriter, r *http.Request) {
 }
 
 func (ctrl *RssController) CreateOpml(w http.ResponseWriter, r *http.Request) {
-	// todo: get user id
-	//ctrl.service.Export()
+	id, _ := strconv.ParseUint(r.URL.Query().Get("id"), 10, 32)
+	ctrl.service.Export(uint(id))
 }
 
 // SetNewFeedName - set new feed name

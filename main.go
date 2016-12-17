@@ -46,6 +46,7 @@ func startTimers(config *models.Config) {
 func init() {
 	// read config file
 	pathPtr := flag.String("config", defaultConfigPath, "Path for configuration file")
+	flag.Parse()
 
 	if *pathPtr == "" {
 		panic("No config path")

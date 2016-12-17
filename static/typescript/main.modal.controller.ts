@@ -15,7 +15,7 @@ module main {
     }
 
     export class ModalData {
-        Rss: Feeds;
+        Feed: Feeds;
         Settings: Settings;
     }
 
@@ -28,8 +28,8 @@ module main {
         ];
 
         constructor(
-            private $scope: IModalScope, 
-            private $mdDialog: IDialogService, 
+            private $scope: IModalScope,
+            private $mdDialog: IDialogService,
             private mainService: MainService,
             private modalData?: ModalData
         ) {
@@ -43,7 +43,7 @@ module main {
         }
 
         public updateFeedName(): void {
-            this.mainService.setNewFeedName(this.modalData.Rss.Id, this.$scope.modalData.Rss.Name);
+            this.mainService.setNewFeedName(this.modalData.Feed.Id, this.$scope.modalData.Feed.Name);
             this.cancel();
         }
 
@@ -65,7 +65,7 @@ module main {
         }
 
         public delete(): void {
-            this.mainService.delete(this.modalData.Rss.Id);
+            this.mainService.delete(this.modalData.Feed.Id);
             this.cancel();
         }
 
