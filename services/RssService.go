@@ -30,9 +30,9 @@ type RssService struct {
 // Migrate DB
 func Migrate(db *gorm.DB) {
 	db.AutoMigrate(&models.Feeds{}, &models.Articles{}, &models.Users{}, &models.Settings{})
-	db.Model(&models.Articles{}).AddForeignKey("FeedId", "feeds(Id)", "RESTRICT", "RESTRICT")
-	db.Model(&models.Settings{}).AddForeignKey("UserId", "users(Id)", "RESTRICT", "RESTRICT")
-	db.Model(&models.Feeds{}).AddForeignKey("UserId", "users(Id)", "RESTRICT", "RESTRICT")
+	db.Model(&models.Articles{}).AddForeignKey("FeedId", "feeds(Id)", "CASCADE", "RESTRICT")
+	db.Model(&models.Settings{}).AddForeignKey("UserId", "users(Id)", "CASCADE", "RESTRICT")
+	db.Model(&models.Feeds{}).AddForeignKey("UserId", "users(Id)", "CASCADE", "RESTRICT")
 }
 
 // Init - create new struct pointer with collection
@@ -57,8 +57,8 @@ func (service *RssService) Init(config *models.Config) *RssService {
 // GetRss - get all rss
 func (service *RssService) GetRss(id uint) []models.Feed {
 	var rss []models.Feeds
-	//service.dbp().Where(&models.Feeds{UserId: id}).Preload("Articles", "IsRead=?", "0").Find(&rss)
-	service.dbp().Where(&models.Feeds{UserId: id}).Find(&rss)
+	service.dbp().Where(&models.Feeds{UserId: id}).Preload("Articles", "IsRead=?", "0").Find(&rss)
+	//service.dbp().Where(&models.Feeds{UserId: id}).Find(&rss)
 	feeds := make([]models.Feed, len(rss))
 	var wg sync.WaitGroup
 
