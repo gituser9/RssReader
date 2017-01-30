@@ -67,7 +67,7 @@ public class UserEntity implements Serializable {
 
     public String getVkPassword() {
         try {
-            SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
+            /*SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
             KeySpec spec = new PBEKeySpec(vkPassword.toCharArray(), salt.getBytes(), 65536, 256);
             SecretKey tmp = factory.generateSecret(spec);
             SecretKey secret = new SecretKeySpec(tmp.getEncoded(), "AES");
@@ -76,9 +76,9 @@ public class UserEntity implements Serializable {
             byte[] iv = params.getParameterSpec(IvParameterSpec.class).getIV();
             cipher.init(Cipher.DECRYPT_MODE, secret, new IvParameterSpec(iv));
 
-            return new String(cipher.doFinal(vkPassword.getBytes()), "UTF-8");
+            return new String(cipher.doFinal(vkPassword.getBytes()), "UTF-8");*/
 
-//            return vkPassword;
+            return vkPassword;
         } catch (Exception e) {
             return null;
         }

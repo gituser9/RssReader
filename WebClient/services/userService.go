@@ -69,27 +69,23 @@ func (service *UserService) Register(name, password string) models.RegistrationD
 
 	return models.RegistrationData{User: &user, Message: ""}
 }
-func (service *UserService) saveVkCredentials(id uint, login string, password string) bool {
-	// create hash
-	encryptedPassword := encryptPassword(password)
-
-	if len(encryptedPassword) == 0 {
-		log.Println("Encrypt Vk password error")
-		return false
-	}
-
+func (service *UserService) Update(newUserData models.Users) {
 	// get user
-	user := models.Users{Id: id}
+	user := models.Users{Id: newUserData.Id}
 	service.db.Find(&user)
 
-	// update user
-	user.VkLogin = login
-	user.VkPassword = encryptedPassword
-	user.VkNewsEnabled = true
+	// vk credentials
+	if newUserData.VkNewsEnabled && len(newUserData.VkLogin) > 0 && len(newUserData.VkPassword) > 0 {
+		vkEncryptedPassword := encryptPassword(newUserData.VkPassword)
+
+		if len(vkEncryptedPassword) > 0 {
+			user.VkLogin = newUserData.VkLogin
+			user.VkPassword = vkEncryptedPassword
+			user.VkNewsEnabled = true
+		}
+	}
 
 	service.db.Save(&user)
-
-	return true
 }
 
 func encryptPassword(password string) string {

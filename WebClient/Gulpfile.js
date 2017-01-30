@@ -33,7 +33,7 @@ gulp.task('csslibs', function () {
 });
 
 gulp.task('revts', ['jslibs', 'minifycss'], function () {
-    gulp.src('static/index.html')
+    gulp.src('static/html/index.html')
         .pipe(rev())
         .pipe(gulp.dest('dist'));
 });
@@ -62,6 +62,6 @@ gulp.task('dist', ['minifycss', 'jslibs', 'compile', 'revts']);
 
 gulp.task('watch', function() {
     gulp.watch('static/typescript/*.ts', ['compile']);
-    gulp.watch('static/index.html', ['revts']);
+    gulp.watch('static/html/index.html', ['revts']);
     gulp.watch('static/css/*.css', ['minifycss']);
 });

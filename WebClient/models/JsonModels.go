@@ -32,3 +32,10 @@ type AuthData struct {
 	Name     string `json:"username"`
 	Password string `json:"password"`
 }
+
+type SettingsData struct {
+	UserId        uint   `json:"UserId"`
+	VkLogin       string `json:"VkLogin"`
+	VkPassword    string `json:"VkPassword"`
+	VkNewsEnabled bool   `json:"VkNewsEnabled"`
+}

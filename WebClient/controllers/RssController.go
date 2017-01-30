@@ -2,10 +2,10 @@ package controllers
 
 import (
 	"encoding/json"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"strconv"
-	"io/ioutil"
 
 	"../models"
 	"../services"

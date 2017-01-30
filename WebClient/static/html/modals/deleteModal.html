@@ -1,0 +1,14 @@
+<md-dialog class="col-md-4">
+    <h3>Delete feed</h3>
+    <p>
+        Delete "{{:: modalData.Feed.Name }}"?
+    </p>
+    <md-dialog-actions layout="row">
+        <md-button ng-click="vm.cancel()" class="md-warn">
+            Cancel
+        </md-button>
+        <md-button ng-click="vm.delete()" class="md-primary">
+            Delete
+        </md-button>
+    </md-dialog-actions>
+</md-dialog>

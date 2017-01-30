@@ -1,0 +1,17 @@
+<md-dialog class="col-md-4">
+    <h3>Add new feed</h3>
+    <p>
+        <md-input-container class="md-block">
+            <label>RSS Url</label>
+            <input ng-model="feedUrl">
+        </md-input-container>
+    </p>
+    <md-dialog-actions layout="row">
+        <md-button ng-click="vm.cancel()">
+            Cancel
+        </md-button>
+        <md-button class="md-primary" ng-click="vm.addFeed(feedUrl)">
+            Add
+        </md-button>
+    </md-dialog-actions>
+</md-dialog>

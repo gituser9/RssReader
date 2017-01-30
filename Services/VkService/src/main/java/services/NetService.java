@@ -58,8 +58,8 @@ public class NetService {
     }
 
     private String getToken(String login, String password) {
-//        HttpPost post = new HttpPost("https://oauth.vk.com/token?grant_type=password&client_id=2274003&client_secret=hHbZxrka2uZ6jB1inYsH&username=79251834590&password=drgfhjkbot123");
-        HttpPost post = new HttpPost("https://oauth.vk.com/token?grant_type=password&client_id=2274003&client_secret=hHbZxrka2uZ6jB1inYsH&username=79537182207&password=Nflu05mHQK863f3m4OYb");
+        String url  = String.format("https://oauth.vk.com/token?grant_type=password&client_id=2274003&client_secret=hHbZxrka2uZ6jB1inYsH&username=%s&password=%s", login, password);
+        HttpPost post = new HttpPost(url);
 
         try {
             response = httpClient.execute(post);

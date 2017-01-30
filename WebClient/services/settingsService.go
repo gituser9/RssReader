@@ -13,7 +13,7 @@ type SettingsService struct {
 }
 
 // Init - create new struct pointer with collection
-func (service *SettingsService) Init(config *models.Config) *SettingsService {
+func (service SettingsService) Init(config *models.Config) *SettingsService {
 	db, err := gorm.Open(config.Driver, config.ConnectionString)
 
 	if err != nil {
@@ -26,4 +26,15 @@ func (service *SettingsService) Init(config *models.Config) *SettingsService {
 func (service *SettingsService) Create(userId uint) {
 	settings := models.Settings{UserId: userId}
 	service.db.Create(&settings)
+}
+
+func (service *SettingsService) Update(settings models.Settings) {
+	service.db.Save(&settings)
+}
+
+func (service *SettingsService) Get(userId uint) models.Settings {
+	settings := models.Settings{UserId: userId}
+	service.db.Find(&settings)
+
+	return settings
 }
