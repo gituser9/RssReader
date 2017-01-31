@@ -311,7 +311,11 @@ Modals
         }
 
         public openSettings(): void {
-            this.mainService.getSettings().then((response: Settings): void => {
+            let storage = window.localStorage;
+            let userStr = storage.getItem("RssReaderUser");
+            let user = <User> JSON.parse(userStr);
+
+            this.mainService.getSettings(user.Id).then((response: Settings): void => {
                 let modalData = new ModalData();
                 modalData.Settings = response;
                 this.openModal("static/html/modals/settingModal.html", modalData);

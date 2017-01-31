@@ -33,9 +33,11 @@ type Users struct {
 	Id            uint   `gorm:"column:Id;primary_key;AUTO_INCREMENT"`
 	Name          string `gorm:"column:Name"`
 	Password      string `gorm:"column:Password"`
-	VkLogin       string `gorm"column:VkLogin"`
-	VkPassword    string `gorm"column:VkPassword"`
-	VkNewsEnabled bool   `gorm:column:VkNewsEnabled`
+	VkLogin       string `gorm:"column:VkLogin"`
+	VkPassword    string `gorm:"column:VkPassword"`
+	VkNewsEnabled bool   `gorm:"column:VkNewsEnabled"`
+	UnreadOnly    bool   `gorm:"column:UnreadOnly"`
+	MarkSameRead  bool   `gorm:"column:MarkSameRead"`
 	Settings      Settings
 	Feeds         []Feeds
 }

@@ -28,7 +28,9 @@ module main {
     export class Settings {
         UnreadOnly: boolean;
         MarkSameRead: boolean;
-        UpdateMinutes: number;
+        VkNewsEnabled: boolean;
+        VkLogin: string;
+        VkPassword: string;
     }
 
     export class ArticleData {
@@ -194,16 +196,19 @@ module main {
             return this.$http.get('/create-opml', config);
         }
 
-        //public setUnread
+        public getSettings(userId: number): ng.IPromise<Settings> {
+            let config: ng.IRequestShortcutConfig = {};
+            config.params = { id: userId };
 
-        public getSettings(): ng.IPromise<Settings> {
-            return this.$http.get("/get-settings").then((response: ng.IHttpPromiseCallbackArg<Settings>): Settings => {
+            return this.$http.get("/get-settings", config).then((response: ng.IHttpPromiseCallbackArg<Settings>): Settings => {
                 return <Settings> response.data;
             });
         }
 
         public markAsRead(id: number, feedId: number, page: number, isRead: boolean): void {
-            this.$http.post("/toggle-as-read", { articleId: id, feedId: feedId, page: page, isRead: isRead }).then((response: ng.IHttpPromiseCallbackArg<ArticleData>): void => {
+            let params = { articleId: id, feedId: feedId, page: page, isRead: isRead };
+            
+            this.$http.post("/toggle-as-read", params).then((response: ng.IHttpPromiseCallbackArg<ArticleData>): void => {
                 this.articles = response.data.Articles;
                 this.articlesCount = response.data.Count;
             });

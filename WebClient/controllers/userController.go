@@ -7,6 +7,7 @@ import (
 
 	"../models"
 	"../services"
+	"strconv"
 )
 
 type UserController struct {
@@ -37,19 +38,27 @@ func (ctrl *UserController) Registration(w http.ResponseWriter, r *http.Request)
 	json.NewEncoder(w).Encode(result)
 }
 
+func (ctrl *UserController) GetUserSettings(w http.ResponseWriter, r *http.Request) {
+	userId, _ := strconv.Atoi(r.URL.Query().Get("id"))
+	user := ctrl.service.GetUser(uint(userId))
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(user)
+}
+
 func (ctrl *UserController) SaveSettings(w http.ResponseWriter, r *http.Request) {
-	settingsData := postSettingsData(r)
+	//settingsData := postSettingsData(r)
 
 	// get JSON
 
 	//settings := models.Settings{}
-	user := models.Users{Id: settingsData.UserId}
+	//_ := models.Users{Id: settingsData.UserId}
 
 	// set settings
 	//service := services.SettingsService.Init(ctrl.config)
 	//service.Update(settings)
 
-	w.Header().Set("Content-Type", "application/json")
+	//w.Header().Set("Content-Type", "application/json")
 	//json.NewEncoder(w).Encode(result)
 }
 

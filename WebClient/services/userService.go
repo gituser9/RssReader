@@ -69,6 +69,7 @@ func (service *UserService) Register(name, password string) models.RegistrationD
 
 	return models.RegistrationData{User: &user, Message: ""}
 }
+
 func (service *UserService) Update(newUserData models.Users) {
 	// get user
 	user := models.Users{Id: newUserData.Id}
@@ -86,6 +87,13 @@ func (service *UserService) Update(newUserData models.Users) {
 	}
 
 	service.db.Save(&user)
+}
+
+func (service *UserService) GetUser(id uint) models.Users {
+	user := models.Users{Id: id}
+	service.db.Find(&user)
+
+	return user
 }
 
 func encryptPassword(password string) string {

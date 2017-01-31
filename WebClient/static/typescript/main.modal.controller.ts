@@ -38,7 +38,6 @@ module main {
 
             if (modalData != null) {
                 $scope.modalData = modalData;
-                console.log(modalData);
             }
         }
 

@@ -24,7 +24,7 @@
         </md-button>
     </md-dialog-actions> -->
 
-    <md-list ng-controller="ListCtrl" ng-cloak>
+    <md-list ng-cloak>
         <h3>Settings</h3>
 
         <md-list-item>
@@ -38,33 +38,18 @@
         <md-list-item>
             <md-checkbox ng-model="modalData.Settings.VkNewsEnabled"></md-checkbox>
             <p> Vk news enabled </p>
-
-            <!-- menu -->
-            <md-menu class="md-secondary">
-                <md-button class="md-icon-button">
-                    <!-- <md-icon md-svg-icon="communication:message"></md-icon> -->
-                    <i class="material-icons">account_box</i>
-                </md-button>
-                <md-menu-content width="4">
-                    <md-menu-item>
-                        <md-button>
-                            Redial
-                        </md-button>
-                    </md-menu-item>
-                    <md-menu-item>
-                        <md-button>
-                          Check voicemail
-                        </md-button>
-                    </md-menu-item>
-                    <md-menu-divider></md-menu-divider>
-                    <md-menu-item>
-                        <md-button>
-                          Notifications
-                        </md-button>
-                    </md-menu-item>
-                </md-menu-content>
-            </md-menu>
-
+        </md-list-item>
+        <md-list-item ng-if="modalData.Settings.VkNewsEnabled">
+            <!-- vk credentials -->
+            <i class="material-icons">account_box</i>
+            <md-input-container>
+                <label>Login</label>
+                <input ng-model="modalData.Settings.VkLogin">
+            </md-input-container>
+            <md-input-container>
+                <label>Password</label>
+                <input ng-model="modalData.Settings.VkPassword">
+            </md-input-container>
         </md-list-item>
     </md-list>
     

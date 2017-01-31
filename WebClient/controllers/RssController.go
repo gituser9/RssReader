@@ -152,10 +152,10 @@ func (ctrl *RssController) ToggleUnread(w http.ResponseWriter, r *http.Request) 
 	ctrl.service.AppSettings.UnreadOnly = data.IsUnread // todo: auth and user setiings
 }
 
-func (ctrl *RssController) GetAppSettings(w http.ResponseWriter, r *http.Request) {
+/*func (ctrl *RssController) GetAppSettings(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(ctrl.service.AppSettings)
-}
+}*/
 
 func (ctrl *RssController) Search(w http.ResponseWriter, r *http.Request) {
 	searchString := r.URL.Query().Get("searchString")
