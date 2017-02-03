@@ -4,6 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import datamodels.AppProperties;
 import datamodels.WorkData;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -23,6 +24,11 @@ public class NetService {
     private HttpResponse response;
     private HttpEntity entity;
     private JsonParser parser = new JsonParser();
+    private AppProperties appProperties;
+
+    public NetService(AppProperties appProperties) {
+        this.appProperties = appProperties;
+    }
 
     public WorkData getNews(String login, String password) {
         String token = getToken(login, password);
@@ -58,7 +64,11 @@ public class NetService {
     }
 
     private String getToken(String login, String password) {
-        String url  = String.format("https://oauth.vk.com/token?grant_type=password&client_id=2274003&client_secret=hHbZxrka2uZ6jB1inYsH&username=%s&password=%s", login, password);
+//        String url  = String.format("https://oauth.vk.com/token?grant_type=password&client_id=2274003&client_secret=hHbZxrka2uZ6jB1inYsH&username=%s&password=%s", login, password);
+        String url  = String.format(
+                "https://oauth.vk.com/token?grant_type=password&client_id=%s&client_secret=%s&username=%s&password=%s",
+                appProperties.getClientId(), appProperties.getClientSecret(), login, password
+            );
         HttpPost post = new HttpPost(url);
 
         try {

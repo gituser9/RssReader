@@ -34,8 +34,14 @@ type AuthData struct {
 }
 
 type SettingsData struct {
-	UserId        uint   `json:"UserId"`
-	VkLogin       string `json:"VkLogin"`
-	VkPassword    string `json:"VkPassword"`
-	VkNewsEnabled bool   `json:"VkNewsEnabled"`
+	UserId            uint   `json:"UserId"`
+	VkLogin           string `json:"VkLogin"`
+	VkPassword        string `json:"VkPassword"`
+	VkNewsEnabled     bool   `json:"VkNewsEnabled"`
+	MarkSameRead      bool   `json:"MarkSameRead"`
+	UnreadOnly        bool   `json:"UnreadOnly"`
+	RssEnabled        bool   `json:"RssEnabled"`
+	ShowPreviewButton bool   `json:"ShowPreviewButton"`
+	ShowTabButton     bool   `json:"ShowTabButton"`
+	ShowReadButton    bool   `json:"ShowReadButton"`
 }

@@ -45,6 +45,7 @@ module main {
         public VkLogin: string;
         public VkPassword: string;
         public VkNewsEnabled: string;
+        public Settings: Settings;
     }
 
     export class RegistrationData {

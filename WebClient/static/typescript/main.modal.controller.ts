@@ -78,6 +78,7 @@ module main {
                 if (response.data != null) {
                     this.cancel();
                     this.mainService.currentUserId = (<User> response.data).Id;
+                    this.mainService.settings = response.data.Settings;
                     this.mainService.getAll(this.mainService.currentUserId);
 
                     let storage = window.localStorage;
@@ -101,6 +102,8 @@ module main {
 
                     this.$scope.errorMessage = "";
                     this.mainService.currentUserId = data.User.Id;
+                    this.mainService.settings = data.User.Settings;
+                    
                     let storage = window.localStorage;
                     storage.setItem("RssReaderUser", JSON.stringify(data.User));
                 }
@@ -109,6 +112,14 @@ module main {
 
         public saveSettings(settings: Settings): void {
             this.mainService.setSettings(JSON.stringify(settings));
+            this.mainService.settings = settings;
+            
+            let storage = window.localStorage;
+            let userStr = storage.getItem("RssReaderUser");
+            let user = <User> JSON.parse(userStr);
+            user.Settings = settings;
+
+            storage.setItem("RssReaderUser", JSON.stringify(user));
             this.cancel();
         }
     }

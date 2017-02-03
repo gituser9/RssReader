@@ -36,8 +36,6 @@ type Users struct {
 	VkLogin       string `gorm:"column:VkLogin"`
 	VkPassword    string `gorm:"column:VkPassword"`
 	VkNewsEnabled bool   `gorm:"column:VkNewsEnabled"`
-	UnreadOnly    bool   `gorm:"column:UnreadOnly"`
-	MarkSameRead  bool   `gorm:"column:MarkSameRead"`
 	Settings      Settings
 	Feeds         []Feeds
 }
@@ -47,9 +45,15 @@ func (Users) TableName() string {
 }
 
 type Settings struct {
-	Id         uint `gorm:"column:Id;primary_key;AUTO_INCREMENT"`
-	UserId     uint `gorm:"column:UserId;index"`
-	UnreadOnly bool `gorm:"column:UnreadOnly"`
+	Id                uint `gorm:"column:Id;primary_key;AUTO_INCREMENT"`
+	UserId            uint `gorm:"column:UserId;index"`
+	UnreadOnly        bool `gorm:"column:UnreadOnly"`
+	MarkSameRead      bool `gorm:"column:MarkSameRead"`
+	RssEnabled        bool `gorm:"column:RssEnabled"`
+	VkNewsEnabled     bool `gorm:"column:VkNewsEnabled"`
+	ShowPreviewButton bool `gorm:"column:ShowPreviewButton"`
+	ShowTabButton     bool `gorm:"column:ShowTabButton"`
+	ShowReadButton    bool `gorm:"column:ShowReadButton"`
 }
 
 func (Settings) TableName() string {

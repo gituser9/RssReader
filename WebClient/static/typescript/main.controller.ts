@@ -74,6 +74,7 @@ module main {
                 this.$scope.showArticle = mainService.showArticle;
                 this.$scope.articlesCount = mainService.articlesCount;
                 this.userId = mainService.currentUserId;
+                this.$scope.settings = mainService.settings;
             });            
 
             let storage = window.localStorage;
@@ -82,9 +83,11 @@ module main {
             if (userStr != null) {
                 let user = <User> JSON.parse(userStr);
 
+                this.mainService.settings = user.Settings;
                 this.mainService.getAll(user.Id);
 
                 mainService.currentUserId = user.Id;
+
                 this.isAuth = true;
                 this.$scope.username = user.Name;
 
@@ -289,6 +292,19 @@ module main {
 
         public removeAllTabs(): void {
             this.$scope.tabs = [];
+        }
+
+        public showPreview(article: Article): void {
+            article.IsRead = true;
+
+            this.mainService.getArticlePromise(article.Id).then((response: ng.IHttpPromiseCallbackArg<Article>): void => {
+                article.Body = response.data.Body;
+                article.Link = response.data.Link;
+            });
+        }
+
+        public hidePreview(article: Article): void {
+            article.Body = "";
         }
 /*
 Modals

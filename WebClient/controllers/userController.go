@@ -40,25 +40,32 @@ func (ctrl *UserController) Registration(w http.ResponseWriter, r *http.Request)
 
 func (ctrl *UserController) GetUserSettings(w http.ResponseWriter, r *http.Request) {
 	userId, _ := strconv.Atoi(r.URL.Query().Get("id"))
-	user := ctrl.service.GetUser(uint(userId))
+
+	settingService := services.SettingsService.Init(ctrl.config)
+	settings := settingService.Get(uint(userId))
 
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(user)
+	json.NewEncoder(w).Encode(settings)
 }
 
 func (ctrl *UserController) SaveSettings(w http.ResponseWriter, r *http.Request) {
-	//settingsData := postSettingsData(r)
+	settingsData := postSettingsData(r)
+	settings := models.Settings{
+		MarkSameRead:      settingsData.MarkSameRead,
+		RssEnabled:        settingsData.RssEnabled,
+		UnreadOnly:        settingsData.UnreadOnly,
+		VkNewsEnabled:     settingsData.VkNewsEnabled,
+		ShowPreviewButton: settingsData.ShowPreviewButton,
+		ShowReadButton:    settingsData.ShowReadButton,
+		ShowTabButton:     settingsData.ShowTabButton,
+	}
+	settingService := services.SettingsService.Init(ctrl.config)
+	existingSettings := settingService.Get(settingsData.UserId)
+	existingSettings = settings
 
-	// get JSON
+	settingService.Update(existingSettings)
 
-	//settings := models.Settings{}
-	//_ := models.Users{Id: settingsData.UserId}
-
-	// set settings
-	//service := services.SettingsService.Init(ctrl.config)
-	//service.Update(settings)
-
-	//w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Content-Type", "application/json")
 	//json.NewEncoder(w).Encode(result)
 }
 

@@ -4,6 +4,8 @@
         read all
     </md-button>
     <article ng-repeat="article in articles" class="col-md-12 col-xs-12 title">
+        <i class="material-icons col-md-1 bookmark" ng-if="article.Body.length == 0" ng-click="vm.showPreview(article)">keyboard_arrow_down</i>
+        <i class="material-icons col-md-1 bookmark" ng-if="article.Body.length > 0" ng-click="vm.hidePreview(article)">keyboard_arrow_up</i>
         <i class="material-icons col-md-1 bookmark" ng-click="vm.addTab(article.Id, article.Title)">tab</i>
 
         <i class="material-icons col-md-1 bookmark" ng-if="article.IsRead" ng-click="vm.toggleAsRead(article.Id, !article.IsRead)">label_outline</i>
@@ -13,6 +15,10 @@
         <i class="material-icons col-md-1 bookmark" ng-if="article.IsBookmark" ng-click="vm.unsetBookmark(article.Id)">bookmark</i>
         <i class="material-icons col-md-1 bookmark" ng-if="!article.IsBookmark" ng-click="vm.setBookmark(article.Id)">bookmark_border</i>
         <div class="article-title" ng-bind="article.Title" ng-click="vm.getArticle(article)" ng-class="{ 'is-read': !article.IsRead }"></div>
+        <md-content ng-if="article.Body.length > 0">
+            <div ng-bind-html="article.Body"></div>
+            <md-button class="md-primary" ng-href="{{ article.Link }}" target="_blank">Read →</md-button>
+        </md-content>
     </article>
 
     <div class="col-md-12 center" ng-show="articles.length > 0">

@@ -1,3 +1,4 @@
+import datamodels.AppProperties;
 import datamodels.WorkData;
 import entities.UserEntity;
 import entities.VkGroupEntity;
@@ -10,14 +11,32 @@ import services.NetService;
 import services.VkService;
 import utils.HibernateSessionFactory;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
+import java.util.Properties;
 
 
 public class Main {
 
     public static void main(String[] args) {
+        Properties prop = new Properties();
+        AppProperties appProperties = new AppProperties();
+
+        try (InputStream input = new FileInputStream("config.properties")) {
+            // load a properties file
+            prop.load(input);
+
+            appProperties.setClientId(prop.getProperty("clientId"));
+            appProperties.setClientSecret(prop.getProperty("clientSecret"));
+            appProperties.setPasswordSalt(prop.getProperty("passwordSalt"));
+        } catch (IOException e) {
+            System.out.println("Load properties error: " + e.getMessage());
+        }
+
         VkService vkService = new VkService();
-        NetService netService = new NetService();
+        NetService netService = new NetService(appProperties);
 
         try (Session session = HibernateSessionFactory.getSessionFactory().openSession()) {
             Criteria criteria = session.createCriteria(UserEntity.class);
@@ -48,5 +67,7 @@ public class Main {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        System.out.println("END");
     }
 }

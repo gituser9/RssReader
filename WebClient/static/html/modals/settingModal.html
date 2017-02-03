@@ -1,58 +1,62 @@
 <md-dialog class="col-md-4">
-    <!-- <h3>Settings</h3>
-    <p>
-        <md-checkbox ng-model="modalData.Settings.UnreadOnly">
-            Unread only
-        </md-checkbox>
-    </p>
-    <p>
-        <md-checkbox ng-model="modalData.Settings.MarkSameRead">
-            Mark Same Read
-        </md-checkbox>
-    </p>
-    <p>
-        <md-checkbox ng-model="modalData.Settings.VkNewsEnabled">
-            Vk news enabled
-        </md-checkbox>
-    </p>
-    <md-dialog-actions layout="row">
-        <md-button ng-click="vm.cancel()">
-            Cancel
-        </md-button>
-        <md-button ng-click="vm.toggleUnread()">
-            Save
-        </md-button>
-    </md-dialog-actions> -->
+    <h3>Settings</h3>
 
-    <md-list ng-cloak>
-        <h3>Settings</h3>
+    <md-tabs>
+        <md-tab label="Rss" ng-if="modalData.Settings.RssEnabled">
+            <md-list ng-cloak>
+                <md-list-item>
+                    <md-checkbox ng-model="modalData.Settings.UnreadOnly"></md-checkbox>
+                    <p> Unread only </p>
+                </md-list-item>
+                <md-list-item>
+                    <md-checkbox ng-model="modalData.Settings.MarkSameRead"></md-checkbox>
+                    <p> Mark Same Read </p>
+                </md-list-item>
+            </md-list>
+        </md-tab>
+        <md-tab label="Rss UI" ng-if="modalData.Settings.RssEnabled">
+            <md-list>
+                <md-list-item>
+                    <md-checkbox ng-model="modalData.Settings.ShowPreviewButton"></md-checkbox>
+                    <p> Show preview button </p>
+                </md-list-item>
+                <md-list-item>
+                    <md-checkbox ng-model="modalData.Settings.ShowTabButton"></md-checkbox>
+                    <p> Show tab button </p>
+                </md-list-item>
+                <md-list-item>
+                    <md-checkbox ng-model="modalData.Settings.ShowReadButton"></md-checkbox>
+                    <p> Show read/unread button </p>
+                </md-list-item>
+            </md-list>
+        </md-tab>
+        <md-tab label="Sources">
+            <md-list>
+                <md-list-item>
+                    <md-checkbox ng-model="modalData.Settings.RssEnabled"></md-checkbox>
+                    <p> Rss enabled </p>
+                </md-list-item>
+                <md-list-item>
+                    <md-checkbox ng-model="modalData.Settings.VkNewsEnabled"></md-checkbox>
+                    <p> Vk news enabled </p>
+                </md-list-item>
+                <md-list-item ng-if="modalData.Settings.VkNewsEnabled">
+                    <!-- vk credentials -->
+                    <i class="material-icons">account_box</i>
+                    <md-input-container>
+                        <label>Login</label>
+                        <input ng-model="modalData.Settings.VkLogin">
+                    </md-input-container>
+                    <md-input-container>
+                        <label>Password</label>
+                        <input ng-model="modalData.Settings.VkPassword">
+                    </md-input-container>
+                </md-list-item>
+            </md-list>
+        </md-tab>
+    </md-tabs>
 
-        <md-list-item>
-            <md-checkbox ng-model="modalData.Settings.UnreadOnly"></md-checkbox>
-            <p> Unread only </p>
-        </md-list-item>
-        <md-list-item>
-            <md-checkbox ng-model="modalData.Settings.MarkSameRead"></md-checkbox>
-            <p> Mark Same Read </p>
-        </md-list-item>
-        <md-list-item>
-            <md-checkbox ng-model="modalData.Settings.VkNewsEnabled"></md-checkbox>
-            <p> Vk news enabled </p>
-        </md-list-item>
-        <md-list-item ng-if="modalData.Settings.VkNewsEnabled">
-            <!-- vk credentials -->
-            <i class="material-icons">account_box</i>
-            <md-input-container>
-                <label>Login</label>
-                <input ng-model="modalData.Settings.VkLogin">
-            </md-input-container>
-            <md-input-container>
-                <label>Password</label>
-                <input ng-model="modalData.Settings.VkPassword">
-            </md-input-container>
-        </md-list-item>
-    </md-list>
-    
+    <!-- Buttons -->
     <md-dialog-actions layout="row">
         <md-button ng-click="vm.cancel()">
             Cancel
