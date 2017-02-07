@@ -29,6 +29,10 @@ module main {
         UnreadOnly: boolean;
         MarkSameRead: boolean;
         VkNewsEnabled: boolean;
+        RssEnabled: boolean;
+        ShowPreviewButton: boolean;
+        ShowReadButton: boolean;
+        ShowTabButton: boolean;
         VkLogin: string;
         VkPassword: string;
     }

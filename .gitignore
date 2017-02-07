@@ -83,3 +83,8 @@ crashlytics-build.properties
 fabric.properties
 
 Services/TwitterService/.idea/
+
+*.properties
+*.json
+.gitignore
+*.iml

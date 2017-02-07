@@ -1,5 +1,7 @@
+import com.sun.istack.internal.Nullable;
 import datamodels.AppProperties;
 import datamodels.WorkData;
+import entities.SettingsEntity;
 import entities.UserEntity;
 import entities.VkGroupEntity;
 import entities.VkNewsEntity;
@@ -21,30 +23,55 @@ import java.util.Properties;
 public class Main {
 
     public static void main(String[] args) {
-        Properties prop = new Properties();
-        AppProperties appProperties = new AppProperties();
+        AppProperties appProperties = getProperties();
 
-        try (InputStream input = new FileInputStream("config.properties")) {
-            // load a properties file
-            prop.load(input);
-
-            appProperties.setClientId(prop.getProperty("clientId"));
-            appProperties.setClientSecret(prop.getProperty("clientSecret"));
-            appProperties.setPasswordSalt(prop.getProperty("passwordSalt"));
-        } catch (IOException e) {
-            System.out.println("Load properties error: " + e.getMessage());
+        if (appProperties == null) {
+            return;
         }
+
+        updateVkNews(appProperties);
+
+        while (true) {
+            try {
+                appProperties = getProperties();
+
+                if (appProperties == null) {
+                    continue;
+                }
+
+                Thread.sleep(appProperties.getSleepMinutes() * 1000 * 60);
+                updateVkNews(appProperties);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private static void updateVkNews(AppProperties appProperties) {
+        System.out.println("START");
 
         VkService vkService = new VkService();
         NetService netService = new NetService(appProperties);
 
         try (Session session = HibernateSessionFactory.getSessionFactory().openSession()) {
-            Criteria criteria = session.createCriteria(UserEntity.class);
-            criteria.add(Restrictions.eq("vkNewsEnabled", true));
+            Criteria settingsCriteria = session.createCriteria(SettingsEntity.class);
+            settingsCriteria.add(Restrictions.eq("vkNewsEnabled", true));
+            settingsCriteria.setProjection(Projections.property("userId"));
+            Object[] userIds = settingsCriteria.list().toArray();
 
-            List<UserEntity> users = (List<UserEntity>) criteria.list();
+            Criteria usersCriteria = session.createCriteria(UserEntity.class);
+//            usersCriteria.add(Restrictions.eq("vkNewsEnabled", true));
+            usersCriteria.add(Restrictions.in("vkNewsEnabled", userIds));
+
+            List<UserEntity> users = (List<UserEntity>) usersCriteria.list();
 
             for (UserEntity user : users) {
+                String vkPassword = user.getDecryptVkPassword(appProperties.getPasswordSalt());
+
+                if (vkPassword == null) {
+                    continue;
+                }
+
                 // query criteria
                 Criteria groupCriteria = session.createCriteria(VkGroupEntity.class);
                 Criteria newsCriteria = session.createCriteria(VkNewsEntity.class);
@@ -58,7 +85,7 @@ public class Main {
                 List existingNewsList = newsCriteria.list();
 
                 // get new news
-                WorkData workData = netService.getNews(user.getVkLogin(), user.getVkPassword());
+                WorkData workData = netService.getNews(user.getVkLogin(), vkPassword);
                 workData.setGroupIds(existingGroupList);
                 workData.setNewsIds(existingNewsList);
                 workData.setUserId(user.getId());
@@ -69,5 +96,26 @@ public class Main {
         }
 
         System.out.println("END");
+    }
+
+    @Nullable
+    private static AppProperties getProperties() {
+        Properties properties = new Properties();
+        AppProperties appProperties = new AppProperties();
+
+        try (InputStream input = new FileInputStream("config.properties")) {
+            // load a properties file
+            properties.load(input);
+
+            appProperties.setClientId(properties.getProperty("clientId"));
+            appProperties.setClientSecret(properties.getProperty("clientSecret"));
+            appProperties.setPasswordSalt(properties.getProperty("passwordSalt"));
+            appProperties.setSleepMinutes(Integer.parseInt(properties.getProperty("sleepMinutes")));
+        } catch (IOException e) {
+            System.out.println("Load properties error: " + e.getMessage());
+            return null;
+        }
+
+        return appProperties;
     }
 }

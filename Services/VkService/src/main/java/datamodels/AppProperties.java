@@ -5,6 +5,7 @@ public class AppProperties {
     private String clientId;
     private String clientSecret;
     private String passwordSalt;
+    private int sleepMinutes;
 
     public String getClientId() {
         return clientId;
@@ -28,5 +29,13 @@ public class AppProperties {
 
     public void setPasswordSalt(String passwordSalt) {
         this.passwordSalt = passwordSalt;
+    }
+
+    public int getSleepMinutes() {
+        return sleepMinutes;
+    }
+
+    public void setSleepMinutes(int sleepMinutes) {
+        this.sleepMinutes = sleepMinutes;
     }
 }

@@ -20,6 +20,15 @@ public class SettingsEntity implements Serializable {
     @Column(name = "VkNewsEnabled")
     private boolean vkNewsEnabled;
 
+    @Column(name = "RssEnabled")
+    private boolean rssEnabled;
+
+    @Column(name = "UnreadOnly")
+    private boolean unreadOnly;
+
+    @Column(name = "MarkSameRead")
+    private boolean markSameRead;
+
     @SuppressWarnings("UnusedDeclaration")
     public SettingsEntity() {
     }
@@ -46,5 +55,29 @@ public class SettingsEntity implements Serializable {
 
     public void setVkNewsEnabled(boolean vkNewsEnabled) {
         this.vkNewsEnabled = vkNewsEnabled;
+    }
+
+    public boolean isRssEnabled() {
+        return rssEnabled;
+    }
+
+    public void setRssEnabled(boolean rssEnabled) {
+        this.rssEnabled = rssEnabled;
+    }
+
+    public boolean isUnreadOnly() {
+        return unreadOnly;
+    }
+
+    public void setUnreadOnly(boolean unreadOnly) {
+        this.unreadOnly = unreadOnly;
+    }
+
+    public boolean isMarkSameRead() {
+        return markSameRead;
+    }
+
+    public void setMarkSameRead(boolean markSameRead) {
+        this.markSameRead = markSameRead;
     }
 }

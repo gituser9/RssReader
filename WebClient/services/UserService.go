@@ -76,7 +76,7 @@ func (service *UserService) Update(newUserData models.Users) {
 	service.db.Find(&user)
 
 	// vk credentials
-	if newUserData.VkNewsEnabled && len(newUserData.VkLogin) > 0 && len(newUserData.VkPassword) > 0 {
+	/*if newUserData.VkNewsEnabled && len(newUserData.VkLogin) > 0 && len(newUserData.VkPassword) > 0 {
 		vkEncryptedPassword := encryptPassword(newUserData.VkPassword)
 
 		if len(vkEncryptedPassword) > 0 {
@@ -84,7 +84,7 @@ func (service *UserService) Update(newUserData models.Users) {
 			user.VkPassword = vkEncryptedPassword
 			user.VkNewsEnabled = true
 		}
-	}
+	}*/
 
 	service.db.Save(&user)
 }

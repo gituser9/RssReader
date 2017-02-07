@@ -5,9 +5,10 @@ import (
 	"log"
 	"net/http"
 
+	"strconv"
+
 	"../models"
 	"../services"
-	"strconv"
 )
 
 type UserController struct {
@@ -43,9 +44,21 @@ func (ctrl *UserController) GetUserSettings(w http.ResponseWriter, r *http.Reque
 
 	settingService := services.SettingsService.Init(ctrl.config)
 	settings := settingService.Get(uint(userId))
+	user := ctrl.service.GetUser(uint(userId))
+	result := models.SettingsData{
+		VkNewsEnabled: settings.VkNewsEnabled,
+		MarkSameRead: settings.MarkSameRead,
+		RssEnabled: settings.RssEnabled,
+		ShowPreviewButton: settings.ShowPreviewButton,
+		ShowReadButton: settings.ShowReadButton,
+		ShowTabButton: settings.ShowTabButton,
+		UnreadOnly: settings.UnreadOnly,
+		VkLogin: user.VkLogin,
+		VkPassword: user.VkPassword,
+	}
 
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(settings)
+	json.NewEncoder(w).Encode(result)
 }
 
 func (ctrl *UserController) SaveSettings(w http.ResponseWriter, r *http.Request) {
@@ -64,6 +77,14 @@ func (ctrl *UserController) SaveSettings(w http.ResponseWriter, r *http.Request)
 	existingSettings = settings
 
 	settingService.Update(existingSettings)
+
+	if settingsData.VkNewsEnabled {
+		user := ctrl.service.GetUser(settingsData.UserId)
+		user.VkLogin = settingsData.VkLogin
+		user.VkPassword = settingsData.VkPassword
+
+		ctrl.service.Update(user)
+	}
 
 	w.Header().Set("Content-Type", "application/json")
 	//json.NewEncoder(w).Encode(result)

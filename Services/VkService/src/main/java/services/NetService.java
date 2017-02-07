@@ -53,7 +53,7 @@ public class NetService {
         }
 
         JsonObject newsJson = parser.parse(builder.toString()).getAsJsonObject();
-        System.out.println(newsJson);
+//        System.out.println(newsJson);
         JsonObject responseJson = newsJson.get("response").getAsJsonObject();
 
         WorkData workData = new WorkData();

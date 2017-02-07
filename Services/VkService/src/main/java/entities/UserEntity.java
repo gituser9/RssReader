@@ -1,5 +1,7 @@
 package entities;
 
+import org.apache.commons.codec.binary.Base64;
+
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
@@ -17,7 +19,6 @@ import java.security.spec.KeySpec;
 public class UserEntity implements Serializable {
 
     private static final long serialVersionUID = -8706689714326132798L;
-    private static final String salt = "DEChZn7LOdgXt6TYFAmyl3oivSqrRM";
 
     @Id
     @Column(name = "Id")
@@ -35,7 +36,6 @@ public class UserEntity implements Serializable {
 
     @Column(name = "VkLogin")
     private String vkLogin;
-
 
     @Column(name = "VkPassword")
     private String vkPassword;
@@ -66,19 +66,20 @@ public class UserEntity implements Serializable {
     }
 
     public String getVkPassword() {
+        return vkPassword;
+    }
+
+    public String getDecryptVkPassword(String salt) {
         try {
-            /*SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
-            KeySpec spec = new PBEKeySpec(vkPassword.toCharArray(), salt.getBytes(), 65536, 256);
-            SecretKey tmp = factory.generateSecret(spec);
-            SecretKey secret = new SecretKeySpec(tmp.getEncoded(), "AES");
-            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-            AlgorithmParameters params = cipher.getParameters();
-            byte[] iv = params.getParameterSpec(IvParameterSpec.class).getIV();
-            cipher.init(Cipher.DECRYPT_MODE, secret, new IvParameterSpec(iv));
+            IvParameterSpec iv = new IvParameterSpec(salt.getBytes("UTF-8"));
+            SecretKeySpec skeySpec = new SecretKeySpec(salt.getBytes("UTF-8"), "AES");
 
-            return new String(cipher.doFinal(vkPassword.getBytes()), "UTF-8");*/
+            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
+            cipher.init(Cipher.DECRYPT_MODE, skeySpec, iv);
 
-            return vkPassword;
+            byte[] original = cipher.doFinal(Base64.decodeBase64(getVkPassword()));
+
+            return new String(original);    // decoded password
         } catch (Exception e) {
             return null;
         }

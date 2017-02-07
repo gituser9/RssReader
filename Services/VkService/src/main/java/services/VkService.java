@@ -5,8 +5,10 @@ import com.google.gson.JsonObject;
 import datamodels.WorkData;
 import entities.VkGroupEntity;
 import entities.VkNewsEntity;
+import org.hibernate.Criteria;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
+import org.hibernate.criterion.Restrictions;
 import utils.HibernateSessionFactory;
 
 import java.util.ArrayList;
@@ -104,11 +106,31 @@ public class VkService {
     private void cleanGroups(WorkData workData, List<Integer> groupIds, Session session) {
 
         // get all grous for user
+        Criteria criteria = session.createCriteria(VkGroupEntity.class);
+        criteria.add(Restrictions.eq("userId", workData.getUserId()));
+
+        List<VkGroupEntity> groups = (List<VkGroupEntity>) criteria.list();
+        List<VkGroupEntity> oldGroups = new ArrayList<>();
 
         // get old groups
+        for (VkGroupEntity group : groups) {
+            if (!groupIds.contains(group.getGid())) {
+                oldGroups.add(group);
+            }
+        }
+
+        if (oldGroups.size() == 0) {
+            return;
+        }
 
         // delete all old groups if it is not in groupIds
+        session.beginTransaction();
 
+        for (VkGroupEntity vkGroupEntity : oldGroups) {
+            session.delete(vkGroupEntity);
+        }
+
+        session.getTransaction().commit();
     }
 
 }

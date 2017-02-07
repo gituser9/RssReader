@@ -110,14 +110,14 @@ module main {
             });
         }
 
-        public saveSettings(settings: Settings): void {
-            this.mainService.setSettings(JSON.stringify(settings));
-            this.mainService.settings = settings;
+        public saveSettings(): void {
+            this.mainService.setSettings(JSON.stringify(this.modalData.Settings));
+            this.mainService.settings = this.modalData.Settings;
             
             let storage = window.localStorage;
             let userStr = storage.getItem("RssReaderUser");
             let user = <User> JSON.parse(userStr);
-            user.Settings = settings;
+            user.Settings = this.modalData.Settings;
 
             storage.setItem("RssReaderUser", JSON.stringify(user));
             this.cancel();
