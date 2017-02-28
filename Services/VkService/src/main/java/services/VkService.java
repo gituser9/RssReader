@@ -35,6 +35,11 @@ public class VkService {
         // get new only and convert
         for (JsonElement item : workData.getNews()) {
             JsonObject json = item.getAsJsonObject();
+
+            if (json.get("marked_as_ads").getAsInt() == 1) {
+                continue;
+            }
+
             String image;
 
             try {
