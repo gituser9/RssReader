@@ -20,7 +20,7 @@ public class VkService {
 
     public void saveNews(WorkData workData, Session session) {
         List<VkNewsEntity> data = convertData(workData, session);
-//        saveData(data);
+        saveData(data);
     }
 
     private List<VkNewsEntity> convertData(WorkData workData, Session session) {
