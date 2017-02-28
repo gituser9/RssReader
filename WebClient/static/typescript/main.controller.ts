@@ -83,7 +83,8 @@ module main {
             if (userStr != null) {
                 let user = <User> JSON.parse(userStr);
 
-                this.mainService.settings = user.Settings;
+                // this.mainService.settings = user.Settings;
+                this.mainService.updateSettings(user.Id);
                 this.mainService.getAll(user.Id);
 
                 mainService.currentUserId = user.Id;

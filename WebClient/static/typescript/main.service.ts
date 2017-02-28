@@ -154,8 +154,8 @@ module main {
             });
         }
 
-        public setSettings(json: string): void {
-            this.$http.post('/set-settings', { settings: json });
+        public setSettings(settings: Settings): void {
+            this.$http.post('/set-settings', settings);
         }
 
         public toggleBookmark(articleId: number, page: number, isBookmark: boolean, isBookmarkPage: boolean, feedId: number): void {
@@ -207,6 +207,15 @@ module main {
 
             return this.$http.get("/get-settings", config).then((response: ng.IHttpPromiseCallbackArg<Settings>): Settings => {
                 return <Settings> response.data;
+            });
+        }
+
+        public updateSettings(userId: number): void {
+            let config: ng.IRequestShortcutConfig = {};
+            config.params = { id: userId };
+
+            this.$http.get("/get-settings", config).then((response: ng.IHttpPromiseCallbackArg<Settings>): void => {
+                this.settings = <Settings> response.data;
             });
         }
 

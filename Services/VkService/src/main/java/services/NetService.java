@@ -53,7 +53,7 @@ public class NetService {
         }
 
         JsonObject newsJson = parser.parse(builder.toString()).getAsJsonObject();
-//        System.out.println(newsJson);
+        System.out.println(newsJson);
         JsonObject responseJson = newsJson.get("response").getAsJsonObject();
 
         WorkData workData = new WorkData();
@@ -64,7 +64,6 @@ public class NetService {
     }
 
     private String getToken(String login, String password) {
-//        String url  = String.format("https://oauth.vk.com/token?grant_type=password&client_id=2274003&client_secret=hHbZxrka2uZ6jB1inYsH&username=%s&password=%s", login, password);
         String url  = String.format(
                 "https://oauth.vk.com/token?grant_type=password&client_id=%s&client_secret=%s&username=%s&password=%s",
                 appProperties.getClientId(), appProperties.getClientSecret(), login, password

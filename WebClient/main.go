@@ -101,6 +101,7 @@ func main() {
 	http.HandleFunc("/create-opml", rssCtrl.CreateOpml)
 	http.HandleFunc("/toggle-unread", rssCtrl.ToggleUnread)
 	http.HandleFunc("/get-settings", userCtrl.GetUserSettings)
+	http.HandleFunc("/set-settings", userCtrl.SaveSettings)
 	http.HandleFunc("/search", rssCtrl.Search)
 	http.HandleFunc("/toggle-as-read", rssCtrl.ToggleAsRead)
 	http.HandleFunc("/auth", userCtrl.Auth)

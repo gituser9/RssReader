@@ -15,7 +15,7 @@ public class VkNewsEntity implements Serializable {
     private int id;
 
     @Column(name = "UserId")
-    private int userId;
+    private long userId;
 
     @Column(name = "GroupId")
     private int groupId;
@@ -25,6 +25,9 @@ public class VkNewsEntity implements Serializable {
 
     @Column(name = "Text", updatable = false)
     private String text;
+
+    @Column(name = "Image", updatable = false)
+    private String image;
 
     @SuppressWarnings("UnusedDeclaration")
     public VkNewsEntity() {
@@ -51,11 +54,11 @@ public class VkNewsEntity implements Serializable {
         this.text = text;
     }
 
-    public int getUserId() {
+    public long getUserId() {
         return userId;
     }
 
-    public void setUserId(int userId) {
+    public void setUserId(long userId) {
         this.userId = userId;
     }
 
@@ -73,6 +76,14 @@ public class VkNewsEntity implements Serializable {
 
     public void setPostId(int postId) {
         this.postId = postId;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
     }
 
     @Override

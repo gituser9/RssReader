@@ -24,13 +24,13 @@ public class VkGroupEntity implements Serializable {
     private String linkedName;
 
     @Column(name = "UserId")
-    private int userId;
+    private long userId;
 
     public VkGroupEntity() {
 
     }
 
-    public VkGroupEntity(int gid, int userId, String name, String linkedName) {
+    public VkGroupEntity(int gid, long userId, String name, String linkedName) {
         this.gid = gid;
         this.userId = userId;
         this.name = name;
@@ -69,11 +69,11 @@ public class VkGroupEntity implements Serializable {
         this.linkedName = linkedName;
     }
 
-    public int getUserId() {
+    public long getUserId() {
         return userId;
     }
 
-    public void setUserId(int userId) {
+    public void setUserId(long userId) {
         this.userId = userId;
     }
 }

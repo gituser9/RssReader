@@ -7,6 +7,10 @@ import (
 
 	"strconv"
 
+	"crypto/aes"
+	"crypto/cipher"
+	"encoding/hex"
+
 	"../models"
 	"../services"
 )
@@ -40,21 +44,29 @@ func (ctrl *UserController) Registration(w http.ResponseWriter, r *http.Request)
 }
 
 func (ctrl *UserController) GetUserSettings(w http.ResponseWriter, r *http.Request) {
-	userId, _ := strconv.Atoi(r.URL.Query().Get("id"))
+	id, _ := strconv.Atoi(r.URL.Query().Get("id"))
+	userId := uint(id)
 
-	settingService := services.SettingsService.Init(ctrl.config)
-	settings := settingService.Get(uint(userId))
-	user := ctrl.service.GetUser(uint(userId))
+	settingsObj := services.SettingsService{}
+	settingService := settingsObj.Init(ctrl.config)
+	settings := settingService.Get(userId)
+	user := ctrl.service.GetUser(userId)
+
+	if user.VkNewsEnabled && len(user.VkPassword) > 0 {
+		user.VkPassword = decryptVkPassword(user.VkPassword)
+	}
+
 	result := models.SettingsData{
-		VkNewsEnabled: settings.VkNewsEnabled,
-		MarkSameRead: settings.MarkSameRead,
-		RssEnabled: settings.RssEnabled,
+		VkNewsEnabled:     settings.VkNewsEnabled,
+		MarkSameRead:      settings.MarkSameRead,
+		RssEnabled:        settings.RssEnabled,
 		ShowPreviewButton: settings.ShowPreviewButton,
-		ShowReadButton: settings.ShowReadButton,
-		ShowTabButton: settings.ShowTabButton,
-		UnreadOnly: settings.UnreadOnly,
-		VkLogin: user.VkLogin,
-		VkPassword: user.VkPassword,
+		ShowReadButton:    settings.ShowReadButton,
+		ShowTabButton:     settings.ShowTabButton,
+		UnreadOnly:        settings.UnreadOnly,
+		VkLogin:           user.VkLogin,
+		VkPassword:        user.VkPassword,
+		UserId:            userId,
 	}
 
 	w.Header().Set("Content-Type", "application/json")
@@ -71,12 +83,11 @@ func (ctrl *UserController) SaveSettings(w http.ResponseWriter, r *http.Request)
 		ShowPreviewButton: settingsData.ShowPreviewButton,
 		ShowReadButton:    settingsData.ShowReadButton,
 		ShowTabButton:     settingsData.ShowTabButton,
+		UserId:            settingsData.UserId,
 	}
-	settingService := services.SettingsService.Init(ctrl.config)
-	existingSettings := settingService.Get(settingsData.UserId)
-	existingSettings = settings
-
-	settingService.Update(existingSettings)
+	settingsObject := services.SettingsService{}
+	settingService := settingsObject.Init(ctrl.config)
+	settingService.Update(settings)
 
 	if settingsData.VkNewsEnabled {
 		user := ctrl.service.GetUser(settingsData.UserId)
@@ -112,4 +123,30 @@ func postSettingsData(r *http.Request) models.SettingsData {
 	}
 
 	return *result
+}
+
+func decryptVkPassword(decryptedPassword string) string {
+	//key := []byte("AES256Key-32Characters1234567890")
+	key := []byte("AES128Key-16Char")
+	ciphertext, _ := hex.DecodeString(decryptedPassword)
+	nonce, _ := hex.DecodeString("37b8e8a308c354048d245f6d")
+	block, err := aes.NewCipher(key)
+
+	if err != nil {
+		panic(err.Error())
+	}
+
+	aesgcm, err := cipher.NewGCM(block)
+
+	if err != nil {
+		panic(err.Error())
+	}
+
+	plaintext, err := aesgcm.Open(nil, nonce, ciphertext, nil)
+
+	if err != nil {
+		return decryptedPassword
+	}
+
+	return string(plaintext)
 }

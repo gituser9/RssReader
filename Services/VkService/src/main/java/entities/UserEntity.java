@@ -3,15 +3,19 @@ package entities;
 import org.apache.commons.codec.binary.Base64;
 
 import javax.crypto.Cipher;
+import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.security.AlgorithmParameters;
+import java.security.Key;
 import java.security.spec.KeySpec;
+import java.util.Arrays;
 
 
 @Entity
@@ -23,7 +27,7 @@ public class UserEntity implements Serializable {
     @Id
     @Column(name = "Id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private long id;
 
     @Column(name = "Name")
     private String name;
@@ -41,7 +45,7 @@ public class UserEntity implements Serializable {
     private String vkPassword;
 
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
@@ -70,14 +74,19 @@ public class UserEntity implements Serializable {
     }
 
     public String getDecryptVkPassword(String salt) {
+        String nonce = "37b8e8a308c354048d245f6d";
+        String key = "AES128Key-16Char";
+
+        if (vkPassword == null || vkPassword.isEmpty()) {
+            return null;
+        }
+
         try {
-            IvParameterSpec iv = new IvParameterSpec(salt.getBytes("UTF-8"));
-            SecretKeySpec skeySpec = new SecretKeySpec(salt.getBytes("UTF-8"), "AES");
-
-            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
-            cipher.init(Cipher.DECRYPT_MODE, skeySpec, iv);
-
-            byte[] original = cipher.doFinal(Base64.decodeBase64(getVkPassword()));
+            Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
+            GCMParameterSpec spec = new GCMParameterSpec(128, nonce.getBytes());
+            Key aesKey = new SecretKeySpec(key.getBytes(), "AES");
+            cipher.init(Cipher.DECRYPT_MODE, aesKey, spec);
+            byte[] original = cipher.doFinal(vkPassword.getBytes());
 
             return new String(original);    // decoded password
         } catch (Exception e) {

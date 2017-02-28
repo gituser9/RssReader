@@ -4,12 +4,12 @@
         read all
     </md-button>
     <article ng-repeat="article in articles" class="col-md-12 col-xs-12 title">
-        <i class="material-icons col-md-1 bookmark" ng-if="article.Body.length == 0" ng-click="vm.showPreview(article)">keyboard_arrow_down</i>
-        <i class="material-icons col-md-1 bookmark" ng-if="article.Body.length > 0" ng-click="vm.hidePreview(article)">keyboard_arrow_up</i>
-        <i class="material-icons col-md-1 bookmark" ng-click="vm.addTab(article.Id, article.Title)">tab</i>
+        <i ng-if="settings.ShowPreviewButton && article.Body.length == 0" class="material-icons col-md-1 bookmark" ng-click="vm.showPreview(article)">keyboard_arrow_down</i>
+        <i ng-if="settings.ShowPreviewButton && article.Body.length > 0" class="material-icons col-md-1 bookmark" ng-click="vm.hidePreview(article)">keyboard_arrow_up</i>
+        <i ng-if="settings.ShowTabButton" class="material-icons col-md-1 bookmark" ng-click="vm.addTab(article.Id, article.Title)">tab</i>
 
-        <i class="material-icons col-md-1 bookmark" ng-if="article.IsRead" ng-click="vm.toggleAsRead(article.Id, !article.IsRead)">label_outline</i>
-        <i class="material-icons col-md-1 bookmark" ng-if="!article.IsRead" ng-click="vm.toggleAsRead(article.Id, !article.IsRead)">label</i>
+        <i ng-if="settings.ShowReadButton && article.IsRead" class="material-icons col-md-1 bookmark" ng-click="vm.toggleAsRead(article.Id, !article.IsRead)">label_outline</i>
+        <i ng-if="settings.ShowReadButton && !article.IsRead" class="material-icons col-md-1 bookmark" ng-click="vm.toggleAsRead(article.Id, !article.IsRead)">label</i>
 
         <!--<i class="material-icons col-md-1 bookmark" ng-if="article.IsBookmark" ng-click="vm.toggleBookmark(article)">bookmark</i>-->
         <i class="material-icons col-md-1 bookmark" ng-if="article.IsBookmark" ng-click="vm.unsetBookmark(article.Id)">bookmark</i>

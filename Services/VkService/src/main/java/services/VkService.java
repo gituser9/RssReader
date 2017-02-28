@@ -20,7 +20,7 @@ public class VkService {
 
     public void saveNews(WorkData workData, Session session) {
         List<VkNewsEntity> data = convertData(workData, session);
-        saveData(data);
+//        saveData(data);
     }
 
     private List<VkNewsEntity> convertData(WorkData workData, Session session) {
@@ -30,11 +30,19 @@ public class VkService {
         Collections.sort(newsIds);
 
         List<VkNewsEntity> result = new ArrayList<>(workData.getNews().size());
-        int userId = workData.getUserId();
+        long userId = workData.getUserId();
 
         // get new only and convert
         for (JsonElement item : workData.getNews()) {
             JsonObject json = item.getAsJsonObject();
+            String image;
+
+            try {
+                image = json.get("attachment").getAsJsonObject().getAsJsonObject("photo").get("src_big").getAsString();
+            } catch (NullPointerException e) {
+                image = null;
+            }
+
             Integer postId = json.get("post_id").getAsInt();
             Integer groupId = -json.get("source_id").getAsInt();
 
@@ -54,6 +62,7 @@ public class VkService {
             entity.setPostId(postId);
             entity.setText(json.get("text").getAsString());
             entity.setUserId(userId);
+            entity.setImage(image);
 
             result.add(entity);
         }

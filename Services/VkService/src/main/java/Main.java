@@ -61,12 +61,13 @@ public class Main {
 
             Criteria usersCriteria = session.createCriteria(UserEntity.class);
 //            usersCriteria.add(Restrictions.eq("vkNewsEnabled", true));
-            usersCriteria.add(Restrictions.in("vkNewsEnabled", userIds));
+            usersCriteria.add(Restrictions.in("id", userIds));
 
             List<UserEntity> users = (List<UserEntity>) usersCriteria.list();
 
             for (UserEntity user : users) {
-                String vkPassword = user.getDecryptVkPassword(appProperties.getPasswordSalt());
+//                String vkPassword = user.getDecryptVkPassword(appProperties.getPasswordSalt());
+                String vkPassword = user.getVkPassword();
 
                 if (vkPassword == null) {
                     continue;
@@ -109,7 +110,7 @@ public class Main {
 
             appProperties.setClientId(properties.getProperty("clientId"));
             appProperties.setClientSecret(properties.getProperty("clientSecret"));
-            appProperties.setPasswordSalt(properties.getProperty("passwordSalt"));
+//            appProperties.setPasswordSalt(properties.getProperty("passwordSalt"));
             appProperties.setSleepMinutes(Integer.parseInt(properties.getProperty("sleepMinutes")));
         } catch (IOException e) {
             System.out.println("Load properties error: " + e.getMessage());

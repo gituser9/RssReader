@@ -3,12 +3,14 @@ package services
 import (
 	"crypto/aes"
 	"crypto/cipher"
-	"crypto/rand"
-	"io"
 	"log"
 
 	"github.com/jinzhu/gorm"
 	"golang.org/x/crypto/bcrypt"
+
+	"fmt"
+
+	"encoding/hex"
 
 	"../models"
 )
@@ -70,49 +72,39 @@ func (service *UserService) Register(name, password string) models.RegistrationD
 	return models.RegistrationData{User: &user, Message: ""}
 }
 
-func (service *UserService) Update(newUserData models.Users) {
-	// get user
-	user := models.Users{Id: newUserData.Id}
-	service.db.Find(&user)
+func (service *UserService) Update(user *models.Users) {
 
 	// vk credentials
-	/*if newUserData.VkNewsEnabled && len(newUserData.VkLogin) > 0 && len(newUserData.VkPassword) > 0 {
-		vkEncryptedPassword := encryptPassword(newUserData.VkPassword)
+	if user.VkNewsEnabled && len(user.VkLogin) > 0 && len(user.VkPassword) > 0 {
+		vkEncryptedPassword := encryptPassword(user.VkPassword)
 
 		if len(vkEncryptedPassword) > 0 {
-			user.VkLogin = newUserData.VkLogin
 			user.VkPassword = vkEncryptedPassword
-			user.VkNewsEnabled = true
 		}
-	}*/
+	}
 
 	service.db.Save(&user)
 }
 
-func (service *UserService) GetUser(id uint) models.Users {
+func (service *UserService) GetUser(id uint) *models.Users {
 	user := models.Users{Id: id}
 	service.db.Find(&user)
 
-	return user
+	return &user
 }
 
 func encryptPassword(password string) string {
-	key := []byte("AES256Key-32Characters1234567890")
-
+	//key := []byte("AES128Key-32Characters1234567890")
+	key := []byte("AES128Key-16Char")
 	block, err := aes.NewCipher(key)
+
 	if err != nil {
 		log.Println(err.Error())
 		return ""
 	}
 
 	// Never use more than 2^32 random nonces with a given key because of the risk of a repeat.
-	nonce := make([]byte, 12)
-
-	if _, err := io.ReadFull(rand.Reader, nonce); err != nil {
-		log.Println(err.Error())
-		return ""
-	}
-
+	nonce, _ := hex.DecodeString("37b8e8a308c354048d245f6d")
 	aesgcm, err := cipher.NewGCM(block)
 
 	if err != nil {
@@ -122,7 +114,6 @@ func encryptPassword(password string) string {
 
 	passwordBytes := []byte(password)
 	encryptedPassword := aesgcm.Seal(nil, nonce, passwordBytes, nil)
-	log.Printf("%x\n", encryptedPassword)
 
-	return string(encryptedPassword)
+	return fmt.Sprintf("%x", string(encryptedPassword))
 }
