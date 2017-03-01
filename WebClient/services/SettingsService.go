@@ -29,6 +29,7 @@ func (service *SettingsService) Create(userId uint) {
 }
 
 func (service *SettingsService) Update(settings models.Settings) {
+	service.db.Delete(models.Settings{UserId: settings.UserId})
 	service.db.Save(&settings)
 }
 

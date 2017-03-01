@@ -5,17 +5,17 @@ import java.util.List;
 
 
 public class WorkData {
-    private int userId;
+    private long userId;
     private JsonArray news;
     private JsonArray groups;
     private List groupIds;
     private List newsIds;
 
-    public int getUserId() {
+    public long getUserId() {
         return userId;
     }
 
-    public void setUserId(int userId) {
+    public void setUserId(long userId) {
         this.userId = userId;
     }
 

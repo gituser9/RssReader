@@ -30,11 +30,24 @@ public class VkService {
         Collections.sort(newsIds);
 
         List<VkNewsEntity> result = new ArrayList<>(workData.getNews().size());
-        int userId = workData.getUserId();
+        long userId = workData.getUserId();
 
         // get new only and convert
         for (JsonElement item : workData.getNews()) {
             JsonObject json = item.getAsJsonObject();
+
+            if (json.get("marked_as_ads").getAsInt() == 1) {
+                continue;
+            }
+
+            String image;
+
+            try {
+                image = json.get("attachment").getAsJsonObject().getAsJsonObject("photo").get("src_big").getAsString();
+            } catch (NullPointerException e) {
+                image = null;
+            }
+
             Integer postId = json.get("post_id").getAsInt();
             Integer groupId = -json.get("source_id").getAsInt();
 
@@ -54,6 +67,7 @@ public class VkService {
             entity.setPostId(postId);
             entity.setText(json.get("text").getAsString());
             entity.setUserId(userId);
+            entity.setImage(image);
 
             result.add(entity);
         }

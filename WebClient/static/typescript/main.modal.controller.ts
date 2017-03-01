@@ -111,7 +111,7 @@ module main {
         }
 
         public saveSettings(): void {
-            this.mainService.setSettings(JSON.stringify(this.modalData.Settings));
+            this.mainService.setSettings(this.modalData.Settings);
             this.mainService.settings = this.modalData.Settings;
             
             let storage = window.localStorage;

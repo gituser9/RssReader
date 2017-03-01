@@ -88,3 +88,5 @@ Services/TwitterService/.idea/
 *.json
 .gitignore
 *.iml
+
+WebClient/dist/*
