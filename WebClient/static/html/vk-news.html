@@ -1,0 +1,17 @@
+<!-- select with groups -->
+<md-select ng-model="searchVkGroup" class="inline" aria-label="Search in Vk News">
+    <md-option value="0">All groups</md-option>
+    <md-option ng-repeat="group in vkGroups" value="{{:: group.Id }}">
+        {{:: group.Name }}
+    </md-option>
+</md-select>
+
+<!-- list with news -->
+<md-content id="vk-news">
+
+    <div class="vk-news-item" ng-repeat="item in vm.vkNews">
+        <article ng-bind-html="item.Text"></article>
+        <img ng-src="item.Image" />
+    </div>
+
+</md-content>

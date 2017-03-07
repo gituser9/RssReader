@@ -59,3 +59,25 @@ type Settings struct {
 func (Settings) TableName() string {
 	return "settings"
 }
+
+/* Vk Models
+============================================================================= */
+type VkNews struct {
+	Id    int
+	Text  string
+	Image string
+}
+
+func (VkNews) TableName() string {
+	return "vknews"
+}
+
+type VkGroup struct {
+	Id     int
+	UserId uint
+	Name   string
+}
+
+func (VkGroup) TableName() string {
+	return "vkgroup"
+}
