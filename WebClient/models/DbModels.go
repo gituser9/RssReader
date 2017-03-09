@@ -63,9 +63,13 @@ func (Settings) TableName() string {
 /* Vk Models
 ============================================================================= */
 type VkNews struct {
-	Id    int
-	Text  string
-	Image string
+	Id      int    `gorm:"column:Id;primary_key;AUTO_INCREMENT"`
+	UserId  int    `gorm:"column:UserId;index"`
+	GroupId int    `gorm:"column:GroupId;index"`
+	PostId  int    `gorm:"column:PostId;index"`
+	Text    string `gorm:"column:Text;index"`
+	Image   string `gorm:"column:Image;index"`
+	Group   VkGroup
 }
 
 func (VkNews) TableName() string {
@@ -73,9 +77,11 @@ func (VkNews) TableName() string {
 }
 
 type VkGroup struct {
-	Id     int
-	UserId uint
-	Name   string
+	Id         int    `gorm:"column:Id;primary_key;AUTO_INCREMENT"`
+	Gid        int    `gorm:"column:Gid;index"`
+	UserId     int    `gorm:"column:UserId;index"`
+	Name       string `gorm:"column:Name;index"`
+	LinkedName string `gorm:"column:LinkedName;index"`
 }
 
 func (VkGroup) TableName() string {

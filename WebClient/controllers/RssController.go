@@ -25,6 +25,7 @@ func (ctrl *RssController) Init(config *models.Config) *RssController {
 }
 
 // Index - return page
+// todo: main ctrl
 func (ctrl *RssController) Index(w http.ResponseWriter, r *http.Request) {
 	http.ServeFile(w, r, "dist/index.html")
 }

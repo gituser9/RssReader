@@ -1,5 +1,6 @@
 import { Feeds } from '../rss/rss.models';
 
+
 export class Settings {
     UnreadOnly: boolean;
     MarkSameRead: boolean;

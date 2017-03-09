@@ -3,7 +3,6 @@ import IDialogService = angular.material.IDialogService;
 import { Settings, User, RegistrationData, ModalData } from './models/generalModels';
 import { ModalController } from './main.modal.controller';
 
-"use strict";
 
 export class MainService {
     public currentUserId: number;
