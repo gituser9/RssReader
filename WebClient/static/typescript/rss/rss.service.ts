@@ -154,3 +154,4 @@ export class RssService {
         }
 
 }
+angular.module("app").service("rssService", RssService);

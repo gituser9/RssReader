@@ -59,3 +59,4 @@ export class VkController {
         this.vkService.getVkNews(this.userId);
     }
 }
+angular.module("app").controller("vkCtrl", VkController);

@@ -30,3 +30,4 @@ export class VkService {
         });
     }
 }
+angular.module("app").service("vkService", VkService);

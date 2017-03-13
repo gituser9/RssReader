@@ -72,3 +72,4 @@ export class MainService {
     }
 
 }
+angular.module("app").service("mainService", MainService);

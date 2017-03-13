@@ -6,6 +6,16 @@ var rev = require('gulp-rev-simple-hash');
 var sourcemaps = require('gulp-sourcemaps');
 var ts = require('gulp-typescript');
 
+
+
+const babel = require('gulp-babel');
+var browserify = require('browserify');
+
+
+
+
+
+
 var bc = './bower_components/';
 
 gulp.task('jslibs', function() {
@@ -39,19 +49,90 @@ gulp.task('revts', ['jslibs', 'minifycss'], function () {
 });
 
 gulp.task('compile', function () {
-    gulp.src([
-            'static/typescript/*.ts',
-            'static/typescript/models/*.ts',
-            'static/typescript/rss/*.ts',
-            'static/typescript/vk/*.ts',
+    /*gulp.src([
+            'static/typescript/!*.ts',
+            'static/typescript/models/!*.ts',
+            'static/typescript/rss/!*.ts',
+            'static/typescript/vk/!*.ts',
         ])
         .pipe(sourcemaps.init())
         .pipe(ts({
             noImplicitAny: false,
-            target: 'ES3',
+            target: 'ES6',
+            removeComments: true,
+            // module: 'amd'
+        }))
+        // .pipe(babel())
+        // .pipe(uglify())
+        .pipe(sourcemaps.write())
+        .pipe(gulp.dest('dist'));*/
+    /*gulp.src('static/typescript/!*.ts')
+        .pipe(sourcemaps.init())
+        pipe(ts({
+            noImplicitAny: false,
+            target: 'ES6',
             removeComments: true
         }))
+        .pipe(babel({
+            presets: ['es2015']
+        }))
         // .pipe(uglify())
+        .pipe(sourcemaps.write())
+        .pipe(gulp.dest('dist'));
+    gulp.src('static/typescript/models/!*.ts')
+        .pipe(sourcemaps.init())
+        .pipe(ts({
+            noImplicitAny: false,
+            target: 'ES6',
+            removeComments: true,
+            // module: 'amd'
+        }))
+        .pipe(babel({
+            presets: ['es2015']
+        }))
+        // .pipe(uglify())
+        .pipe(sourcemaps.write())
+        .pipe(gulp.dest('dist/models'));
+    gulp.src('static/typescript/rss/!*.ts')
+        .pipe(sourcemaps.init())
+        .pipe(ts({
+            noImplicitAny: false,
+            target: 'ES6',
+            removeComments: true,
+            // module: 'amd'
+        }))
+        .pipe(babel({
+            presets: ['es2015']
+        }))
+        // .pipe(uglify())
+        .pipe(sourcemaps.write())
+        .pipe(gulp.dest('dist/rss'));
+    gulp.src('static/typescript/vk/!*.ts')
+            .pipe(sourcemaps.init())
+            .pipe(ts({
+                noImplicitAny: false,
+                target: 'ES6',
+                removeComments: true,
+                // module: 'amd'
+            }))
+        .pipe(babel({
+            presets: ['es2015']
+        }))
+            // .pipe(uglify())
+            .pipe(sourcemaps.write())
+            .pipe(gulp.dest('dist/vk'));*/
+
+    gulp.src('static/typescript/**/*.ts')
+        .pipe(sourcemaps.init())
+        .pipe(ts({
+            noImplicitAny: false,
+            target: 'ES3',
+            removeComments: true,
+            out: 'output.js',
+            module: 'amd',
+            // sortOutput: true,
+            noResolve: true
+        }))
         .pipe(sourcemaps.write())
         .pipe(gulp.dest('dist'));
 });

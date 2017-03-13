@@ -1,6 +1,8 @@
+
+
 export class ArticleData {
-    public Articles: Article[];
-    public Count: number;
+    Articles: Article[];
+    Count: number;
 }
 
 export class Article {

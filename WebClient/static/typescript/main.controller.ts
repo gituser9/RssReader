@@ -31,11 +31,11 @@ export class MainController {
     private userId: number;
 
     constructor(
-        private $scope: IMainScope, 
+        private $scope: IMainScope,
         private $timeout: ng.ITimeoutService,
-        private $mdDialog: IDialogService, 
+        private $mdDialog: IDialogService,
         private $mdToast: IToastService,
-        private $upload: any, 
+        private $upload: any,
         private mainService: MainService
     ) {
         $scope.vm = this;
@@ -45,7 +45,7 @@ export class MainController {
         $scope.$watch(() => {
             this.userId = mainService.currentUserId;
             this.$scope.settings = mainService.settings;
-        });            
+        });
 
         let storage = window.localStorage;
         let userStr = storage.getItem("RssReaderUser");
@@ -64,11 +64,11 @@ export class MainController {
             this.isAuth = true;
             this.$scope.username = user.Name;
 
-            // this.$timeout(() => { this.mainService.getAll(user.Id) }, 30);  
+            // this.$timeout(() => { this.mainService.getAll(user.Id) }, 30);
         } else {
             // modal for auth
             this.mainService.openAuthModal();
-        }            
+        }
     }
 
     public logout(): void {
@@ -88,8 +88,8 @@ export class MainController {
         this.$scope.currentSource = Sources.Vk;
     }
 
-        
-        
+
+
 /*
 Modals
 ================================================================================
@@ -107,7 +107,7 @@ Modals
         });
     }
 
-        
+
 
 /*
 Private
@@ -118,3 +118,5 @@ Private
     }
 
 }
+// angular.module("app").controller("mainCtrl", MainController);
+angular.module('app').controller("mainCtrl", MainController);

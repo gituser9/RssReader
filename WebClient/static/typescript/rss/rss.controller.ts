@@ -13,7 +13,6 @@ interface IRssScope extends ng.IScope {
         feeds: Feed[];
         articles: Article[];
         article: Article;
-        // settings: Settings;
         currentFeed: Feed;
         showWaitBar: boolean;
         showArticle: boolean;
@@ -29,8 +28,6 @@ interface IRssScope extends ng.IScope {
         currentPage: number;
         currentUserId: number;
         tabs: Tab[];
-        // sources: Sources;
-        // currentSource: Sources;
     }
 
 
@@ -332,3 +329,5 @@ export class RssController {
         }
     }
 }
+
+angular.module("app").controller("rssCtrl", RssController);
