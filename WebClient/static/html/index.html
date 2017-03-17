@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" ng-app="app" data-framework="typescript">
+<html lang="en" ng-app="app">
 
 <head>
     <meta charset="UTF-8">
@@ -10,33 +10,59 @@
     <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/icon?family=Material+Icons">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,400italic">
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.3/require.min.js"></script>
-
-
     <!-- rev-hash -->
     <link rel="stylesheet" href="dist/app.css"/>
     <!-- end -->
-
 </head>
 
 <body ng-controller="mainCtrl" ng-cloak>
-<header class="col-md-12 col-xs-12">
-    <md-toolbar class="md-hue-2">
-      <div class="md-toolbar-tools">
-        <md-button class="md-primary" ng-click="vm.openSettings()">
-            Settings
-        </md-button>
-        <md-button class="md-primary" aria-label="refresh" ng-click="vm.getBookmarks()">
-            Bookmarks
-        </md-button>
-        <md-button class="md-primary" aria-label="rss" ng-click="vm.showRss()" ng-if="vm.settings.RssEnabled">
-            Rss
-        </md-button>
-        <md-button class="md-primary" aria-label="refresh" ng-click="vk.showVk()" ng-if="vm.settings.VkNewsEnabled">
-            Vkontakte
-        </md-button>
+<header flex ng-init="init()">
+    <md-toolbar>
+        <div class="md-toolbar-tools">
+            <md-button ng-click="openSettings()">
+                Settings
+            </md-button>
 
-        <!--<h2 flex md-truncate>Toolbar with Disabled/Enabled Icon Buttons</h2>-->
+            <md-button aria-label="rss" ng-click="showRss()" ng-if="settings.RssEnabled">
+                Rss
+            </md-button>
+            <md-button aria-label="refresh" ng-click="showVk()" ng-if="settings.VkNewsEnabled">
+                Vkontakte
+            </md-button>
+
+
+            <!--<md-menu>
+                <md-button aria-label="menu" class="md-icon-button">
+                    <i class="material-icons">more_vert</i>
+                </md-button>
+                <md-menu-content width="4">
+                    <md-menu-item ng-if="settings.RssEnabled && currentSource == Sources.Rss">
+                        <md-button aria-label="Twitter" class="md-fab md-raised md-mini" ng-click="openAdd()">
+                                Add feed
+                            <i class="material-icons">add</i>
+                        </md-button>
+                    </md-menu-item>
+                    <md-menu-item  ng-if="settings.RssEnabled && currentSource == Sources.Rss">
+                        <md-button aria-label="Twitter" class="md-fab md-raised md-mini" ngf-select="uploadOpml($file)">
+                                Upload OPML
+                            <i class="material-icons">file_upload</i>
+                        </md-button>
+                    </md-menu-item>
+                    <md-menu-item ng-if="settings.RssEnabled && currentSource == Sources.Rss">
+                        <md-button aria-label="Twitter" class="md-fab md-raised md-mini" ng-click="createOpml()">
+                                Download OPML
+                            <i class="material-icons">file_download</i>
+                        </md-button>
+                    </md-menu-item>
+                    <md-menu-divider></md-menu-divider>
+                    <md-menu-item>
+                        <md-button aria-label="Twitter" class="md-fab md-raised md-mini" ng-click="logout()">
+                                Logout
+                            <i class="material-icons">exit_to_app</i>
+                        </md-button>
+                    </md-menu-item>
+                </md-menu-content>
+            </md-menu>-->
 
         <md-fab-speed-dial md-direction="down" class="md-fling" ng-cloak id="logout">
             <md-fab-trigger>
@@ -46,26 +72,26 @@
             </md-fab-trigger>
 
             <md-fab-actions>
-                <md-button aria-label="Twitter" class="md-fab md-raised md-mini" ng-click="vm.openAdd()">
+                <md-button aria-label="Twitter" class="md-fab md-raised md-mini" ng-click="openAdd()" ng-if="settings.RssEnabled && currentSource == Sources.Rss">
                     <md-tooltip md-direction="left">
                         Add feed
                     </md-tooltip>
                     <i class="material-icons">add</i>
                 </md-button>
-                <md-button aria-label="Twitter" class="md-fab md-raised md-mini" ngf-select="vm.uploadOpml($file)">
+                <md-button aria-label="Twitter" class="md-fab md-raised md-mini" ngf-select="uploadOpml($file)" ng-if="settings.RssEnabled && currentSource == Sources.Rss">
                     <md-tooltip md-direction="left">
                         Upload OPML
                     </md-tooltip>
                     <i class="material-icons">file_upload</i>
                 </md-button>
                 </md-button>
-                <md-button aria-label="Twitter" class="md-fab md-raised md-mini" ng-click="vm.createOpml()">
+                <md-button aria-label="Twitter" class="md-fab md-raised md-mini" ng-click="createOpml()" ng-if="settings.RssEnabled && currentSource == Sources.Rss">
                     <md-tooltip md-direction="left">
                         Download OPML
                     </md-tooltip>
                     <i class="material-icons">file_download</i>
                 </md-button>
-                <md-button aria-label="Twitter" class="md-fab md-raised md-mini" ng-click="vm.logout()">
+                <md-button aria-label="Twitter" class="md-fab md-raised md-mini" ng-click="logout()">
                     <md-tooltip md-direction="left">
                         Logout
                     </md-tooltip>
@@ -75,91 +101,36 @@
         </md-fab-speed-dial>
       </div>
     </md-toolbar>
-    <!--<h1>RSS Reader</h1>
-    <md-button class="md-primary" ng-click="vm.openSettings()">
-        Settings
-    </md-button>
-    <md-button class="md-primary" aria-label="refresh" ng-click="vm.getBookmarks()">
-        Bookmarks
-    </md-button>-->
-
-    <!--<div id="search-container">
-        <md-input-container>
-            <label>Search</label>
-            <input ng-model="searchText">
-        </md-input-container>
-        <md-button class="md-primary inline" ng-click="vm.search()">Search</md-button>
-        <md-select ng-model="searchFeed" class="inline" aria-label="Search in feed">
-            <md-option value="0">All feeds</md-option>
-            <md-option ng-repeat="feed in feeds" value="{{:: feed.Feed.Id }}">{{:: feed.Feed.Name }}</md-option>
-        </md-select>
-        <md-checkbox ng-model="searchInBookmark" aria-label="In bookmarks">
-            in bookmarks
-        </md-checkbox>
-
-        <md-fab-speed-dial md-direction="down" class="md-fling" ng-cloak id="logout">
-            <md-fab-trigger>
-                <md-button aria-label="menu" class="md-fab md-warn">
-                    <i class="material-icons">menu</i>
-                </md-button>
-            </md-fab-trigger>
-
-            <md-fab-actions>
-                <md-button aria-label="Twitter" class="md-fab md-raised md-mini" ng-click="vm.openAdd()">
-                    <md-tooltip md-direction="left">
-                        Add feed
-                    </md-tooltip>
-                    <i class="material-icons">add</i>
-                </md-button>
-                <md-button aria-label="Twitter" class="md-fab md-raised md-mini" ngf-select="vm.uploadOpml($file)">
-                    <md-tooltip md-direction="left">
-                        Upload OPML
-                    </md-tooltip>
-                    <i class="material-icons">file_upload</i>
-                </md-button>
-                </md-button>
-                <md-button aria-label="Twitter" class="md-fab md-raised md-mini" ng-click="vm.createOpml()">
-                    <md-tooltip md-direction="left">
-                        Download OPML
-                    </md-tooltip>
-                    <i class="material-icons">file_download</i>
-                </md-button>
-                <md-button aria-label="Twitter" class="md-fab md-raised md-mini" ng-click="vm.logout()">
-                    <md-tooltip md-direction="left">
-                        Logout
-                    </md-tooltip>
-                    <i class="material-icons">exit_to_app</i>
-                </md-button>
-            </md-fab-actions>
-        </md-fab-speed-dial>
-    </div>-->
 </header>
 
-<div ng-show="vm.settings.RssEnabled && vm.currentSources == sources.Rss" ng-controller="rssCtrl">
+<div ng-show="settings.RssEnabled && currentSource == Sources.Rss" ng-controller="rssCtrl">
     <!-- Rss -->
     <!-- left side -->
     <aside id="feed-titles" class="col-md-4 col-xs-4">
         <div layout="row">
-            <md-button class="md-primary" ng-click="vm.getAll()">
+            <md-button class="md-primary" ng-click="getAll()">
                 Refresh
             </md-button>
-            <md-button class="md-primary" ng-click="vm.removeAllTabs()" ng-show="tabs.length != 0">
+            <md-button class="md-primary" aria-label="refresh" ng-click="getBookmarks()">
+                Bookmarks
+            </md-button>
+            <md-button class="md-primary" ng-click="removeAllTabs()" ng-show="tabs.length != 0">
                 Close all tabs
             </md-button>
         </div>
         <md-progress-linear ng-show="showWaitBar" md-mode="indeterminate"></md-progress-linear>
-        <div ng-repeat="feed in feeds" class="row col-md-12 col-xs-12" ng-click="vm.getArticles(feed)">
+        <div ng-repeat="feed in feeds" class="row col-md-12 col-xs-12" ng-click="getArticles(feed)">
             <div class="col-md-9">
                 <div ng-if="!feed.ExistUnread" class="feed-title inline col-md-10" ng-bind="feed.Feed.Name"
-                    ng-click="vm.getArticles(feed)"></div>
+                    ng-click="getArticles(feed)"></div>
                 <div ng-if="feed.ExistUnread" class="feed-title inline col-md-10 is-read">
                     <span>{{:: feed.Feed.Name }}</span>
                     <span ng-if="feed.ExistUnread" class="badge">{{ feed.ArticlesCount }}</span>
                 </div>
             </div>
             <div class="col-md-3">
-                <i class="material-icons delete-feed col-md-1" ng-click="vm.openEditName(feed.Feed)">mode_edit</i>
-                <i class="material-icons delete-feed col-md-1" ng-click="vm.openDelete(feed.Feed)">delete_forever</i>
+                <i class="material-icons delete-feed col-md-1" ng-click="openEditName(feed.Feed)">mode_edit</i>
+                <i class="material-icons delete-feed col-md-1" ng-click="openDelete(feed.Feed)">delete_forever</i>
             </div>
         </div>
     </aside>
@@ -175,7 +146,7 @@
         </div>
     </section>
 </div>
-<div ng-show="vm.settings.VkNewsEnabled && vm.currentSources == sources.Vk" ng-controller="vkCtrl">
+<div ng-show="settings.VkNewsEnabled && currentSource == Sources.Vk" ng-controller="vkCtrl">
     <!-- Vkontakte -->
     <ng-include src="'static/html/vk-news.html'"></ng-include>
 </div>
@@ -186,20 +157,17 @@
 
     <!-- rev-hash -->
     <script src="dist/libs.js"></script>
-    <script src="dist/output.js"></script>
-    <!--<script src="dist/rss/rss.models.js"></script>
-    <script src="dist/models/generalModels.js"></script>
+    <!--<script src="dist/output.js"></script>-->
     <script src="dist/main.service.js"></script>
     <script src="dist/main.modal.controller.js"></script>
     <script src="dist/main.controller.js"></script>
 
     <script src="dist/rss/rss.service.js"></script>
     <script src="dist/rss/rss.modal.controller.js"></script>
-    <script src="dist/vk/vk.models.js"></script>
+    <script src="dist/rss/rss.controller.js"></script>
     <script src="dist/vk/vk.service.js"></script>
     <script src="dist/vk/vk.controller.js"></script>
-    <script src="dist/app.js"></script>-->
-    <!--<script src="dist/_all.js"></script>-->
+    <script src="dist/app.js"></script>
     <!-- end -->
 </footer>
 </body>

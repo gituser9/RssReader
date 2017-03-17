@@ -77,16 +77,20 @@ func init() {
 func main() {
 	rssCtrl := new(controllers.RssController).Init(&conf)
 	userCtrl := new(controllers.UserController).Init(&conf)
+	vkCtrl := new(controllers.VkController).Init(&conf)
 
 	go startTimers(&conf)
 
 	// todo: websocket for update feed list
 	// todo: gorilla mux for REST API
+	// todo: gorilla sessions
 
 	log.Println("server start")
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./static/"))))
 	http.Handle("/dist/", http.StripPrefix("/dist/", http.FileServer(http.Dir("./dist/"))))
 	http.HandleFunc("/", rssCtrl.Index)
+
+	// rss
 	http.HandleFunc("/get-all", rssCtrl.GetAll)
 	http.HandleFunc("/get-articles", rssCtrl.GetArticles)
 	http.HandleFunc("/get-article", rssCtrl.GetArticle)
@@ -104,8 +108,14 @@ func main() {
 	http.HandleFunc("/set-settings", userCtrl.SaveSettings)
 	http.HandleFunc("/search", rssCtrl.Search)
 	http.HandleFunc("/toggle-as-read", rssCtrl.ToggleAsRead)
+
+	// user
 	http.HandleFunc("/auth", userCtrl.Auth)
 	http.HandleFunc("/registration", userCtrl.Registration)
+
+	// vk
+	http.HandleFunc("/get-vk-page", vkCtrl.GetPageData)
+	http.HandleFunc("/get-vk-news", vkCtrl.GetAll)
 
 	err := http.ListenAndServe(":"+strconv.Itoa(conf.Port), nil)
 

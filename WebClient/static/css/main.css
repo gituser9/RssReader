@@ -118,7 +118,7 @@ button {
 #logout {
     position: absolute;
     right: 15px;
-    top: 15px;
+    top: 4px;
 }
 
 md-fab-actions i {
@@ -134,4 +134,17 @@ md-fab-actions i {
 /* rss-fixme */
 .tabs {
     height: 1100px !important;
+}
+
+
+/* Vk
+======================================================================================================================*/
+#vk-news {
+    text-align: center;
+}
+
+.vk-news-item {
+    width: 80%;
+    margin: auto;
+    padding-bottom: 30px;
 }

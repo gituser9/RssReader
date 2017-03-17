@@ -3,8 +3,9 @@ package services
 import (
 	"log"
 
-	"../models"
 	"github.com/jinzhu/gorm"
+
+	"../models"
 )
 
 // VkService - service
@@ -24,10 +25,18 @@ func (service *VkService) Init(config *models.Config) *VkService {
 	return &VkService{db: db, config: config}
 }
 
-func (service *VkService) GetAll(id int) []models.VkNews {
+func (service *VkService) GetAllNews(id int) []models.VkNews {
 	var result []models.VkNews
 
-	service.db.Where(models.VkNews{UserId: id}).Find(&result)
+	service.db.Where(&models.VkNews{UserId: id}).Find(&result)
+
+	return result
+}
+
+func (service *VkService) GetAllGroups(id int) []models.VkGroup {
+	var result []models.VkGroup
+
+	service.db.Where(&models.VkGroup{UserId: id}).Find(&result)
 
 	return result
 }

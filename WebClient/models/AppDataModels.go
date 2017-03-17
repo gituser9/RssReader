@@ -21,3 +21,8 @@ type RegistrationData struct {
 	User    *Users
 	Message string
 }
+
+type VkPageData struct {
+	News   []VkNews
+	Groups []VkGroup
+}

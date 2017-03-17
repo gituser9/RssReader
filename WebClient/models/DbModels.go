@@ -85,5 +85,5 @@ type VkGroup struct {
 }
 
 func (VkGroup) TableName() string {
-	return "vkgroup"
+	return "vkgroups"
 }

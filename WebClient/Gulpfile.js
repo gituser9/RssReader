@@ -8,7 +8,7 @@ var ts = require('gulp-typescript');
 
 
 
-const babel = require('gulp-babel');
+var babel = require('gulp-babel');
 var browserify = require('browserify');
 
 
@@ -33,7 +33,7 @@ gulp.task('jslibs', function() {
     .pipe(gulp.dest('dist'));
 });
 
-gulp.task('csslibs', function () {
+gulp.task('csslibs', function() {
     gulp.src([
         bc + 'bootstrap/dist/css/bootstrap.min.css',
         bc + 'angular-material/angular-material.min.css'
@@ -42,102 +42,21 @@ gulp.task('csslibs', function () {
     .pipe(gulp.dest('dist'));
 });
 
-gulp.task('revts', ['jslibs', 'minifycss'], function () {
+gulp.task('revts', ['jslibs', 'minifycss'], function() {
     gulp.src('static/html/index.html')
         .pipe(rev())
         .pipe(gulp.dest('dist'));
 });
 
-gulp.task('compile', function () {
-    /*gulp.src([
-            'static/typescript/!*.ts',
-            'static/typescript/models/!*.ts',
-            'static/typescript/rss/!*.ts',
-            'static/typescript/vk/!*.ts',
-        ])
+gulp.task('compile', function() {
+    gulp.src('static/typescript/**/*.js')
         .pipe(sourcemaps.init())
-        .pipe(ts({
-            noImplicitAny: false,
-            target: 'ES6',
-            removeComments: true,
-            // module: 'amd'
-        }))
-        // .pipe(babel())
-        // .pipe(uglify())
-        .pipe(sourcemaps.write())
-        .pipe(gulp.dest('dist'));*/
-    /*gulp.src('static/typescript/!*.ts')
-        .pipe(sourcemaps.init())
-        pipe(ts({
-            noImplicitAny: false,
-            target: 'ES6',
-            removeComments: true
-        }))
-        .pipe(babel({
-            presets: ['es2015']
-        }))
-        // .pipe(uglify())
-        .pipe(sourcemaps.write())
-        .pipe(gulp.dest('dist'));
-    gulp.src('static/typescript/models/!*.ts')
-        .pipe(sourcemaps.init())
-        .pipe(ts({
-            noImplicitAny: false,
-            target: 'ES6',
-            removeComments: true,
-            // module: 'amd'
-        }))
-        .pipe(babel({
-            presets: ['es2015']
-        }))
-        // .pipe(uglify())
-        .pipe(sourcemaps.write())
-        .pipe(gulp.dest('dist/models'));
-    gulp.src('static/typescript/rss/!*.ts')
-        .pipe(sourcemaps.init())
-        .pipe(ts({
-            noImplicitAny: false,
-            target: 'ES6',
-            removeComments: true,
-            // module: 'amd'
-        }))
-        .pipe(babel({
-            presets: ['es2015']
-        }))
-        // .pipe(uglify())
-        .pipe(sourcemaps.write())
-        .pipe(gulp.dest('dist/rss'));
-    gulp.src('static/typescript/vk/!*.ts')
-            .pipe(sourcemaps.init())
-            .pipe(ts({
-                noImplicitAny: false,
-                target: 'ES6',
-                removeComments: true,
-                // module: 'amd'
-            }))
-        .pipe(babel({
-            presets: ['es2015']
-        }))
-            // .pipe(uglify())
-            .pipe(sourcemaps.write())
-            .pipe(gulp.dest('dist/vk'));*/
-
-    gulp.src('static/typescript/**/*.ts')
-        .pipe(sourcemaps.init())
-        .pipe(ts({
-            noImplicitAny: false,
-            target: 'ES3',
-            removeComments: true,
-            out: 'output.js',
-            module: 'amd',
-            // sortOutput: true,
-            noResolve: true
-        }))
-        .pipe(sourcemaps.write())
+        // .pipe(concat('output.js'))
+        .pipe(sourcemaps.write('.'))
         .pipe(gulp.dest('dist'));
 });
 
-gulp.task('minifycss', ['csslibs'], function () {
+gulp.task('minifycss', ['csslibs'], function() {
     gulp.src('./static/css/*.css')
         .pipe(concat('app.css'))
         .pipe(cleanCSS({compatibility: 'ie8'}))
@@ -147,10 +66,10 @@ gulp.task('minifycss', ['csslibs'], function () {
 gulp.task('dist', ['minifycss', 'jslibs', 'compile', 'revts']);
 
 gulp.task('watch', function() {
-    gulp.watch('static/typescript/*.ts', ['compile']);
-    gulp.watch('static/typescript/rss/*.ts', ['compile']);
-    gulp.watch('static/typescript/vk/*.ts', ['compile']);
-    gulp.watch('static/typescript/models/*.ts', ['compile']);
+    gulp.watch('static/typescript/*.js', ['compile']);
+    gulp.watch('static/typescript/rss/*.js', ['compile']);
+    gulp.watch('static/typescript/vk/*.js', ['compile']);
+    gulp.watch('static/typescript/models/*.js', ['compile']);
     gulp.watch('static/html/index.html', ['revts']);
     gulp.watch('static/css/*.css', ['minifycss']);
 });
