@@ -29,6 +29,13 @@
 .material-icons.md-36 { font-size: 36px; }
 .material-icons.md-48 { font-size: 48px; }
 
+.menu-icons {
+    position: relative !important;
+    top: 7px !important;
+}
+
+/* Rss
+===================================================================================================================== */
 .feed-title,
 .article-title {
     padding: 10px;
@@ -144,7 +151,21 @@ md-fab-actions i {
 }
 
 .vk-news-item {
-    width: 80%;
-    margin: auto;
+    width: 60%;
+    margin: 20px auto;
     padding-bottom: 30px;
+    background-color: #fff !important;
+    border-radius: 5px;
 }
+
+.vk-news-text {
+    text-align: left;
+    padding: 10px;
+}
+
+/*
+#vk-menu {
+    position: fixed;
+    right: 20px;
+    top: 100px;
+}*/

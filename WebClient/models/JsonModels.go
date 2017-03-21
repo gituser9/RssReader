@@ -45,3 +45,7 @@ type SettingsData struct {
 	ShowTabButton     bool   `json:"ShowTabButton"`
 	ShowReadButton    bool   `json:"ShowReadButton"`
 }
+
+type VkData struct {
+	GroupId int `json:"GroupId"`
+}

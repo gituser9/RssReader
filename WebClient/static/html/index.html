@@ -31,74 +31,41 @@
             </md-button>
 
 
-            <!--<md-menu>
-                <md-button aria-label="menu" class="md-icon-button">
+            <md-menu id="main-menu">
+                <md-button aria-label="menu" class="md-icon-button" ng-click="openMenu($mdOpenMenu, $event)">
                     <i class="material-icons">more_vert</i>
                 </md-button>
                 <md-menu-content width="4">
-                    <md-menu-item ng-if="settings.RssEnabled && currentSource == Sources.Rss">
-                        <md-button aria-label="Twitter" class="md-fab md-raised md-mini" ng-click="openAdd()">
+                    <span ng-controller="rssCtrl" ng-if="settings.RssEnabled && currentSource == Sources.Rss">
+                        <!-- rss menu items -->
+                        <md-menu-item >
+                            <md-button aria-label="Twitter" ng-click="openAdd()">
+                                <i class="material-icons menu-icons">add</i>
                                 Add feed
-                            <i class="material-icons">add</i>
-                        </md-button>
-                    </md-menu-item>
-                    <md-menu-item  ng-if="settings.RssEnabled && currentSource == Sources.Rss">
-                        <md-button aria-label="Twitter" class="md-fab md-raised md-mini" ngf-select="uploadOpml($file)">
+                            </md-button>
+                        </md-menu-item>
+                        <md-menu-item>
+                            <md-button aria-label="Twitter" ngf-select="uploadOpml($file)">
+                                <i class="material-icons menu-icons">file_upload</i>
                                 Upload OPML
-                            <i class="material-icons">file_upload</i>
-                        </md-button>
-                    </md-menu-item>
-                    <md-menu-item ng-if="settings.RssEnabled && currentSource == Sources.Rss">
-                        <md-button aria-label="Twitter" class="md-fab md-raised md-mini" ng-click="createOpml()">
+                            </md-button>
+                        </md-menu-item>
+                        <md-menu-item>
+                            <md-button aria-label="Twitter" ng-click="createOpml()">
+                                <i class="material-icons menu-icons">file_download</i>
                                 Download OPML
-                            <i class="material-icons">file_download</i>
-                        </md-button>
-                    </md-menu-item>
+                            </md-button>
+                        </md-menu-item>
+                    </span>
                     <md-menu-divider></md-menu-divider>
                     <md-menu-item>
-                        <md-button aria-label="Twitter" class="md-fab md-raised md-mini" ng-click="logout()">
-                                Logout
-                            <i class="material-icons">exit_to_app</i>
+                        <md-button aria-label="Twitter" ng-click="logout()">
+                            <i class="material-icons menu-icons">exit_to_app</i>
+                            Logout
                         </md-button>
                     </md-menu-item>
                 </md-menu-content>
-            </md-menu>-->
-
-        <md-fab-speed-dial md-direction="down" class="md-fling" ng-cloak id="logout">
-            <md-fab-trigger>
-                <md-button aria-label="menu" class="md-fab md-warn">
-                    <i class="material-icons">menu</i>
-                </md-button>
-            </md-fab-trigger>
-
-            <md-fab-actions>
-                <md-button aria-label="Twitter" class="md-fab md-raised md-mini" ng-click="openAdd()" ng-if="settings.RssEnabled && currentSource == Sources.Rss">
-                    <md-tooltip md-direction="left">
-                        Add feed
-                    </md-tooltip>
-                    <i class="material-icons">add</i>
-                </md-button>
-                <md-button aria-label="Twitter" class="md-fab md-raised md-mini" ngf-select="uploadOpml($file)" ng-if="settings.RssEnabled && currentSource == Sources.Rss">
-                    <md-tooltip md-direction="left">
-                        Upload OPML
-                    </md-tooltip>
-                    <i class="material-icons">file_upload</i>
-                </md-button>
-                </md-button>
-                <md-button aria-label="Twitter" class="md-fab md-raised md-mini" ng-click="createOpml()" ng-if="settings.RssEnabled && currentSource == Sources.Rss">
-                    <md-tooltip md-direction="left">
-                        Download OPML
-                    </md-tooltip>
-                    <i class="material-icons">file_download</i>
-                </md-button>
-                <md-button aria-label="Twitter" class="md-fab md-raised md-mini" ng-click="logout()">
-                    <md-tooltip md-direction="left">
-                        Logout
-                    </md-tooltip>
-                    <i class="material-icons">exit_to_app</i>
-                </md-button>
-            </md-fab-actions>
-        </md-fab-speed-dial>
+            </md-menu>
       </div>
     </md-toolbar>
 </header>

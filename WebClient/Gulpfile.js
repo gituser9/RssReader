@@ -4,16 +4,6 @@ var cleanCSS = require('gulp-clean-css');
 var uglify = require('gulp-uglify');
 var rev = require('gulp-rev-simple-hash');
 var sourcemaps = require('gulp-sourcemaps');
-var ts = require('gulp-typescript');
-
-
-
-var babel = require('gulp-babel');
-var browserify = require('browserify');
-
-
-
-
 
 
 var bc = './bower_components/';
@@ -26,7 +16,8 @@ gulp.task('jslibs', function() {
         bc + 'angular-bootstrap/ui-bootstrap-tpls.min.js',  // todo: pagination only
         bc + 'angular-aria/angular-aria.min.js',
         bc + 'angular-animate/angular-animate.min.js',
-        bc + 'angular-material/angular-material.min.js'
+        bc + 'angular-material/angular-material.min.js',
+        bc + 'ngInfiniteScroll/build/ng-infinite-scroll.min.js'
     ])
     .pipe(concat('libs.js'))
     .pipe(uglify())

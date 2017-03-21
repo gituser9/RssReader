@@ -40,3 +40,16 @@ func (service *VkService) GetAllGroups(id int) []models.VkGroup {
 
 	return result
 }
+
+func (service *VkService) GetNewsByFilters(filters models.VkData) []models.VkNews {
+	var result []models.VkNews
+	var conditions models.VkNews
+
+	if filters.GroupId != 0 {
+		conditions.GroupId = filters.GroupId
+	}
+
+	service.db.Where(&conditions).Find(&result)
+
+	return result
+}

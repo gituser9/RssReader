@@ -73,6 +73,10 @@ function MainController ($scope, $timeout, mainService, vkService, rssService) {
         }
     };
 
+    $scope.openMenu = function($mdOpenMenu, ev) {
+        $mdOpenMenu(ev);
+    };
+
 /*
 Modals
 ================================================================================

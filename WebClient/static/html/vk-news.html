@@ -1,20 +1,27 @@
 <md-content>
     <!-- select with groups -->
-    <md-select ng-model="searchVkGroup" class="inline" aria-label="Search in Vk News">
+    <aside id="vk-menu">
+        <md-select ng-model="filters.GroupId" class="inline" aria-label="Search in Vk News" ng-change="getByFilters()">
 
-        <md-option value="0">All groups</md-option>
-        <md-option ng-repeat="group in model.VkGroups" value="{{:: group.Id }}">
-            {{:: group.Name }}
-        </md-option>
+            <md-option value="0">All groups</md-option>
+            <md-option ng-repeat="group in model.VkGroups" value="{{:: group.Gid }}">
+                {{:: group.Name }}
+            </md-option>
 
-    </md-select>
+        </md-select>
+    </aside>
+
 
     <!-- list with news -->
     <md-content id="vk-news">
 
         <div class="vk-news-item" ng-repeat="item in model.VkNews">
-            <article ng-bind-html="item.Text"></article>
+            <article ng-bind-html="item.Text" class="vk-news-text"></article>
             <img ng-src="{{:: item.Image }}" />
+            <div class="vk-news-manage-buttons" layout="row" layout-align="space-between center">
+                <!--<md-button ng-click="loadComments(item)">Show comments</md-button>-->
+                <md-button href="https://vk.com/wall-{{:: item.GroupId }}_{{:: item.PostId }}" target="_blank">Open →</md-button>
+            </div>
         </div>
 
     </md-content>

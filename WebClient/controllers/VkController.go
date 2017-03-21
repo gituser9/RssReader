@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"strconv"
 
+	"log"
+
 	"../models"
 	"../services"
 )
@@ -38,4 +40,28 @@ func (ctrl *VkController) GetAll(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(news)
+}
+
+func (ctrl *VkController) GetByFilters(w http.ResponseWriter, r *http.Request) {
+	data := postVkData(r)
+	news := ctrl.service.GetNewsByFilters(data)
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(news)
+}
+
+/*==============================================================================
+	Private
+==============================================================================*/
+
+func postVkData(r *http.Request) models.VkData {
+	result := new(models.VkData)
+	decoder := json.NewDecoder(r.Body)
+	err := decoder.Decode(&result)
+
+	if err != nil {
+		log.Println("decode err: ", err.Error())
+	}
+
+	return *result
 }
