@@ -115,7 +115,7 @@ func main() {
 
 	// vk
 	http.HandleFunc("/get-vk-page", vkCtrl.GetPageData)
-	http.HandleFunc("/get-vk-news", vkCtrl.GetAll)
+	http.HandleFunc("/get-vk-news", vkCtrl.GetNews)
 	http.HandleFunc("/get-vk-news-by-filters", vkCtrl.GetByFilters)
 
 	err := http.ListenAndServe(":"+strconv.Itoa(conf.Port), nil)

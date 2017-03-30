@@ -25,10 +25,15 @@ func (service *VkService) Init(config *models.Config) *VkService {
 	return &VkService{db: db, config: config}
 }
 
-func (service *VkService) GetAllNews(id int) []models.VkNews {
+func (service *VkService) GetNews(id int, page int) []models.VkNews {
 	var result []models.VkNews
+	offset := service.config.PageSize * (page - 1)
 
-	service.db.Where(&models.VkNews{UserId: id}).Find(&result)
+	service.db.Where(&models.VkNews{UserId: id}).
+		Limit(service.config.PageSize).
+		Offset(offset).
+		Order("Id desc").
+		Find(&result)
 
 	return result
 }

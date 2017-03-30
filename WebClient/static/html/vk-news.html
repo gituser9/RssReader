@@ -11,19 +11,21 @@
         </md-select>
     </aside>
 
-
     <!-- list with news -->
     <md-content id="vk-news">
-
-        <div class="vk-news-item" ng-repeat="item in model.VkNews">
-            <article ng-bind-html="item.Text" class="vk-news-text"></article>
-            <img ng-src="{{:: item.Image }}" />
-            <div class="vk-news-manage-buttons" layout="row" layout-align="space-between center">
-                <!--<md-button ng-click="loadComments(item)">Show comments</md-button>-->
-                <md-button href="https://vk.com/wall-{{:: item.GroupId }}_{{:: item.PostId }}" target="_blank">Open →</md-button>
+        <div infinite-scroll='getVkNews()' infinite-scroll-disabled='model.IsLoad' infinite-scroll-distance='1'>
+            <div class="vk-news-item" ng-repeat="item in model.VkNews">
+                <article ng-bind-html="item.Text" class="vk-news-text"></article>
+                <img ng-src="{{:: item.Image }}" />
+                <div class="vk-news-manage-buttons" layout="row" layout-align="space-between center">
+                    <!--<md-button ng-click="loadComments(item)">Show comments</md-button>-->
+                    <md-button href="https://vk.com/wall-{{:: item.GroupId }}_{{:: item.PostId }}" target="_blank">Open →</md-button>
+                </div>
             </div>
         </div>
-
+        <div ng-show='model.IsLoad' layout="row" layout-sm="column" layout-align="space-around">
+            <md-progress-circular md-mode="indeterminate"></md-progress-circular>
+        </div>
     </md-content>
 </md-content>
 

@@ -3,28 +3,47 @@ function VkService ($http) {
     var factory = {
         model: {
             VkNews: [],
-            VkGroups: []
+            VkGroups: [],
+            IsLoad: false,
+            IsAll: false
         }
     };
 
     factory.getPageData = function(id) {
+        factory.model.IsLoad = true;
         var config = {};
         config.params = { id: id };
 
         $http.get("/get-vk-page", config).then(function (response) {
             factory.model.VkNews = response.data.News;
             factory.model.VkGroups = response.data.Groups;
+            factory.model.IsLoad = false;
         });
     };
 
-    /*factory.getVkNews = function(userId) {
+    factory.getVkNews = function(userId, page) {
+        if (factory.model.IsLoad || factory.model.IsAll) {
+            return;
+        }
+
+        factory.model.IsLoad = true;
         var config = {};
-        config.params = { id: userId };
+        config.params = { id: userId, page: page };
 
         $http.get("/get-vk-news", config).then(function (response) {
-            factory.model.VkNews = response.data;
+            // factory.model.VkNews = response.data;
+            if (response.data.length === 0) {
+                factory.model.IsAll = true;
+                return;
+            }
+
+            for (var i = 0; i < response.data.length; ++i) {
+                factory.model.VkNews.push(response.data[i]);
+            }
+
+            factory.model.IsLoad = false;
         });
-    };*/
+    };
 
     factory.getVkGroups = function(userId) {
         var config = {};
@@ -45,7 +64,7 @@ function VkService ($http) {
                 owner_id: '-' + news.GroupId
             }
         };
-        $http.get(url, cfg).then(function (response) {
+        $http.jsonp(url, cfg).then(function (response) {
             console.log(response);
         });
     };

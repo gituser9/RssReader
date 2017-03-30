@@ -113,7 +113,7 @@
         </div>
     </section>
 </div>
-<div ng-show="settings.VkNewsEnabled && currentSource == Sources.Vk" ng-controller="vkCtrl">
+<div ng-if="settings.VkNewsEnabled && currentSource == Sources.Vk" ng-controller="vkCtrl">
     <!-- Vkontakte -->
     <ng-include src="'static/html/vk-news.html'"></ng-include>
 </div>

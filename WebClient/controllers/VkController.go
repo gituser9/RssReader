@@ -26,7 +26,7 @@ func (ctrl *VkController) Init(config *models.Config) *VkController {
 func (ctrl *VkController) GetPageData(w http.ResponseWriter, r *http.Request) {
 	id, _ := strconv.Atoi(r.URL.Query().Get("id"))
 	pageData := models.VkPageData{
-		News:   ctrl.service.GetAllNews(id),
+		News:   ctrl.service.GetNews(id, 1),
 		Groups: ctrl.service.GetAllGroups(id),
 	}
 
@@ -34,9 +34,10 @@ func (ctrl *VkController) GetPageData(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(pageData)
 }
 
-func (ctrl *VkController) GetAll(w http.ResponseWriter, r *http.Request) {
+func (ctrl *VkController) GetNews(w http.ResponseWriter, r *http.Request) {
 	id, _ := strconv.Atoi(r.URL.Query().Get("id"))
-	news := ctrl.service.GetAllNews(id)
+	page, _ := strconv.Atoi(r.URL.Query().Get("page"))
+	news := ctrl.service.GetNews(id, page)
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(news)

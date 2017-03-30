@@ -1,7 +1,6 @@
 ﻿
-angular.module("app", ["ngSanitize", "ui.bootstrap", "ngFileUpload", "ngMaterial"])
+angular.module("app", ["ngSanitize", "ui.bootstrap", "ngFileUpload", "ngMaterial", 'infinite-scroll'])
     .controller("mainCtrl", MainController)
-    // .controller("modalCtrl", ModalController)
     .controller("vkCtrl", VkController)
     .controller("rssCtrl", RssController)
     .service("mainService", MainService)
