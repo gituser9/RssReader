@@ -1,13 +1,11 @@
-<md-content>
+<md-content id="vk-content">
     <!-- select with groups -->
     <aside id="vk-menu">
-        <md-select ng-model="filters.GroupId" class="inline" aria-label="Search in Vk News" ng-change="getByFilters()">
-
+        <md-select id="vk-groups" ng-model="filters.GroupId" class="inline" aria-label="Search in Vk News" ng-change="getByFilters()">
             <md-option value="0">All groups</md-option>
             <md-option ng-repeat="group in model.VkGroups" value="{{:: group.Gid }}">
                 {{:: group.Name }}
             </md-option>
-
         </md-select>
     </aside>
 

@@ -60,7 +60,7 @@ function MainController ($scope, $timeout, mainService, vkService, rssService) {
     $scope.showRss = function() {
         $scope.currentSource = $scope.Sources.Rss;
 
-        if (!rssService.feeds || rssService.feeds.length == 0) {
+        if (!rssService.feeds || rssService.feeds.length === 0) {
             rssService.getAll($scope.userId);
         }
     };
@@ -68,7 +68,7 @@ function MainController ($scope, $timeout, mainService, vkService, rssService) {
     $scope.showVk = function() {
         $scope.currentSource = $scope.Sources.Vk;
 
-        if (vkService.model.VkNews.length == 0) {
+        if (vkService.model.VkNews.length === 0) {
             vkService.getPageData($scope.userId);
         }
     };
@@ -87,7 +87,7 @@ Modals
         var userStr = storage.getItem("RssReaderUser");
         var user = JSON.parse(userStr);
 
-        $scope = mainService.getSettings(user.Id).then(function (response) {
+        mainService.getSettings(user.Id).then(function (response) {
             var modalData = {};
             modalData.Settings = response;
             mainService.openModal("static/html/modals/settingModal.html", ModalController, modalData);

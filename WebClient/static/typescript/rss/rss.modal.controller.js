@@ -2,6 +2,8 @@ function RssModalController ($scope, $mdDialog, rssService, modalData){
     $scope.vm = this;
     $scope.feedUrl = "";
 
+    console.log(modalData);
+
     if (modalData != null) {
         $scope.modalData = modalData;
     }

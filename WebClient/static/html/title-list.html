@@ -22,16 +22,19 @@
     </article>
 
     <div class="col-md-12 center" ng-show="articles.length > 0">
-        <uib-pagination
-                total-items="articlesCount"
-                items-per-page="20"
-                ng-model="currentPage"
-                max-size="10"
-                class="pagination-sm"
-                boundary-links="true"
-                force-ellipses="true"
-                ng-change="vm.getArticlesByPage(currentPage)">
-        </uib-pagination>
+        <paging
+            page="page"
+            page-size="20"
+            total="articlesCount"
+            text-first="First"
+            text-last="Last"
+            text-next="Next"
+            text-prev="Previous"
+            show-prev-next="true"
+            show-first-last="true"
+            paging-action="vm.getArticlesByPage(page)"
+        >
+        </paging>
     </div>
 </div>
 

@@ -10,15 +10,14 @@ var bc = './bower_components/';
 
 gulp.task('jslibs', function() {
     gulp.src([
-        bc + 'jquery/dist/jquery.js',
         bc + 'angular/angular.min.js',
         bc + 'angular-sanitize/angular-sanitize.min.js',
         bc + 'ng-file-upload/ng-file-upload.min.js',
-        bc + 'angular-bootstrap/ui-bootstrap-tpls.min.js',  // todo: pagination only
         bc + 'angular-aria/angular-aria.min.js',
         bc + 'angular-animate/angular-animate.min.js',
         bc + 'angular-material/angular-material.min.js',
-        bc + 'ngInfiniteScroll/build/ng-infinite-scroll.min.js'
+        bc + 'ngInfiniteScroll/build/ng-infinite-scroll.min.js',
+        bc + 'angular-paging/dist/paging.js'
     ])
     .pipe(concat('libs.js'))
     .pipe(uglify())
@@ -27,14 +26,13 @@ gulp.task('jslibs', function() {
 
 gulp.task('csslibs', function() {
     gulp.src([
-        bc + 'bootstrap/dist/css/bootstrap.min.css',
         bc + 'angular-material/angular-material.min.css'
     ])
     .pipe(concat('libs.css'))
     .pipe(gulp.dest('dist'));
 });
 
-gulp.task('revts', ['jslibs', 'minifycss'], function() {
+gulp.task('revts', function() {
     gulp.src('static/html/index.html')
         .pipe(rev())
         .pipe(gulp.dest('dist'));
@@ -43,13 +41,14 @@ gulp.task('revts', ['jslibs', 'minifycss'], function() {
 gulp.task('compile', function() {
     gulp.src('static/typescript/**/*.js')
         .pipe(sourcemaps.init())
-        // .pipe(concat('output.js'))
+        .pipe(concat('output.js'))
+        .pipe(uglify())
         .pipe(sourcemaps.write('.'))
         .pipe(gulp.dest('dist'));
 });
 
-gulp.task('minifycss', ['csslibs'], function() {
-    gulp.src('./static/css/*.css')
+gulp.task('minifycss', function() {
+    return gulp.src('static/css/*.css')
         .pipe(concat('app.css'))
         .pipe(cleanCSS({compatibility: 'ie8'}))
         .pipe(gulp.dest('dist'));

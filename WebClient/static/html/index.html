@@ -70,7 +70,8 @@
     </md-toolbar>
 </header>
 
-<div ng-show="settings.RssEnabled && currentSource == Sources.Rss" ng-controller="rssCtrl">
+<!-- RSS -->
+<div ng-if="settings.RssEnabled && currentSource == Sources.Rss" ng-controller="rssCtrl">
     <!-- Rss -->
     <!-- left side -->
     <aside id="feed-titles" class="col-md-4 col-xs-4">
@@ -113,8 +114,9 @@
         </div>
     </section>
 </div>
-<div ng-if="settings.VkNewsEnabled && currentSource == Sources.Vk" ng-controller="vkCtrl">
-    <!-- Vkontakte -->
+
+<!-- Vkontakte -->
+<div id="vk-container" ng-if="settings.VkNewsEnabled && currentSource == Sources.Vk" ng-controller="vkCtrl">
     <ng-include src="'static/html/vk-news.html'"></ng-include>
 </div>
 
@@ -124,8 +126,8 @@
 
     <!-- rev-hash -->
     <script src="dist/libs.js"></script>
-    <!--<script src="dist/output.js"></script>-->
-    <script src="dist/main.service.js"></script>
+    <script src="dist/output.js"></script>
+    <!--<script src="dist/main.service.js"></script>
     <script src="dist/main.modal.controller.js"></script>
     <script src="dist/main.controller.js"></script>
 
@@ -134,7 +136,7 @@
     <script src="dist/rss/rss.controller.js"></script>
     <script src="dist/vk/vk.service.js"></script>
     <script src="dist/vk/vk.controller.js"></script>
-    <script src="dist/app.js"></script>
+    <script src="dist/app.js"></script>-->
     <!-- end -->
 </footer>
 </body>

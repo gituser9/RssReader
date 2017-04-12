@@ -29,6 +29,7 @@ func (ctrl *UserController) Init(config *models.Config) *UserController {
 
 func (ctrl *UserController) Auth(w http.ResponseWriter, r *http.Request) {
 	authData := postUserData(r)
+	log.Println(authData)
 	user := ctrl.service.Auth(authData.Name, authData.Password)
 
 	w.Header().Set("Content-Type", "application/json")

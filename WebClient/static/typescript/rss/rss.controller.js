@@ -220,7 +220,7 @@ function RssController ($scope, $timeout, $mdDialog, $mdToast, $upload, mainServ
     =========================================================== */
 
     $scope.openDelete = function(rss) {
-        var modalData = new ModalData();
+        var modalData = {};
         modalData.Feed = rss;
         mainService.openModal("static/html/modals/deleteModal.html", RssModalController, modalData);
     };
@@ -230,7 +230,7 @@ function RssController ($scope, $timeout, $mdDialog, $mdToast, $upload, mainServ
     };
 
     $scope.openEditName = function(rss) {
-        var modalData = new ModalData();
+        var modalData = {};
         modalData.Feed = rss;
         mainService.openModal("static/html/modals/editModal.html", RssModalController, modalData);
     };

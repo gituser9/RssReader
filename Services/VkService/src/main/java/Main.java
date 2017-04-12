@@ -110,7 +110,6 @@ public class Main {
 
             appProperties.setClientId(properties.getProperty("clientId"));
             appProperties.setClientSecret(properties.getProperty("clientSecret"));
-//            appProperties.setPasswordSalt(properties.getProperty("passwordSalt"));
             appProperties.setSleepMinutes(Integer.parseInt(properties.getProperty("sleepMinutes")));
         } catch (IOException e) {
             System.out.println("Load properties error: " + e.getMessage());

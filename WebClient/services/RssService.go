@@ -57,18 +57,14 @@ func (service *RssService) Init(config *models.Config) *RssService {
 // GetRss - get all rss
 func (service *RssService) GetRss(id uint) []models.Feed {
 	var rss []models.Feeds
-	service.dbp().Where(&models.Feeds{UserId: id}).Preload("Articles", "IsRead=?", "0").Find(&rss)
-	//service.dbp().Where(&models.Feeds{UserId: id}).Find(&rss)
+	service.dbp().Preload("Articles", "IsRead=?", "0").Where(&models.Feeds{UserId: id}).Find(&rss)
 	feeds := make([]models.Feed, len(rss))
 	var wg sync.WaitGroup
 
 	for i, item := range rss {
 		wg.Add(1)
 		go func(item models.Feeds, i int) {
-			var articles []models.Articles
-			service.dbp().Where(&models.Articles{FeedId: item.Id}).Where("IsRead=?", "0").Find(&articles)
-			//count := len(item.Articles)
-			count := len(articles)
+			count := len(item.Articles)
 			feeds[i] = models.Feed{Feed: item, ArticlesCount: count, ExistUnread: count > 0}
 
 			wg.Done()
@@ -142,7 +138,6 @@ func (service *RssService) UpdateAllFeeds() {
 
 // UpdateFeed - update one feed
 func (service *RssService) UpdateFeed(url string, userId uint) {
-	//defer wg.Done()
 	rssBody, err := service.getFeedBody(url)
 
 	if err != nil {
@@ -153,8 +148,9 @@ func (service *RssService) UpdateFeed(url string, userId uint) {
 	// get feed from DB by url, if not - add
 	defer rssBody.Close()
 	var rss models.Feeds
-	//service.dbp().Preload("Articles").Where(&models.Feeds{Url: url, UserId: userId}).Find(&rss)
-	service.dbp().Where(&models.Feeds{Url: url, UserId: userId}).First(&rss)
+	service.dbp().Preload("Articles").
+		Where(&models.Feeds{Url: url, UserId: userId}).
+		Find(&rss)
 
 	if rss.Url == "" {
 		service.AddFeed(url, userId)
@@ -310,10 +306,12 @@ func (service *RssService) GetBookmarks(page int64) *models.ArticlesJSON {
 	offset := service.config.PageSize * (int(page) - 1)
 	var count int
 
-	service.dbp().Where(&whereObject).Find(&articles).
+	service.dbp().Where(&whereObject).
+		Select("Id, Title, IsBookmark, IsRead").
 		Limit(service.config.PageSize).
 		Offset(offset).
-		Order("Id desc")
+		Order("Id desc").
+		Find(&articles)
 	service.dbp().Model(&models.Articles{}).Where(&whereObject).Count(&count)
 
 	return &models.ArticlesJSON{Articles: articles, Count: count}
@@ -471,13 +469,10 @@ func (service *RssService) getFeedBody(url string) (io.ReadCloser, error) {
 }
 
 func (service *RssService) updateArticles(rss models.Feeds, xmlModel models.XMLFeed) {
-	var articles []models.Articles
-	service.dbp().Where(&models.Articles{FeedId: rss.Id}).Find(&articles)
-
-	links := make([]string, len(articles))
+	links := make([]string, len(rss.Articles))
 	var wg sync.WaitGroup
 
-	for i, article := range articles {
+	for i, article := range rss.Articles {
 		links[i] = article.Link
 	}
 

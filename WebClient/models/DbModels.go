@@ -2,11 +2,11 @@ package models
 
 // Rss - structure for DB
 type Feeds struct {
-	Id       uint   `gorm:"column:Id;primary_key;AUTO_INCREMENT"`
-	Name     string `gorm:"column:Name"`
-	Url      string `gorm:"column:Url"`
-	UserId   uint   `gorm:"column:UserId"`
-	Articles []Articles
+	Id       uint       `gorm:"column:Id;primary_key;AUTO_INCREMENT"`
+	Name     string     `gorm:"column:Name"`
+	Url      string     `gorm:"column:Url"`
+	UserId   uint       `gorm:"column:UserId"`
+	Articles []Articles `gorm:"ForeignKey:FeedId"`
 }
 
 func (Feeds) TableName() string {
@@ -22,7 +22,7 @@ type Articles struct {
 	Date       int64  `gorm:"column:Date"`
 	IsRead     bool   `gorm:"column:IsRead"`
 	IsBookmark bool   `gorm:"column:IsBookmark"`
-	Feed       Feeds
+	//Feed       Feeds
 }
 
 func (Articles) TableName() string {

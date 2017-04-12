@@ -1,6 +1,9 @@
 function RssService ($http){
 
-    var factory = {};
+    var factory = {
+        articles: [],
+        articlesCount: 0
+    };
 
     factory.getArticles = function(feedId, page) {
         var config = {};
