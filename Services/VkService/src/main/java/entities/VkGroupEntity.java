@@ -26,15 +26,19 @@ public class VkGroupEntity implements Serializable {
     @Column(name = "UserId")
     private long userId;
 
+    @Column(name = "Image", unique = false, updatable = true)
+    private String image;
+
     public VkGroupEntity() {
 
     }
 
-    public VkGroupEntity(int gid, long userId, String name, String linkedName) {
+    public VkGroupEntity(int gid, long userId, String name, String linkedName, String image) {
         this.gid = gid;
         this.userId = userId;
         this.name = name;
         this.linkedName = linkedName;
+        this.image = image;
     }
 
     public int getId() {
@@ -75,5 +79,13 @@ public class VkGroupEntity implements Serializable {
 
     public void setUserId(long userId) {
         this.userId = userId;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
     }
 }

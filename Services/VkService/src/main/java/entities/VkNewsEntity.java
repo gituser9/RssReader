@@ -29,6 +29,12 @@ public class VkNewsEntity implements Serializable {
     @Column(name = "Image", updatable = false)
     private String image;
 
+    @Column(name = "Link", updatable = false)
+    private String link;
+
+    @Column(name = "Timestamp", updatable = false)
+    private long timestamp;
+
     @SuppressWarnings("UnusedDeclaration")
     public VkNewsEntity() {
     }
@@ -84,6 +90,22 @@ public class VkNewsEntity implements Serializable {
 
     public void setImage(String image) {
         this.image = image;
+    }
+
+    public String getLink() {
+        return link;
+    }
+
+    public void setLink(String link) {
+        this.link = link;
+    }
+
+    public long getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(long timestamp) {
+        this.timestamp = timestamp;
     }
 
     @Override

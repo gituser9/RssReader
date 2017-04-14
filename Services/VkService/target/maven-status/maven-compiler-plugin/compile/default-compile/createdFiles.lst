@@ -1,0 +1,10 @@
+services\VkService.class
+entities\VkGroupEntity.class
+Main.class
+datamodels\AppProperties.class
+entities\UserEntity.class
+datamodels\WorkData.class
+entities\VkNewsEntity.class
+utils\HibernateSessionFactory.class
+entities\SettingsEntity.class
+services\NetService.class

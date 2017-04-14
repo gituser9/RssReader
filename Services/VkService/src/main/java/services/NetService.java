@@ -52,6 +52,8 @@ public class NetService {
             e.printStackTrace();
         }
 
+        System.out.println(builder.toString());
+
         JsonObject newsJson = parser.parse(builder.toString()).getAsJsonObject();
         JsonObject responseJson = newsJson.get("response").getAsJsonObject();
 

@@ -1,40 +1,66 @@
 package utils;
 
+import datamodels.AppProperties;
+import entities.SettingsEntity;
+import entities.UserEntity;
+import entities.VkGroupEntity;
+import entities.VkNewsEntity;
 import org.hibernate.SessionFactory;
-import org.hibernate.boot.MetadataSources;
-import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
+import org.hibernate.cfg.Configuration;
+import org.hibernate.service.ServiceRegistry;
+
 
 public class HibernateSessionFactory {
 
-    private static SessionFactory sessionFactory = buildSessionFactory();
+    private static SessionFactory sessionFactory;
 
-    protected static SessionFactory buildSessionFactory() {
-        // A SessionFactory is set up once for an application!
-        final StandardServiceRegistry registry = new StandardServiceRegistryBuilder()
-                .configure() // configures settings from hibernate.cfg.xml
-                .build();
-        try {
-            sessionFactory = new MetadataSources( registry ).buildMetadata().buildSessionFactory();
-        }
-        catch (Exception e) {
-            // The registry would be destroyed by the SessionFactory, but we had trouble building the SessionFactory
-            // so destroy it manually.
-            StandardServiceRegistryBuilder.destroy( registry );
+    public static SessionFactory getSessionFactory(AppProperties appProperties) {
+//        return sessionFactory;
+        Configuration configuration = confugurationBuilder(appProperties);
+        StandardServiceRegistryBuilder builder = new StandardServiceRegistryBuilder();
+        builder.applySettings(configuration.getProperties());
+        ServiceRegistry serviceRegistry = builder.build();
 
-            throw new ExceptionInInitializerError("Initial SessionFactory failed" + e);
-        }
-        return sessionFactory;
-    }
+        sessionFactory = configuration.buildSessionFactory(serviceRegistry);
 
-
-    public static SessionFactory getSessionFactory() {
         return sessionFactory;
     }
 
     public static void shutdown() {
         // Close caches and connection pools
-        getSessionFactory().close();
+        if (sessionFactory != null) {
+            sessionFactory.close();
+        }
     }
+
+    private static Configuration confugurationBuilder(AppProperties appProperties) {
+        switch (appProperties.getDbEngine()) {
+            case "mysql":
+                return createMysqlConfiguration(appProperties);
+            default:
+                return null;
+        }
+
+    }
+
+    private static Configuration createMysqlConfiguration(AppProperties appProperties) {
+        Configuration configuration = new Configuration();
+        configuration.addAnnotatedClass(VkNewsEntity.class);
+        configuration.addAnnotatedClass(VkGroupEntity.class);
+        configuration.addAnnotatedClass(SettingsEntity.class);
+        configuration.addAnnotatedClass(UserEntity.class);
+
+        configuration.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQLDialect");
+        configuration.setProperty("hibernate.connection.driver_class", "com.mysql.jdbc.Driver");
+        configuration.setProperty("hibernate.connection.url", appProperties.getHibernateConnectionString());
+        configuration.setProperty("hibernate.connection.username", appProperties.getDbLogin());
+        configuration.setProperty("hibernate.connection.password", appProperties.getDbPassword());
+        configuration.setProperty("hibernate.show_sql", "false");
+
+
+        return configuration;
+    }
+
 
 }

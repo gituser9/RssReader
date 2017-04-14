@@ -2,6 +2,7 @@ package services;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import datamodels.AppProperties;
 import datamodels.WorkData;
 import entities.VkGroupEntity;
 import entities.VkNewsEntity;
@@ -17,6 +18,11 @@ import java.util.List;
 
 
 public class VkService {
+    private AppProperties appProperties;
+
+    public VkService(AppProperties appProperties) {
+        this.appProperties = appProperties;
+    }
 
     public void saveNews(WorkData workData, Session session) {
         List<VkNewsEntity> data = convertData(workData, session);
@@ -26,7 +32,6 @@ public class VkService {
     private List<VkNewsEntity> convertData(WorkData workData, Session session) {
         List<Integer> groupIds = (List<Integer>) workData.getGroupIds();
         List<Integer> newsIds = (List<Integer>) workData.getNewsIds();
-        Collections.sort(groupIds);
         Collections.sort(newsIds);
 
         List<VkNewsEntity> result = new ArrayList<>(workData.getNews().size());
@@ -40,12 +45,23 @@ public class VkService {
                 continue;
             }
 
-            String image;
+            String image = null;
+            String link = null;
+            JsonObject attachment = json.get("attachment").getAsJsonObject();
+            String postType = attachment.get("type").getAsString();
 
-            try {
+            if (postType.equals("photo")) {
                 image = json.get("attachment").getAsJsonObject().getAsJsonObject("photo").get("src_big").getAsString();
-            } catch (NullPointerException e) {
-                image = null;
+            } else if (postType.equals("link")) {
+                JsonObject linkObject = attachment.getAsJsonObject("link");
+
+                if (linkObject.has("image_big")) {
+                    image = linkObject.get("image_big").getAsString();
+                } else if (linkObject.has("image_src")) {
+                    image = linkObject.get("image_src").getAsString();
+                }
+
+                link = linkObject.get("url").getAsString();
             }
 
             Integer postId = json.get("post_id").getAsInt();
@@ -55,7 +71,7 @@ public class VkService {
                 continue;
             }
 
-            if (Collections.binarySearch(groupIds, groupId) == -1) {
+            if (!groupIds.contains(groupId)) {
                 // add new group for user
                 addGroup(groupId, workData, session);
                 groupIds.add(groupId);
@@ -68,6 +84,8 @@ public class VkService {
             entity.setText(json.get("text").getAsString());
             entity.setUserId(userId);
             entity.setImage(image);
+            entity.setLink(link);
+            entity.setTimestamp(json.get("date").getAsLong());
 
             result.add(entity);
         }
@@ -78,7 +96,7 @@ public class VkService {
     }
 
     private void saveData(List<VkNewsEntity> news) {
-        try (Session session = HibernateSessionFactory.getSessionFactory().openSession()) {
+        try (Session session = HibernateSessionFactory.getSessionFactory(appProperties).openSession()) {
             session.beginTransaction();
             SQLQuery query = session.createSQLQuery("SET NAMES utf8mb4");
             query.executeUpdate();
@@ -105,9 +123,10 @@ public class VkService {
             if (groupId == id) {
                 String name = json.get("name").getAsString();
                 String linkedName = json.get("screen_name").getAsString();
+                String image = json.get("photo").getAsString();
 
                 session.beginTransaction();
-                VkGroupEntity groupEntity = new VkGroupEntity(groupId, workData.getUserId(), name, linkedName);
+                VkGroupEntity groupEntity = new VkGroupEntity(groupId, workData.getUserId(), name, linkedName, image);
                 session.save(groupEntity);
                 session.getTransaction().commit();
 

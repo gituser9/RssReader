@@ -50,10 +50,10 @@ public class Main {
     private static void updateVkNews(AppProperties appProperties) {
         System.out.println("START");
 
-        VkService vkService = new VkService();
+        VkService vkService = new VkService(appProperties);
         NetService netService = new NetService(appProperties);
 
-        try (Session session = HibernateSessionFactory.getSessionFactory().openSession()) {
+        try (Session session = HibernateSessionFactory.getSessionFactory(appProperties).openSession()) {
             Criteria settingsCriteria = session.createCriteria(SettingsEntity.class);
             settingsCriteria.add(Restrictions.eq("vkNewsEnabled", true));
             settingsCriteria.setProjection(Projections.property("userId"));
@@ -104,13 +104,17 @@ public class Main {
         Properties properties = new Properties();
         AppProperties appProperties = new AppProperties();
 
-        try (InputStream input = new FileInputStream("config.properties")) {
+        try (InputStream input = new FileInputStream("vkconfig.properties")) {
             // load a properties file
             properties.load(input);
 
             appProperties.setClientId(properties.getProperty("clientId"));
             appProperties.setClientSecret(properties.getProperty("clientSecret"));
             appProperties.setSleepMinutes(Integer.parseInt(properties.getProperty("sleepMinutes")));
+            appProperties.setDbEngine(properties.getProperty("dbEngine"));
+            appProperties.setDbLogin(properties.getProperty("dbLogin"));
+            appProperties.setDbPassword(properties.getProperty("dbPassword"));
+            appProperties.setHibernateConnectionString(properties.getProperty("hibernateConnectionString"));
         } catch (IOException e) {
             System.out.println("Load properties error: " + e.getMessage());
             return null;

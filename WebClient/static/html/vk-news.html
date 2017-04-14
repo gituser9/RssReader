@@ -13,8 +13,10 @@
     <md-content id="vk-news">
         <div infinite-scroll='getVkNews()' infinite-scroll-disabled='model.IsLoad' infinite-scroll-distance='1'>
             <div class="vk-news-item" ng-repeat="item in model.VkNews">
+                <img src="{{::  }}" />
                 <article ng-bind-html="item.Text" class="vk-news-text"></article>
                 <img ng-src="{{:: item.Image }}" />
+                <a ng-if="item.Link.length > 0" href="{{:: item.Link }}" target="_blank">{{:: item.Link }}</a>
                 <div class="vk-news-manage-buttons" layout="row" layout-align="space-between center">
                     <!--<md-button ng-click="loadComments(item)">Show comments</md-button>-->
                     <md-button href="https://vk.com/wall-{{:: item.GroupId }}_{{:: item.PostId }}" target="_blank">Open →</md-button>
