@@ -85,7 +85,6 @@ func main() {
 	// todo: gorilla mux for REST API
 	// todo: gorilla sessions
 
-	log.Println("server start")
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./static/"))))
 	http.Handle("/dist/", http.StripPrefix("/dist/", http.FileServer(http.Dir("./dist/"))))
 	http.HandleFunc("/", rssCtrl.Index)
@@ -119,6 +118,9 @@ func main() {
 	http.HandleFunc("/get-vk-news-by-filters", vkCtrl.GetByFilters)
 	http.HandleFunc("/search-vk-news", vkCtrl.Search)
 
+	// twitter
+
+	log.Println("server start on port " + strconv.Itoa(conf.Port))
 	err := http.ListenAndServe(":"+strconv.Itoa(conf.Port), nil)
 
 	if err != nil {

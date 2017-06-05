@@ -230,17 +230,17 @@ function RssController ($scope, $timeout, $mdDialog, $mdToast, $upload, mainServ
     $scope.openDelete = function(rss) {
         var modalData = {};
         modalData.Feed = rss;
-        mainService.openModal("static/html/modals/deleteModal.html", RssModalController, modalData);
+        mainService.openModal("deleteModal.html", RssModalController, modalData);
     };
 
     $scope.openAdd = function() {
-        mainService.openModal("static/html/modals/addModal.html", RssModalController, null);
+        mainService.openModal("addModal.html", RssModalController, null);
     };
 
     $scope.openEditName = function(rss) {
         var modalData = {};
         modalData.Feed = rss;
-        mainService.openModal("static/html/modals/editModal.html", RssModalController, modalData);
+        mainService.openModal("editModal.html", RssModalController, modalData);
     };
 
     /* Private
@@ -254,7 +254,7 @@ function RssController ($scope, $timeout, $mdDialog, $mdToast, $upload, mainServ
             --$scope.currentFeed.ArticlesCount;
         }
 
-        if ($scope.currentFeed.ArticlesCount == 0) {
+        if ($scope.currentFeed.ArticlesCount === 0) {
             $scope.currentFeed.ExistUnread = false;
         }
     }

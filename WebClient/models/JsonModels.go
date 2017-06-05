@@ -50,3 +50,7 @@ type VkData struct {
 	GroupId      int    `json:"GroupId"`
 	SearchString string `json:"SearchString"`
 }
+
+type TwitterData struct {
+	SourceId int `json:"SourceId"`
+}

@@ -61,11 +61,9 @@ public class Main {
 
         Criteria usersCriteria = session.createCriteria(UserEntity.class);
         usersCriteria.add(Restrictions.in("id", userIds));
-
         List<UserEntity> users = (List<UserEntity>) usersCriteria.list();
 
         for (UserEntity user : users) {
-//                String vkPassword = user.getDecryptVkPassword(appProperties.getPasswordSalt());
             String vkPassword = user.getVkPassword();
 
             if (vkPassword == null) {

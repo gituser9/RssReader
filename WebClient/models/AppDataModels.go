@@ -26,3 +26,8 @@ type VkPageData struct {
 	News   []VkNews
 	Groups []VkGroup
 }
+
+type TwitterPageData struct {
+	News    []TwitterNews
+	Sources []TwitterSource
+}

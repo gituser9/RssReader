@@ -30,14 +30,15 @@ func (Articles) TableName() string {
 }
 
 type Users struct {
-	Id            uint   `gorm:"column:Id;primary_key;AUTO_INCREMENT"`
-	Name          string `gorm:"column:Name"`
-	Password      string `gorm:"column:Password"`
-	VkLogin       string `gorm:"column:VkLogin"`
-	VkPassword    string `gorm:"column:VkPassword"`
-	VkNewsEnabled bool   `gorm:"column:VkNewsEnabled"`
-	Settings      Settings
-	Feeds         []Feeds
+	Id                uint   `gorm:"column:Id;primary_key;AUTO_INCREMENT"`
+	Name              string `gorm:"column:Name"`
+	Password          string `gorm:"column:Password"`
+	VkLogin           string `gorm:"column:VkLogin"`
+	VkPassword        string `gorm:"column:VkPassword"`
+	TwitterScreenName string `gorm:"column:TwitterScreenName"`
+	VkNewsEnabled     bool   `gorm:"column:VkNewsEnabled"`
+	Settings          Settings
+	Feeds             []Feeds
 }
 
 func (Users) TableName() string {
@@ -51,6 +52,7 @@ type Settings struct {
 	MarkSameRead      bool `gorm:"column:MarkSameRead"`
 	RssEnabled        bool `gorm:"column:RssEnabled"`
 	VkNewsEnabled     bool `gorm:"column:VkNewsEnabled"`
+	TwitterEnabled    bool `gorm:"column:TwitterEnabled"`
 	ShowPreviewButton bool `gorm:"column:ShowPreviewButton"`
 	ShowTabButton     bool `gorm:"column:ShowTabButton"`
 	ShowReadButton    bool `gorm:"column:ShowReadButton"`
@@ -88,4 +90,31 @@ type VkGroup struct {
 
 func (VkGroup) TableName() string {
 	return "vkgroups"
+}
+
+/* Twitter Models
+============================================================================= */
+type TwitterNews struct {
+	Id          int    `gorm:"column:Id;primary_key;AUTO_INCREMENT"`
+	UserId      int    `gorm:"column:UserId;index"`
+	SourceId    int    `gorm:"column:SourceId;index"`
+	Text        string `gorm:"column:Text"`
+	ExpandedUrl string `gorm:"column:ExpandedUrl"`
+}
+
+func (TwitterNews) TableName() string {
+	return "twitternews"
+}
+
+type TwitterSource struct {
+	Id         int    `gorm:"column:Id;primary_key;AUTO_INCREMENT"`
+	UserId     int    `gorm:"column:UserId;index"`
+	Name       string `gorm:"column:Name"`
+	ScreenName string `gorm:"column:ScreenName"`
+	Url        string `gorm:"column:Url"`
+	Image      string `gorm:"column:Image"`
+}
+
+func (TwitterSource) TableName() string {
+	return "twittersource"
 }

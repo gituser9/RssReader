@@ -51,6 +51,8 @@ function ModalController ($scope, $mdDialog, mainService, modalData) {
                 
                 var storage = window.localStorage;
                 storage.setItem("RssReaderUser", JSON.stringify(data.User));
+
+                mainService.openModal("settingModal.html", ModalController, {});
             }
         });
     };

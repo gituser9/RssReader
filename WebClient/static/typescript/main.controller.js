@@ -1,4 +1,4 @@
-function MainController ($scope, $timeout, mainService, vkService, rssService) {
+function MainController ($scope, mainService, vkService, rssService, twitterService) {
 
     var setStartedSource = function(settings) {
         if (settings.RssEnabled) {
@@ -10,13 +10,18 @@ function MainController ($scope, $timeout, mainService, vkService, rssService) {
             vkService.getPageData(settings.UserId);
             return;
         }
+
+        if (settings.TwitterEnabled) {
+            twitterService.getPageData(settings.UserId);
+            return;
+        }
     };
 
     $scope.Sources = {
         Rss: 1,
-        Vk: 2
+        Vk: 2,
+        Twitter: 3
     };
-
     $scope.currentSource = $scope.Sources.Rss;
     $scope.isAuth = false;
 
@@ -35,21 +40,19 @@ function MainController ($scope, $timeout, mainService, vkService, rssService) {
 
             // mainService.settings = user.Settings;
             mainService.updateSettings(user.Id);
-
             setStartedSource(user.Settings);
 
             mainService.currentUserId = user.Id;
             $scope.isAuth = true;
             $scope.username = user.Name;
-
-            // $scope.$timeout(function () mainService.getAll(user.Id) }, 30);
         } else {
             // modal for auth
-            mainService.openAuthModal();
+            // mainService.openAuthModal();
+            mainService.openModal("authModal.html", ModalController, null);
         }
     };
 
-    $scope.logout = function() {
+    $scope.logout = function () {
         var storage = window.localStorage;
         storage.removeItem("RssReaderUser");
 
@@ -57,7 +60,7 @@ function MainController ($scope, $timeout, mainService, vkService, rssService) {
         mainService.openAuthModal();
     };
 
-    $scope.showRss = function() {
+    $scope.showRss = function () {
         $scope.currentSource = $scope.Sources.Rss;
 
         if (!rssService.feeds || rssService.feeds.length === 0) {
@@ -65,11 +68,19 @@ function MainController ($scope, $timeout, mainService, vkService, rssService) {
         }
     };
 
-    $scope.showVk = function() {
+    $scope.showVk = function () {
         $scope.currentSource = $scope.Sources.Vk;
 
         if (vkService.model.VkNews.length === 0) {
             vkService.getPageData($scope.userId);
+        }
+    };
+
+    $scope.showTwitter = function () {
+        $scope.currentSource = $scope.Sources.Twitter;
+
+        if (twitterService.model.news.length === 0) {
+            twitterService.getPageData($scope.userId);
         }
     };
 
@@ -90,7 +101,7 @@ Modals
         mainService.getSettings(user.Id).then(function (response) {
             var modalData = {};
             modalData.Settings = response;
-            mainService.openModal("static/html/modals/settingModal.html", ModalController, modalData);
+            mainService.openModal("settingModal.html", ModalController, modalData);
         });
     };
 
@@ -103,8 +114,8 @@ Private
 }
 MainController.$inject = [
     "$scope",
-    "$timeout",
     "mainService",
     "vkService",
-    "rssService"
+    "rssService",
+    "twitterService"
 ];
