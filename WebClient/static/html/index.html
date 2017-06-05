@@ -29,6 +29,9 @@
             <md-button aria-label="refresh" ng-click="showVk()" ng-if="settings.VkNewsEnabled">
                 Vkontakte
             </md-button>
+            <md-button aria-label="refresh" ng-click="showTwitter()" ng-if="settings.TwitterEnabled">
+                Twitter
+            </md-button>
 
 
             <md-menu id="main-menu">
@@ -118,6 +121,10 @@
 <!-- Vkontakte -->
 <div id="vk-container" ng-if="settings.VkNewsEnabled && currentSource == Sources.Vk" ng-controller="vkCtrl">
     <ng-include src="'static/html/vk-news.html'"></ng-include>
+</div>
+
+<div id="twitter-container" ng-if="settings.TwitterEnabled && currentSource == Sources.Twitter">
+    <ng-include src="'static/html/twitter/news-list.html'"></ng-include>
 </div>
 
 <!-- footer -->

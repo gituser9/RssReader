@@ -1,6 +1,6 @@
 ## Synopsis
 
-Personal RSS reader
+News Aggregator
 
 ## Installation
 
@@ -13,7 +13,7 @@ For example:
 ```
 {  
     "driver": "mysql",  
-    "connection_string": "root:root@/gorss?charset=utf8&parseTime=True&loc=Local",  
+    "connection_string": "root:root@/dbname?charset=utf8&parseTime=True&loc=Local",  
     "opml_path": "/path/for/save/opml/file",  
     "update_minutes": 30,  
     "page_size": 20,  
@@ -27,6 +27,7 @@ $ npm install -g bower gulp && npm install
 $ bower install  
 $ gulp dist  
 $ go build  
-$ ./RssReader  
+$ ./WebClient  
 
 ## License
+

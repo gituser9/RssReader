@@ -4,10 +4,12 @@
     <md-tabs id="setting-tabs">
         <md-tab label="Sources">
             <md-list>
+                <!-- Rss -->
                 <md-list-item>
                     <md-checkbox ng-model="modalData.Settings.RssEnabled"></md-checkbox>
                     <p> Rss enabled </p>
                 </md-list-item>
+                <!-- Vk -->
                 <md-list-item>
                     <md-checkbox ng-model="modalData.Settings.VkNewsEnabled"></md-checkbox>
                     <p> Vk news enabled </p>
@@ -22,6 +24,18 @@
                     <md-input-container>
                         <label>Password</label>
                         <input ng-model="modalData.Settings.VkPassword" type="password">
+                    </md-input-container>
+                </md-list-item>
+                <!-- Twitter -->
+                <md-list-item>
+                    <md-checkbox ng-model="modalData.Settings.TwitterEnabled"></md-checkbox>
+                    <p>Twitter enabled</p>
+                </md-list-item>
+                <md-list-item>
+                    <i class="material-icons">account_box</i>
+                    <md-input-container>
+                        <label>Twitter name</label>
+                        <input ng-model="modalData.Settings.TwitterName">
                     </md-input-container>
                 </md-list-item>
             </md-list>

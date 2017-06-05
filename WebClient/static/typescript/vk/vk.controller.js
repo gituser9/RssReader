@@ -26,10 +26,6 @@ function VkController ($scope, $timeout, vkService, mainService) {
     $scope.getByFilters = function () {
         vkService.getByFilters($scope.filters);
     };
-
-    $scope.test = function () {
-        console.log('DDD');
-    }
 }
 VkController.$inject = [
     "$scope",

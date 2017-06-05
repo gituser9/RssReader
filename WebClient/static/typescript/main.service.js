@@ -1,6 +1,8 @@
 function MainService ($http, $mdDialog) {
 
-    var factory = {};
+    var factory = {
+        modalUrl: "static/html/modals/"
+    };
 
     factory.getSettings = function (userId) {
         var config = {};
@@ -33,22 +35,22 @@ function MainService ($http, $mdDialog) {
         return $http.post('/registration', { username: username, password: password });
     };
 
-    factory.openAuthModal = function () {
+    /*factory.openAuthModal = function () {
         $mdDialog.show({
             controller: ModalController,
-            templateUrl: "static/html/modals/authModal.html",
+            templateUrl: factory.modalUrl + "authModal.html",
             parent: angular.element(document.body),
             clickOutsideToClose: false,
             locals: {
                 modalData: null
             }
         });
-    };
+    };*/
 
-    factory.openModal = function (url, ctrl, modalData) {
-        $mdDialog.show({
+    factory.openModal = function (template, ctrl, modalData) {
+        return $mdDialog.show({
             controller: ctrl,
-            templateUrl: url,
+            templateUrl: factory.modalUrl + template,
             parent: angular.element(document.body),
             clickOutsideToClose: true,
             locals: {

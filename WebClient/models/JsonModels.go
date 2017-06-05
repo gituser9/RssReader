@@ -49,3 +49,7 @@ type SettingsData struct {
 type VkData struct {
 	GroupId int `json:"GroupId"`
 }
+
+type TwitterData struct {
+	SourceId int `json:"SourceId"`
+}

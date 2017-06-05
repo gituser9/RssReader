@@ -28,12 +28,12 @@ type RssService struct {
 }
 
 // Migrate DB
-func Migrate(db *gorm.DB) {
+/*func Migrate(db *gorm.DB) {
 	db.AutoMigrate(&models.Feeds{}, &models.Articles{}, &models.Users{}, &models.Settings{})
 	db.Model(&models.Articles{}).AddForeignKey("FeedId", "feeds(Id)", "CASCADE", "RESTRICT")
 	db.Model(&models.Settings{}).AddForeignKey("UserId", "users(Id)", "CASCADE", "RESTRICT")
 	db.Model(&models.Feeds{}).AddForeignKey("UserId", "users(Id)", "CASCADE", "RESTRICT")
-}
+}*/
 
 // Init - create new struct pointer with collection
 func (service *RssService) Init(config *models.Config) *RssService {
@@ -43,7 +43,7 @@ func (service *RssService) Init(config *models.Config) *RssService {
 		log.Println(err)
 	}
 
-	Migrate(db)
+	//Migrate(db)
 
 	// set default settings
 	settings := models.AppSettings{
