@@ -53,9 +53,9 @@ func (ctrl *UserController) GetUserSettings(w http.ResponseWriter, r *http.Reque
 	settings := settingService.Get(userId)
 	user := ctrl.service.GetUser(userId)
 
-	if user.VkNewsEnabled && len(user.VkPassword) > 0 {
+	/*if user.VkNewsEnabled && len(user.VkPassword) > 0 {
 		user.VkPassword = decryptVkPassword(user.VkPassword)
-	}
+	}*/
 
 	result := models.SettingsData{
 		VkNewsEnabled:     settings.VkNewsEnabled,

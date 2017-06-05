@@ -104,19 +104,20 @@ func main() {
 	http.HandleFunc("/mark-read-all", rssCtrl.MarkAllRead)
 	http.HandleFunc("/create-opml", rssCtrl.CreateOpml)
 	http.HandleFunc("/toggle-unread", rssCtrl.ToggleUnread)
-	http.HandleFunc("/get-settings", userCtrl.GetUserSettings)
-	http.HandleFunc("/set-settings", userCtrl.SaveSettings)
 	http.HandleFunc("/search", rssCtrl.Search)
 	http.HandleFunc("/toggle-as-read", rssCtrl.ToggleAsRead)
 
 	// user
 	http.HandleFunc("/auth", userCtrl.Auth)
 	http.HandleFunc("/registration", userCtrl.Registration)
+	http.HandleFunc("/get-settings", userCtrl.GetUserSettings)
+	http.HandleFunc("/set-settings", userCtrl.SaveSettings)
 
 	// vk
 	http.HandleFunc("/get-vk-page", vkCtrl.GetPageData)
 	http.HandleFunc("/get-vk-news", vkCtrl.GetNews)
 	http.HandleFunc("/get-vk-news-by-filters", vkCtrl.GetByFilters)
+	http.HandleFunc("/search-vk-news", vkCtrl.Search)
 
 	err := http.ListenAndServe(":"+strconv.Itoa(conf.Port), nil)
 

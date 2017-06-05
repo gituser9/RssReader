@@ -1,12 +1,7 @@
 function RssModalController ($scope, $mdDialog, rssService, modalData){
     $scope.vm = this;
     $scope.feedUrl = "";
-
-    console.log(modalData);
-
-    if (modalData != null) {
-        $scope.modalData = modalData;
-    }
+    $scope.modalData = modalData;
 
     $scope.updateFeedName = function() {
         rssService.setNewFeedName($scope.modalData.Feed.Id, $scope.modalData.Feed.Name);

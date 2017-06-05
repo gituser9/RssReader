@@ -47,5 +47,6 @@ type SettingsData struct {
 }
 
 type VkData struct {
-	GroupId int `json:"GroupId"`
+	GroupId      int    `json:"GroupId"`
+	SearchString string `json:"SearchString"`
 }

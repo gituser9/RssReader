@@ -65,6 +65,7 @@ func (service *RssService) GetRss(id uint) []models.Feed {
 		wg.Add(1)
 		go func(item models.Feeds, i int) {
 			count := len(item.Articles)
+			item.Articles = make([]models.Articles, 0)
 			feeds[i] = models.Feed{Feed: item, ArticlesCount: count, ExistUnread: count > 0}
 
 			wg.Done()
@@ -77,7 +78,7 @@ func (service *RssService) GetRss(id uint) []models.Feed {
 }
 
 // GetArticles - get articles for rss by id
-func (service *RssService) GetArticles(id uint, page int) *models.ArticlesJSON {
+func (service *RssService) GetArticles(id uint, userId uint, page int) *models.ArticlesJSON {
 	var articles []models.Articles
 	var count int
 	offset := service.config.PageSize * (page - 1)
@@ -90,7 +91,10 @@ func (service *RssService) GetArticles(id uint, page int) *models.ArticlesJSON {
 		Order("Id desc")
 	queryCount := service.dbp().Model(&whereObject).Where(&whereObject)
 
-	if service.AppSettings.UnreadOnly {
+	var settings models.Settings
+	service.dbp().Where(models.Settings{UserId: userId}).Find(&settings)
+
+	if settings.UnreadOnly {
 		whereNotObject := models.Articles{IsRead: true}
 		query = query.Not(&whereNotObject)
 		queryCount = queryCount.Not(&whereNotObject)
@@ -103,16 +107,19 @@ func (service *RssService) GetArticles(id uint, page int) *models.ArticlesJSON {
 }
 
 // GetArticle - get one article
-func (service *RssService) GetArticle(id uint) *models.Articles {
+func (service *RssService) GetArticle(id uint, userId uint) *models.Articles {
 	// get article
 	var article models.Articles
 	service.dbp().First(&article, id)
+
+	var settings models.Settings
+	service.dbp().Where(models.Settings{UserId: userId}).Find(&settings)
 
 	// update state
 	article.IsRead = true
 	service.dbp().Save(&article)
 
-	if service.AppSettings.MarkSameRead {
+	if settings.MarkSameRead {
 		go service.markSameArticles(article.Link, article.FeedId)
 	}
 
@@ -428,28 +435,6 @@ func (service *RssService) dbp() *gorm.DB {
 	}
 
 	return service.db
-}
-
-func (service *RssService) startTimers(config *models.Config) {
-	// todo: service must bo one only
-	// todo: DB backup timer (24 hours)
-
-	updateTime := time.Duration(service.AppSettings.UpdateMinutes) * time.Minute
-	updateTimer := time.NewTicker(updateTime).C
-	weekTimer := time.NewTicker(time.Hour * 168).C // week
-
-	// on start
-	go service.UpdateAllFeeds()
-
-	for {
-		select {
-		case <-updateTimer:
-			service.UpdateAllFeeds()
-		case <-weekTimer:
-			service.CleanOldArticles()
-			//service.Export()
-		}
-	}
 }
 
 func (service *RssService) getFeedBody(url string) (io.ReadCloser, error) {

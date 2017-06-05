@@ -20,6 +20,7 @@ function RssController ($scope, $timeout, $mdDialog, $mdToast, $upload, mainServ
         });
 
     $scope.getAll = function() {
+        rssService.showWaitBar = true;
         rssService.getAll($scope.userId);
     };
 
@@ -35,7 +36,7 @@ function RssController ($scope, $timeout, $mdDialog, $mdToast, $upload, mainServ
         $scope.currentFeedId = feed.Feed.Id;
         $scope.currentFeedTitle = feed.Feed.Name;
 
-        rssService.getArticles(feed.Feed.Id, $scope.currentPage);
+        rssService.getArticles(feed.Feed.Id, $scope.currentPage, $scope.userId);
     };
 
     $scope.stepBack = function() {
@@ -106,14 +107,14 @@ function RssController ($scope, $timeout, $mdDialog, $mdToast, $upload, mainServ
     };
 
     $scope.markReadAll = function() {
-        rssService.markReadAll($scope.currentFeedId);
+        rssService.markReadAll($scope.currentFeedId, $scope.userId);
 
         $scope.currentFeed.ArticlesCount = 0;
         $scope.currentFeed.ExistUnread = false;
     };
 
     $scope.toggleAsRead = function(id, isRead) {
-        rssService.markAsRead(id, $scope.currentFeedId, $scope.currentPage, isRead);
+        rssService.markAsRead(id, $scope.currentFeedId, $scope.currentPage, isRead, $scope.userId);
 
         if (isRead) {
             $scope.setRead();
@@ -170,7 +171,7 @@ function RssController ($scope, $timeout, $mdDialog, $mdToast, $upload, mainServ
                     $mdToast.simple()
                         .textContent('Tab already exists')
                         .position("top end")
-                        .hideDelay(3000)
+                        .hideDelay(1500)
                 );
                 return;
             }
@@ -179,14 +180,18 @@ function RssController ($scope, $timeout, $mdDialog, $mdToast, $upload, mainServ
         // add new tab
         var tab = {};
         tab.title = title;
-        
+
         $scope.tabs.push(tab);
 
         rssService.getArticlePromise(id).then(function(response) {
             tab.article = response.data;
 
+
             rssService.articles.forEach(function(item) {
                 if (item.Id == id) {
+                    if (!item.IsRead) {
+                        $scope.setRead();
+                    }
                     item.IsRead = true;
                     return;
                 }
@@ -204,6 +209,9 @@ function RssController ($scope, $timeout, $mdDialog, $mdToast, $upload, mainServ
     };
 
     $scope.showPreview = function(article) {
+        if (!article.IsRead) {
+            $scope.setRead();
+        }
         article.IsRead = true;
 
         rssService.getArticlePromise(article.Id).then(function(response) {

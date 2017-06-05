@@ -5,9 +5,9 @@ function RssService ($http){
         articlesCount: 0
     };
 
-    factory.getArticles = function(feedId, page) {
+    factory.getArticles = function(feedId, page, userId) {
         var config = {};
-        config.params = { "id": feedId, "page": page };
+        config.params = { "id": feedId, "page": page, "userId": userId };
 
         $http.get("/get-articles", config).then(function(response) {
             factory.articles = response.data.Articles;
@@ -56,6 +56,7 @@ function RssService ($http){
 
         $http.get("/get-all", config).then(function(response) {
             factory.feeds = response.data;
+            factory.showWaitBar = false;
         });
     };
 
@@ -111,9 +112,9 @@ function RssService ($http){
         });
     };
 
-    factory.markReadAll = function(feedId) {
+    factory.markReadAll = function(feedId, userId) {
         var config = {};
-        config.params = { id: feedId };
+        config.params = { id: feedId, userId: userId };
 
         $http.get("/mark-read-all", config).then(function(response) {
             factory.articles = response.data.Articles;
@@ -129,8 +130,8 @@ function RssService ($http){
         return $http.get('/create-opml', config);
     };
 
-    factory.markAsRead = function(id, feedId, page, isRead) {
-        var params = { articleId: id, feedId: feedId, page: page, isRead: isRead };
+    factory.markAsRead = function(id, feedId, page, isRead, userId) {
+        var params = { articleId: id, feedId: feedId, page: page, isRead: isRead, userId: userId };
 
         $http.post("/toggle-as-read", params).then(function(response) {
             factory.articles = response.data.Articles;

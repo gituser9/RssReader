@@ -22,16 +22,7 @@ public class HibernateSessionFactory {
         builder.applySettings(configuration.getProperties());
         ServiceRegistry serviceRegistry = builder.build();
 
-        sessionFactory = configuration.buildSessionFactory(serviceRegistry);
-
-        return sessionFactory;
-    }
-
-    public static void shutdown() {
-        // Close caches and connection pools
-        if (sessionFactory != null) {
-            sessionFactory.close();
-        }
+        return configuration.buildSessionFactory(serviceRegistry);
     }
 
     private static Configuration confugurationBuilder(AppProperties appProperties) {
@@ -56,6 +47,11 @@ public class HibernateSessionFactory {
         configuration.setProperty("hibernate.connection.url", appProperties.getHibernateConnectionString());
         configuration.setProperty("hibernate.connection.username", appProperties.getDbLogin());
         configuration.setProperty("hibernate.connection.password", appProperties.getDbPassword());
+
+        configuration.setProperty("hibernate.connection.CharSet", "utf8");
+        configuration.setProperty("hibernate.connection.characterEncoding", "utf8");
+        configuration.setProperty("hibernate.connection.useUnicode", "true");
+
         configuration.setProperty("hibernate.show_sql", "false");
 
 

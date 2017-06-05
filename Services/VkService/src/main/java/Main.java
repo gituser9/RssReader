@@ -1,4 +1,4 @@
-import com.sun.istack.internal.Nullable;
+import com.sun.istack.Nullable;
 import datamodels.AppProperties;
 import datamodels.WorkData;
 import entities.SettingsEntity;
@@ -53,49 +53,46 @@ public class Main {
         VkService vkService = new VkService(appProperties);
         NetService netService = new NetService(appProperties);
 
-        try (Session session = HibernateSessionFactory.getSessionFactory(appProperties).openSession()) {
-            Criteria settingsCriteria = session.createCriteria(SettingsEntity.class);
-            settingsCriteria.add(Restrictions.eq("vkNewsEnabled", true));
-            settingsCriteria.setProjection(Projections.property("userId"));
-            Object[] userIds = settingsCriteria.list().toArray();
+        Session session = HibernateSessionFactory.getSessionFactory(appProperties).openSession();
+        Criteria settingsCriteria = session.createCriteria(SettingsEntity.class);
+        settingsCriteria.add(Restrictions.eq("vkNewsEnabled", true));
+        settingsCriteria.setProjection(Projections.property("userId"));
+        Object[] userIds = settingsCriteria.list().toArray();
 
-            Criteria usersCriteria = session.createCriteria(UserEntity.class);
-//            usersCriteria.add(Restrictions.eq("vkNewsEnabled", true));
-            usersCriteria.add(Restrictions.in("id", userIds));
+        Criteria usersCriteria = session.createCriteria(UserEntity.class);
+        usersCriteria.add(Restrictions.in("id", userIds));
 
-            List<UserEntity> users = (List<UserEntity>) usersCriteria.list();
+        List<UserEntity> users = (List<UserEntity>) usersCriteria.list();
 
-            for (UserEntity user : users) {
+        for (UserEntity user : users) {
 //                String vkPassword = user.getDecryptVkPassword(appProperties.getPasswordSalt());
-                String vkPassword = user.getVkPassword();
+            String vkPassword = user.getVkPassword();
 
-                if (vkPassword == null) {
-                    continue;
-                }
-
-                // query criteria
-                Criteria groupCriteria = session.createCriteria(VkGroupEntity.class);
-                Criteria newsCriteria = session.createCriteria(VkNewsEntity.class);
-                groupCriteria.add(Restrictions.eq("userId", user.getId()));
-                groupCriteria.setProjection(Projections.property("gid"));
-                newsCriteria.add(Restrictions.eq("userId", user.getId()));
-                newsCriteria.setProjection(Projections.property("postId"));
-
-                // lists of existing groups and news objects
-                List existingGroupList = groupCriteria.list();
-                List existingNewsList = newsCriteria.list();
-
-                // get new news
-                WorkData workData = netService.getNews(user.getVkLogin(), vkPassword);
-                workData.setGroupIds(existingGroupList);
-                workData.setNewsIds(existingNewsList);
-                workData.setUserId(user.getId());
-                vkService.saveNews(workData, session);
+            if (vkPassword == null) {
+                continue;
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+
+            // query criteria
+            Criteria groupCriteria = session.createCriteria(VkGroupEntity.class);
+            Criteria newsCriteria = session.createCriteria(VkNewsEntity.class);
+            groupCriteria.add(Restrictions.eq("userId", user.getId()));
+            groupCriteria.setProjection(Projections.property("gid"));
+            newsCriteria.add(Restrictions.eq("userId", user.getId()));
+            newsCriteria.setProjection(Projections.property("postId"));
+
+            // lists of existing groups and news objects
+            List existingGroupList = groupCriteria.list();
+            List existingNewsList = newsCriteria.list();
+
+            // get new news
+            WorkData workData = netService.getNews(user.getVkLogin(), vkPassword);
+            workData.setGroupIds(existingGroupList);
+            workData.setNewsIds(existingNewsList);
+            workData.setUserId(user.getId());
+            vkService.saveNews(workData, session);
         }
 
+        session.close();
         System.out.println("END");
     }
 

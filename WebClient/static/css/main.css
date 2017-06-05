@@ -34,8 +34,15 @@
     top: 7px !important;
 }
 
+#settings-modal {
+    width: 550px;
+}
+
 #setting-tabs {
-    height: 400px !important;
+    height: 450px !important;
+}
+#menu-btn-icon {
+    color: #fff;
 }
 
 /* Rss
@@ -108,6 +115,10 @@ button {
     float: right;
 }
 
+.wp-post-image {
+    width: 100%;
+}
+
 /*#search-container md-input-container {
     margin: 0;
 }*/
@@ -151,11 +162,12 @@ button {
 /* Vk
 ======================================================================================================================*/
 #vk-content {
-    background: #dddee0;
+    background: #edeef0;
 }
 
 #vk-news {
     text-align: center;
+    background: #edeef0;
 }
 
 .vk-news-item {
@@ -167,15 +179,60 @@ button {
     box-shadow: 0 1px 0 0 #d7d8db, 0 0 0 1px #e3e4e8;
 }
 
+.group-image {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    vertical-align: top;
+    margin: 10px 10px 0 10px;
+}
+
+.group-name {
+    margin-top: 25px;
+}
+
+.group-name a {
+    font-weight: 600;
+    -webkit-font-smoothing: subpixel-antialiased;
+    color: #2a5885;
+    text-decoration: none;
+    cursor: pointer;
+}
+
 .vk-news-text {
     text-align: left;
     padding: 10px;
 }
 
+.external-link,
+.external-link:hover {
+    color: #939393;
+    line-height: 12px;
+    text-decoration: none;
+}
+
 #vk-menu {
-    text-align: right;
+    position: fixed;
+    right: 5px;
+    top: 85px;
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: 0 1px 0 0 #d7d8db, 0 0 0 1px #e3e4e8;
+    width: 200px;
 }
 
 #vk-groups {
-    margin-right: 50px;
+    /*margin-right: 50px;*/
+}
+
+#go-to-top-btn {
+    position: fixed;
+    right: 5px;
+    bottom: 20px;
+}
+
+#go-to-top-btn i {
+    color: #fff;
+    font-size: 30px;
+    padding-top: 12px;
 }

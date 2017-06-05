@@ -3,12 +3,21 @@ function VkController ($scope, $timeout, vkService, mainService) {
     $scope.searchVkGroup = 0;
     $scope.filters = {
         GroupId: 0,
-        Page: 1
+        Page: 1,
+        SearchString: ''
     };
 
     $scope.$watch(function() {
         $scope.model = vkService.model;
     });
+
+    $scope.refresh = function () {
+        $scope.filters.Page = 0;
+        $scope.goToTop();
+        vkService.model.IsSearch = false;
+        vkService.model.VkNews = [];
+        $scope.getVkNews();
+    };
 
     $scope.getVkNews = function () {
         ++$scope.filters.Page;  // for scroll
@@ -27,9 +36,14 @@ function VkController ($scope, $timeout, vkService, mainService) {
         vkService.getByFilters($scope.filters);
     };
 
-    $scope.test = function () {
-        console.log('DDD');
-    }
+    $scope.goToTop = function () {
+        $('html,body').scrollTop(0);
+    };
+
+    $scope.search = function () {
+        console.log($scope.filters.SearchString);
+        vkService.search($scope.filters.SearchString, $scope.filters.GroupId);
+    };
 }
 VkController.$inject = [
     "$scope",

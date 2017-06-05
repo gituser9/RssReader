@@ -10,6 +10,7 @@ var bc = './bower_components/';
 
 gulp.task('jslibs', function() {
     gulp.src([
+        bc + 'jquery/dist/jquery.js',
         bc + 'angular/angular.min.js',
         bc + 'angular-sanitize/angular-sanitize.min.js',
         bc + 'ng-file-upload/ng-file-upload.min.js',

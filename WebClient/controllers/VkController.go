@@ -51,6 +51,14 @@ func (ctrl *VkController) GetByFilters(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(news)
 }
 
+func (ctrl *VkController) Search(w http.ResponseWriter, r *http.Request) {
+	data := postVkData(r)
+	news := ctrl.service.Search(data.SearchString, data.GroupId)
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(news)
+}
+
 /*==============================================================================
 	Private
 ==============================================================================*/

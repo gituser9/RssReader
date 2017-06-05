@@ -2,7 +2,9 @@ package services;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.sun.istack.NotNull;
 import datamodels.AppProperties;
+import datamodels.ImageLink;
 import datamodels.WorkData;
 import entities.VkGroupEntity;
 import entities.VkNewsEntity;
@@ -45,25 +47,7 @@ public class VkService {
                 continue;
             }
 
-            String image = null;
-            String link = null;
-            JsonObject attachment = json.get("attachment").getAsJsonObject();
-            String postType = attachment.get("type").getAsString();
-
-            if (postType.equals("photo")) {
-                image = json.get("attachment").getAsJsonObject().getAsJsonObject("photo").get("src_big").getAsString();
-            } else if (postType.equals("link")) {
-                JsonObject linkObject = attachment.getAsJsonObject("link");
-
-                if (linkObject.has("image_big")) {
-                    image = linkObject.get("image_big").getAsString();
-                } else if (linkObject.has("image_src")) {
-                    image = linkObject.get("image_src").getAsString();
-                }
-
-                link = linkObject.get("url").getAsString();
-            }
-
+            ImageLink imageLink = getImageLink(json);
             Integer postId = json.get("post_id").getAsInt();
             Integer groupId = -json.get("source_id").getAsInt();
 
@@ -75,7 +59,6 @@ public class VkService {
                 // add new group for user
                 addGroup(groupId, workData, session);
                 groupIds.add(groupId);
-                Collections.sort(groupIds);
             }
 
             VkNewsEntity entity = new VkNewsEntity();
@@ -83,8 +66,8 @@ public class VkService {
             entity.setPostId(postId);
             entity.setText(json.get("text").getAsString());
             entity.setUserId(userId);
-            entity.setImage(image);
-            entity.setLink(link);
+            entity.setImage(imageLink.getImage());
+            entity.setLink(imageLink.getLink());
             entity.setTimestamp(json.get("date").getAsLong());
 
             result.add(entity);
@@ -96,23 +79,21 @@ public class VkService {
     }
 
     private void saveData(List<VkNewsEntity> news) {
-        try (Session session = HibernateSessionFactory.getSessionFactory(appProperties).openSession()) {
-            session.beginTransaction();
-            SQLQuery query = session.createSQLQuery("SET NAMES utf8mb4");
-            query.executeUpdate();
+        Session session = HibernateSessionFactory.getSessionFactory(appProperties).openSession();
+        session.beginTransaction();
+        SQLQuery query = session.createSQLQuery("SET NAMES utf8mb4");
+        query.executeUpdate();
 
-            for (VkNewsEntity item : news) {
-                try {
-                    session.save(item);
-                } catch (Exception e) {
-                    continue;
-                }
+        for (VkNewsEntity item : news) {
+            try {
+                session.save(item);
+            } catch (Exception e) {
+                continue;
             }
-
-            session.getTransaction().commit();
-        } catch (Exception e) {
-            e.printStackTrace();
         }
+
+        session.getTransaction().commit();
+        session.close();
     }
 
     private void addGroup(int groupId, WorkData workData, Session session) {
@@ -164,6 +145,42 @@ public class VkService {
         }
 
         session.getTransaction().commit();
+    }
+
+    @NotNull
+    private ImageLink getImageLink(JsonObject json) {
+        JsonObject attachment = json.get("attachment").getAsJsonObject();
+        String postType = attachment.get("type").getAsString();
+        String image = null;
+        String link = null;
+
+        if (postType.equals("photo")) {
+            if (attachment.has("photo")) {
+                JsonObject photo = attachment.getAsJsonObject("photo");
+
+                if (photo.has("src_big")){
+                    image = photo.get("src_big").getAsString();
+                }
+            }
+        } else if (postType.equals("link")) {
+            JsonObject linkObject = attachment.getAsJsonObject("link");
+
+            if (linkObject.has("image_big")) {
+                image = linkObject.get("image_big").getAsString();
+            } else if (linkObject.has("image_src")) {
+                image = linkObject.get("image_src").getAsString();
+            }
+
+            link = linkObject.get("url").getAsString();
+        } else if (postType.equals("doc")) {
+            JsonObject doc = attachment.get("doc").getAsJsonObject();
+
+            if (doc.has("ext") && doc.get("ext").getAsString().equals("gif")) {
+                image = doc.get("url").getAsString();
+            }
+        }
+
+        return new ImageLink(image, link);
     }
 
 }

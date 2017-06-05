@@ -1,22 +1,44 @@
 <md-content id="vk-content">
     <!-- select with groups -->
-    <aside id="vk-menu">
-        <md-select id="vk-groups" ng-model="filters.GroupId" class="inline" aria-label="Search in Vk News" ng-change="getByFilters()">
-            <md-option value="0">All groups</md-option>
-            <md-option ng-repeat="group in model.VkGroups" value="{{:: group.Gid }}">
-                {{:: group.Name }}
-            </md-option>
-        </md-select>
-    </aside>
+
 
     <!-- list with news -->
     <md-content id="vk-news">
-        <div infinite-scroll='getVkNews()' infinite-scroll-disabled='model.IsLoad' infinite-scroll-distance='1'>
+        <!-- menu -->
+        <aside id="vk-menu" layout="column" layout-align="center center">
+            <md-button md-no-ink class="md-primary" ng-click="refresh()">Refresh</md-button>
+            <md-select flex id="vk-groups" ng-model="filters.GroupId" class="inline" aria-label="Search in Vk News" ng-change="getByFilters()">
+                <md-option value="0">All groups</md-option>
+                <md-option ng-repeat="group in model.VkGroups" value="{{:: group.Gid }}">
+                    {{:: group.Name }}
+                </md-option>
+            </md-select>
+            <form ng-submit="search()">
+                <md-input-container class="md-block" flex-gt-sm>
+                    <label>Search</label>
+                    <input ng-model="filters.SearchString">
+                </md-input-container>
+            </form>
+
+        </aside>
+
+        <!-- news list -->
+        <div infinite-scroll='getVkNews()' infinite-scroll-disabled='model.IsLoad' infinite-scroll-distance='5'>
+            <md-button id="go-to-top-btn" class="md-fab" aria-label="To Up" ng-click="goToTop()">
+                <i class="material-icons">keyboard_arrow_up</i>
+            </md-button>
             <div class="vk-news-item" ng-repeat="item in model.VkNews">
-                <img src="{{::  }}" />
+                <div layout="row">
+                    <img class="group-image" src="{{:: model.VkGroupMap[item.GroupId].image }}" />
+                    <div class="group-name">
+                        <a target="_blank" href="{{:: 'https://vk.com/' + model.VkGroupMap[item.GroupId].link }}">
+                            {{:: model.VkGroupMap[item.GroupId].name }}
+                        </a>
+                    </div>
+                </div>
                 <article ng-bind-html="item.Text" class="vk-news-text"></article>
                 <img ng-src="{{:: item.Image }}" />
-                <a ng-if="item.Link.length > 0" href="{{:: item.Link }}" target="_blank">{{:: item.Link }}</a>
+                <div><a class="external-link" ng-if="item.Link.length > 0" href="{{:: item.Link }}" target="_blank">{{:: item.Link }}</a></div>
                 <div class="vk-news-manage-buttons" layout="row" layout-align="space-between center">
                     <!--<md-button ng-click="loadComments(item)">Show comments</md-button>-->
                     <md-button href="https://vk.com/wall-{{:: item.GroupId }}_{{:: item.PostId }}" target="_blank">Open →</md-button>
@@ -26,6 +48,6 @@
         <div ng-show='model.IsLoad' layout="row" layout-sm="column" layout-align="space-around">
             <md-progress-circular md-mode="indeterminate"></md-progress-circular>
         </div>
+
     </md-content>
 </md-content>
-

@@ -19,10 +19,6 @@
 <header flex ng-init="init()">
     <md-toolbar>
         <div class="md-toolbar-tools">
-            <md-button ng-click="openSettings()">
-                Settings
-            </md-button>
-
             <md-button aria-label="rss" ng-click="showRss()" ng-if="settings.RssEnabled">
                 Rss
             </md-button>
@@ -30,10 +26,9 @@
                 Vkontakte
             </md-button>
 
-
             <md-menu id="main-menu">
                 <md-button aria-label="menu" class="md-icon-button" ng-click="openMenu($mdOpenMenu, $event)">
-                    <i class="material-icons">more_vert</i>
+                    <i id="menu-btn-icon" class="material-icons">more_vert</i>
                 </md-button>
                 <md-menu-content width="4">
                     <span ng-controller="rssCtrl" ng-if="settings.RssEnabled && currentSource == Sources.Rss">
@@ -56,7 +51,14 @@
                                 Download OPML
                             </md-button>
                         </md-menu-item>
+
                     </span>
+                    <md-menu-item>
+                        <md-button aria-label="settings" ng-click="openSettings()">
+                            <i class="material-icons menu-icons">settings</i>
+                            Settings
+                        </md-button>
+                    </md-menu-item>
                     <md-menu-divider></md-menu-divider>
                     <md-menu-item>
                         <md-button aria-label="Twitter" ng-click="logout()">
@@ -66,7 +68,7 @@
                     </md-menu-item>
                 </md-menu-content>
             </md-menu>
-      </div>
+        </div>
     </md-toolbar>
 </header>
 

@@ -5,7 +5,9 @@ function VkService ($http) {
             VkNews: [],
             VkGroups: [],
             IsLoad: false,
-            IsAll: false
+            IsAll: false,
+            VkGroupMap: {},
+            IsSearch: false
         }
     };
 
@@ -18,11 +20,19 @@ function VkService ($http) {
             factory.model.VkNews = response.data.News;
             factory.model.VkGroups = response.data.Groups;
             factory.model.IsLoad = false;
+
+            response.data.Groups.forEach(function (item) {
+                factory.model.VkGroupMap[item.Gid] = {
+                    image: item.Image,
+                    name: item.Name,
+                    link: item.LinkedName
+                };
+            });
         });
     };
 
     factory.getVkNews = function(userId, page) {
-        if (factory.model.IsLoad || factory.model.IsAll) {
+        if (factory.model.IsLoad || factory.model.IsAll || factory.model.IsSearch) {
             return;
         }
 
@@ -31,7 +41,8 @@ function VkService ($http) {
         config.params = { id: userId, page: page };
 
         $http.get("/get-vk-news", config).then(function (response) {
-            // factory.model.VkNews = response.data;
+            factory.model.IsLoad = false;
+
             if (response.data.length === 0) {
                 factory.model.IsAll = true;
                 return;
@@ -40,8 +51,6 @@ function VkService ($http) {
             for (var i = 0; i < response.data.length; ++i) {
                 factory.model.VkNews.push(response.data[i]);
             }
-
-            factory.model.IsLoad = false;
         });
     };
 
@@ -70,10 +79,22 @@ function VkService ($http) {
     };
 
     factory.getByFilters = function (filters) {
+        factory.model.IsSearch = false;
         var data = {
             GroupId: Number(filters.GroupId)
         };
         $http.post('/get-vk-news-by-filters', data).then(function (response) {
+            factory.model.VkNews = response.data;
+        });
+    };
+
+    factory.search = function (searchString, groupId) {
+        factory.model.IsSearch = true;
+        var data = {
+            SearchString: searchString,
+            GroupId: groupId
+        };
+        $http.post('/search-vk-news', data).then(function (response) {
             factory.model.VkNews = response.data;
         });
     };

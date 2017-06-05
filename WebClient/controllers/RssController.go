@@ -43,7 +43,8 @@ func (ctrl *RssController) GetAll(w http.ResponseWriter, r *http.Request) {
 func (ctrl *RssController) GetArticles(w http.ResponseWriter, r *http.Request) {
 	id, _ := strconv.ParseUint(r.URL.Query().Get("id"), 10, 32)
 	page, _ := strconv.ParseInt(r.URL.Query().Get("page"), 10, 32)
-	feed := ctrl.service.GetArticles(uint(id), int(page))
+	userId, _ := strconv.ParseUint(r.URL.Query().Get("userId"), 10, 32)
+	feed := ctrl.service.GetArticles(uint(id), uint(userId), int(page))
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(feed)
@@ -52,7 +53,8 @@ func (ctrl *RssController) GetArticles(w http.ResponseWriter, r *http.Request) {
 // GetArticle - get one article
 func (ctrl *RssController) GetArticle(w http.ResponseWriter, r *http.Request) {
 	id, _ := strconv.ParseUint(r.URL.Query().Get("id"), 10, 32)
-	article := ctrl.service.GetArticle(uint(id))
+	userId, _ := strconv.ParseUint(r.URL.Query().Get("userId"), 10, 32)
+	article := ctrl.service.GetArticle(uint(id), uint(userId))
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(article)
@@ -139,9 +141,10 @@ func (ctrl *RssController) GetBookmarks(w http.ResponseWriter, r *http.Request) 
 
 func (ctrl *RssController) MarkAllRead(w http.ResponseWriter, r *http.Request) {
 	id64, _ := strconv.ParseUint(r.URL.Query().Get("id"), 10, 32)
+	userId, _ := strconv.ParseUint(r.URL.Query().Get("userId"), 10, 32)
 	id := uint(id64)
 	ctrl.service.MarkReadAll(id)
-	feed := ctrl.service.GetArticles(id, 1)
+	feed := ctrl.service.GetArticles(id, uint(userId), 1)
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(feed)
@@ -171,7 +174,7 @@ func (ctrl *RssController) ToggleAsRead(w http.ResponseWriter, r *http.Request) 
 	data := postClientData(r)
 
 	ctrl.service.ToggleAsRead(data.ArticleId, data.IsRead)
-	articles := ctrl.service.GetArticles(uint(data.FeedId), data.Page)
+	articles := ctrl.service.GetArticles(uint(data.FeedId), uint(data.UserId), data.Page)
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(articles)

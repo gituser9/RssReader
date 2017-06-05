@@ -54,7 +54,20 @@ func (service *VkService) GetNewsByFilters(filters models.VkData) []models.VkNew
 		conditions.GroupId = filters.GroupId
 	}
 
-	service.db.Where(&conditions).Find(&result)
+	service.db.Where(&conditions).Order("Id desc").Find(&result)
+
+	return result
+}
+
+func (service *VkService) Search(searchString string, groupId int) []models.VkNews {
+	var result []models.VkNews
+	query := service.db.Where("Text LIKE ?", "%"+searchString+"%")
+
+	if groupId != 0 {
+		query = query.Where(&models.VkNews{GroupId: groupId})
+	}
+
+	query.Order("Id desc").Find(&result)
 
 	return result
 }

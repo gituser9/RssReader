@@ -1,21 +1,7 @@
 package entities;
 
-import org.apache.commons.codec.binary.Base64;
-
-import javax.crypto.Cipher;
-import javax.crypto.KeyGenerator;
-import javax.crypto.SecretKey;
-import javax.crypto.SecretKeyFactory;
-import javax.crypto.spec.GCMParameterSpec;
-import javax.crypto.spec.IvParameterSpec;
-import javax.crypto.spec.PBEKeySpec;
-import javax.crypto.spec.SecretKeySpec;
 import javax.persistence.*;
 import java.io.Serializable;
-import java.security.AlgorithmParameters;
-import java.security.Key;
-import java.security.spec.KeySpec;
-import java.util.Arrays;
 
 
 @Entity
@@ -73,7 +59,7 @@ public class UserEntity implements Serializable {
         return vkPassword;
     }
 
-    public String getDecryptVkPassword(String salt) {
+    /*public String getDecryptVkPassword(String salt) {
         String nonce = "37b8e8a308c354048d245f6d";
         String key = "AES128Key-16Char";
 
@@ -92,7 +78,7 @@ public class UserEntity implements Serializable {
         } catch (Exception e) {
             return null;
         }
-    }
+    }*/
 
     public void setVkPassword(String vkPassword) {
         this.vkPassword = vkPassword;

@@ -75,13 +75,13 @@ func (service *UserService) Register(name, password string) models.RegistrationD
 func (service *UserService) Update(user *models.Users) {
 
 	// vk credentials
-	if user.VkNewsEnabled && len(user.VkLogin) > 0 && len(user.VkPassword) > 0 {
+	/*if user.VkNewsEnabled && len(user.VkLogin) > 0 && len(user.VkPassword) > 0 {
 		vkEncryptedPassword := encryptPassword(user.VkPassword)
 
 		if len(vkEncryptedPassword) > 0 {
 			user.VkPassword = vkEncryptedPassword
 		}
-	}
+	}*/
 
 	service.db.Save(&user)
 }
