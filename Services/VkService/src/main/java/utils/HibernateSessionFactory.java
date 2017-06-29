@@ -12,17 +12,16 @@ import org.hibernate.service.ServiceRegistry;
 
 
 public class HibernateSessionFactory {
-
     private static SessionFactory sessionFactory;
 
-    public static SessionFactory getSessionFactory(AppProperties appProperties) {
+    public static void buildSessionFactory(AppProperties appProperties) {
 //        return sessionFactory;
         Configuration configuration = confugurationBuilder(appProperties);
         StandardServiceRegistryBuilder builder = new StandardServiceRegistryBuilder();
         builder.applySettings(configuration.getProperties());
         ServiceRegistry serviceRegistry = builder.build();
 
-        return configuration.buildSessionFactory(serviceRegistry);
+        sessionFactory = configuration.buildSessionFactory(serviceRegistry);
     }
 
     private static Configuration confugurationBuilder(AppProperties appProperties) {
@@ -33,6 +32,10 @@ public class HibernateSessionFactory {
                 return null;
         }
 
+    }
+
+    public static SessionFactory getSessionFactory() {
+        return sessionFactory;
     }
 
     private static Configuration createMysqlConfiguration(AppProperties appProperties) {
@@ -56,6 +59,11 @@ public class HibernateSessionFactory {
 
 
         return configuration;
+    }
+
+    public static void shutdown() {
+        // Close caches and connection pools
+        getSessionFactory().close();
     }
 
 

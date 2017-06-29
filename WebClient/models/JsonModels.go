@@ -37,7 +37,9 @@ type SettingsData struct {
 	UserId            uint   `json:"UserId"`
 	VkLogin           string `json:"VkLogin"`
 	VkPassword        string `json:"VkPassword"`
+	TwitterName       string `json:"TwitterName"`
 	VkNewsEnabled     bool   `json:"VkNewsEnabled"`
+	TwitterEnabled    bool   `json:"TwitterEnabled"`
 	MarkSameRead      bool   `json:"MarkSameRead"`
 	UnreadOnly        bool   `json:"UnreadOnly"`
 	RssEnabled        bool   `json:"RssEnabled"`

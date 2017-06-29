@@ -65,7 +65,7 @@ func (service *RssService) GetRss(id uint) []models.Feed {
 		wg.Add(1)
 		go func(item models.Feeds, i int) {
 			count := len(item.Articles)
-			item.Articles = make([]models.Articles, 0)
+			item.Articles = nil
 			feeds[i] = models.Feed{Feed: item, ArticlesCount: count, ExistUnread: count > 0}
 
 			wg.Done()

@@ -35,7 +35,6 @@ function VkController ($scope, $timeout, vkService, mainService) {
     $scope.getByFilters = function () {
         vkService.getByFilters($scope.filters);
     };
-<<<<<<< HEAD
 
     $scope.goToTop = function () {
         $('html,body').scrollTop(0);
@@ -45,8 +44,6 @@ function VkController ($scope, $timeout, vkService, mainService) {
         console.log($scope.filters.SearchString);
         vkService.search($scope.filters.SearchString, $scope.filters.GroupId);
     };
-=======
->>>>>>> twitter
 }
 VkController.$inject = [
     "$scope",

@@ -50,6 +50,14 @@ func (ctrl *TwitterController) GetByFilters(w http.ResponseWriter, r *http.Reque
 	json.NewEncoder(w).Encode(news)
 }
 
+/*func (ctrl *TwitterController) Search(w http.ResponseWriter, r *http.Request) {
+	data := postTwitterData(r)
+	news := ctrl.service.Search(data.SearchString, data.GroupId)
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(news)
+}*/
+
 /*==============================================================================
 	Private
 ==============================================================================*/

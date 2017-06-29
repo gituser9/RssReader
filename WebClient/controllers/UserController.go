@@ -68,6 +68,8 @@ func (ctrl *UserController) GetUserSettings(w http.ResponseWriter, r *http.Reque
 		VkLogin:           user.VkLogin,
 		VkPassword:        user.VkPassword,
 		UserId:            userId,
+		TwitterEnabled:    settings.TwitterEnabled,
+		TwitterName:       user.TwitterScreenName,
 	}
 
 	w.Header().Set("Content-Type", "application/json")
@@ -85,21 +87,22 @@ func (ctrl *UserController) SaveSettings(w http.ResponseWriter, r *http.Request)
 		ShowReadButton:    settingsData.ShowReadButton,
 		ShowTabButton:     settingsData.ShowTabButton,
 		UserId:            settingsData.UserId,
+		TwitterEnabled:    settingsData.TwitterEnabled,
 	}
 	settingsObject := services.SettingsService{}
 	settingService := settingsObject.Init(ctrl.config)
 	settingService.Update(settings)
 
+	appUser := ctrl.service.GetUser(settingsData.UserId)
+
 	if settingsData.VkNewsEnabled {
-		user := ctrl.service.GetUser(settingsData.UserId)
-		user.VkLogin = settingsData.VkLogin
-		user.VkPassword = settingsData.VkPassword
-
-		ctrl.service.Update(user)
+		appUser.VkLogin = settingsData.VkLogin
+		appUser.VkPassword = settingsData.VkPassword
 	}
-
-	w.Header().Set("Content-Type", "application/json")
-	//json.NewEncoder(w).Encode(result)
+	if settingsData.TwitterEnabled {
+		appUser.TwitterScreenName = settingsData.TwitterName
+	}
+	ctrl.service.Update(appUser)
 }
 
 func postUserData(r *http.Request) models.AuthData {

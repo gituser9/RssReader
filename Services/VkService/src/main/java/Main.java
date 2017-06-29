@@ -7,6 +7,7 @@ import entities.VkGroupEntity;
 import entities.VkNewsEntity;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import services.NetService;
@@ -29,9 +30,7 @@ public class Main {
             return;
         }
 
-        updateVkNews(appProperties);
-
-        while (true) {
+        do {
             try {
                 appProperties = getProperties();
 
@@ -39,21 +38,22 @@ public class Main {
                     continue;
                 }
 
-                Thread.sleep(appProperties.getSleepMinutes() * 1000 * 60);
                 updateVkNews(appProperties);
+                Thread.sleep(appProperties.getSleepMinutes() * 1000 * 60);
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        }
+        } while (true);
     }
 
     private static void updateVkNews(AppProperties appProperties) {
         System.out.println("START");
 
+        HibernateSessionFactory.buildSessionFactory(appProperties);
         VkService vkService = new VkService(appProperties);
         NetService netService = new NetService(appProperties);
 
-        Session session = HibernateSessionFactory.getSessionFactory(appProperties).openSession();
+        Session session = HibernateSessionFactory.getSessionFactory().openSession();
         Criteria settingsCriteria = session.createCriteria(SettingsEntity.class);
         settingsCriteria.add(Restrictions.eq("vkNewsEnabled", true));
         settingsCriteria.setProjection(Projections.property("userId"));
@@ -91,6 +91,7 @@ public class Main {
         }
 
         session.close();
+        HibernateSessionFactory.shutdown();
         System.out.println("END");
     }
 

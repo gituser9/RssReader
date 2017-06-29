@@ -13,14 +13,16 @@ import org.hibernate.service.ServiceRegistry;
 
 
 public class HibernateSessionFactory {
+    private static SessionFactory sessionFactory;
 
-    public static SessionFactory getSessionFactory(AppProperties appProperties) {
+    public static void buildSessionFactory(AppProperties appProperties) {
+//        return sessionFactory;
         Configuration configuration = confugurationBuilder(appProperties);
         StandardServiceRegistryBuilder builder = new StandardServiceRegistryBuilder();
         builder.applySettings(configuration.getProperties());
         ServiceRegistry serviceRegistry = builder.build();
 
-        return configuration.buildSessionFactory(serviceRegistry);
+        sessionFactory = configuration.buildSessionFactory(serviceRegistry);
     }
 
     private static Configuration confugurationBuilder(AppProperties appProperties) {
@@ -31,6 +33,10 @@ public class HibernateSessionFactory {
                 return null;
         }
 
+    }
+
+    public static SessionFactory getSessionFactory() {
+        return sessionFactory;
     }
 
     private static Configuration createMysqlConfiguration(AppProperties appProperties) {
@@ -45,9 +51,20 @@ public class HibernateSessionFactory {
         configuration.setProperty("hibernate.connection.url", appProperties.getHibernateConnectionString());
         configuration.setProperty("hibernate.connection.username", appProperties.getDbLogin());
         configuration.setProperty("hibernate.connection.password", appProperties.getDbPassword());
+
+        configuration.setProperty("hibernate.connection.CharSet", "utf8");
+        configuration.setProperty("hibernate.connection.characterEncoding", "utf8");
+        configuration.setProperty("hibernate.connection.useUnicode", "true");
+
         configuration.setProperty("hibernate.show_sql", "false");
 
+
         return configuration;
+    }
+
+    public static void shutdown() {
+        // Close caches and connection pools
+        getSessionFactory().close();
     }
 
 

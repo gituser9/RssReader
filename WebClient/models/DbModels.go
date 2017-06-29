@@ -95,11 +95,12 @@ func (VkGroup) TableName() string {
 /* Twitter Models
 ============================================================================= */
 type TwitterNews struct {
-	Id          int    `gorm:"column:Id;primary_key;AUTO_INCREMENT"`
+	Id          uint64 `gorm:"column:Id;primary_key;AUTO_INCREMENT"`
 	UserId      int    `gorm:"column:UserId;index"`
 	SourceId    int    `gorm:"column:SourceId;index"`
 	Text        string `gorm:"column:Text"`
 	ExpandedUrl string `gorm:"column:ExpandedUrl"`
+	Image       string `gorm:"column:Image"`
 }
 
 func (TwitterNews) TableName() string {

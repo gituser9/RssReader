@@ -35,6 +35,9 @@ public class VkNewsEntity implements Serializable {
     @Column(name = "Timestamp", updatable = false)
     private long timestamp;
 
+    /*@Column(name = "ImageType", nullable = true)
+    private String imageType;*/
+
     @SuppressWarnings("UnusedDeclaration")
     public VkNewsEntity() {
     }
@@ -107,6 +110,14 @@ public class VkNewsEntity implements Serializable {
     public void setTimestamp(long timestamp) {
         this.timestamp = timestamp;
     }
+
+   /* public String getImageType() {
+        return imageType;
+    }
+
+    public void setImageType(String imageType) {
+        this.imageType = imageType;
+    }*/
 
     @Override
     public String toString() {

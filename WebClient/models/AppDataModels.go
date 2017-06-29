@@ -28,6 +28,14 @@ type VkPageData struct {
 }
 
 type TwitterPageData struct {
-	News    []TwitterNews
+	News    []TwitterNewsView
 	Sources []TwitterSource
+}
+type TwitterNewsView struct {
+	Id          string
+	UserId      int
+	SourceId    int
+	Text        string
+	ExpandedUrl string
+	Image       string
 }

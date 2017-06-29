@@ -21,6 +21,9 @@ function RssController ($scope, $timeout, $mdDialog, $mdToast, $upload, mainServ
 
     $scope.getAll = function() {
         rssService.showWaitBar = true;
+        /*$timeout(function () {
+            rssService.getAll($scope.userId);
+        }, 3000);*/
         rssService.getAll($scope.userId);
     };
 
@@ -88,16 +91,6 @@ function RssController ($scope, $timeout, $mdDialog, $mdToast, $upload, mainServ
         );
     };
 
-    /* = functiontoggleBookmark(article: app.services.Article) {
-        mainService.toggleBookmark(
-            article.ID,
-            $scope.currentPage,
-            !article.IsRead,
-            $scope.isBookmark,
-            $scope.currentFeedId
-        );
-    }*/
-
     $scope.getBookmarks = function() {
         $scope.isBookmark = true;
         $scope.hideMarkReadAll = true;
@@ -108,6 +101,13 @@ function RssController ($scope, $timeout, $mdDialog, $mdToast, $upload, mainServ
 
     $scope.markReadAll = function() {
         rssService.markReadAll($scope.currentFeedId, $scope.userId);
+
+        $scope.currentFeed.ArticlesCount = 0;
+        $scope.currentFeed.ExistUnread = false;
+    };
+
+    $scope.markReadAllById = function(id) {
+        rssService.markReadAll(id, $scope.userId);
 
         $scope.currentFeed.ArticlesCount = 0;
         $scope.currentFeed.ExistUnread = false;

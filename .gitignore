@@ -90,3 +90,7 @@ Services/TwitterService/.idea/
 *.iml
 
 WebClient/dist/*
+Services/TwitterService/src/*
+Services/TwitterService/target/*
+Services/VkService/src/*
+Services/VkService/target/*

@@ -236,3 +236,32 @@ button {
     font-size: 30px;
     padding-top: 12px;
 }
+
+/* Twitter
+======================================================================================================================*/
+#twitter-content md-list-item {
+    margin: 10px 0;
+    background-color: #fff;
+}
+.twitter-news-image {
+    width: 100%;
+}
+.twitter-news-text,
+.twitter-news-text:hover {
+    color: black;
+    text-decoration: none;
+}
+.twitter-source-name {
+    margin-top: 12px;
+    font-weight: 700;
+    color: #000;
+}
+.twitter-source-screen-name {
+    color: #777;
+    margin-top: 12px;
+    margin-left: 10px;
+}
+.twitter-source-link,
+.twitter-source-link:hover {
+    text-decoration: none;
+}

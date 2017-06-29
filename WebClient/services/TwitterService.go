@@ -5,6 +5,8 @@ import (
 
 	"log"
 
+	"strconv"
+
 	"github.com/jinzhu/gorm"
 )
 
@@ -24,15 +26,27 @@ func (service *TwitterService) Init(config *models.Config) *TwitterService {
 	return &TwitterService{db: db, config: config}
 }
 
-func (service *TwitterService) GetNews(id int, page int) []models.TwitterNews {
-	var result []models.TwitterNews
+func (service *TwitterService) GetNews(id int, page int) []models.TwitterNewsView {
+	var dbModels []models.TwitterNews
 	offset := service.config.PageSize * (page - 1)
 
 	service.db.Where(&models.TwitterNews{UserId: id}).
 		Limit(service.config.PageSize).
 		Offset(offset).
 		Order("Id desc").
-		Find(&result)
+		Find(&dbModels)
+
+	result := make([]models.TwitterNewsView, len(dbModels))
+
+	for index, item := range dbModels {
+		result[index] = models.TwitterNewsView{
+			SourceId:    item.SourceId,
+			ExpandedUrl: item.ExpandedUrl,
+			Image:       item.Image,
+			Text:        item.Text,
+			Id:          strconv.FormatUint(item.Id, 10),
+		}
+	}
 
 	return result
 }

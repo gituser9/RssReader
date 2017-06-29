@@ -31,7 +31,7 @@
                     <md-checkbox ng-model="modalData.Settings.TwitterEnabled"></md-checkbox>
                     <p>Twitter enabled</p>
                 </md-list-item>
-                <md-list-item>
+                <md-list-item ng-if="modalData.Settings.TwitterEnabled">
                     <i class="material-icons">account_box</i>
                     <md-input-container>
                         <label>Twitter name</label>

@@ -78,6 +78,7 @@ func main() {
 	rssCtrl := new(controllers.RssController).Init(&conf)
 	userCtrl := new(controllers.UserController).Init(&conf)
 	vkCtrl := new(controllers.VkController).Init(&conf)
+	twitterCtrl := new(controllers.TwitterController).Init(&conf)
 
 	go startTimers(&conf)
 
@@ -119,6 +120,10 @@ func main() {
 	http.HandleFunc("/search-vk-news", vkCtrl.Search)
 
 	// twitter
+	http.HandleFunc("/get-twitter-page", twitterCtrl.GetPageData)
+	http.HandleFunc("/get-twitter-news", twitterCtrl.GetNews)
+	http.HandleFunc("/get-twitter-news-by-filters", twitterCtrl.GetByFilters)
+	//http.HandleFunc("/search-twitter-news", twitterCtrl.Search)
 
 	log.Println("server start on port " + strconv.Itoa(conf.Port))
 	err := http.ListenAndServe(":"+strconv.Itoa(conf.Port), nil)

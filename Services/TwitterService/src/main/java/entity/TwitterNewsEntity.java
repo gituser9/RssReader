@@ -26,6 +26,9 @@ public class TwitterNewsEntity implements Serializable {
     @Column(name = "ExpandedUrl")
     private String expandedUrl;     // entities.urls[0].expanded_url
 
+    @Column(name = "Image", nullable = true)
+    private String image;
+
     public TwitterNewsEntity() {
 
     }
@@ -75,5 +78,13 @@ public class TwitterNewsEntity implements Serializable {
 
     public void setExpandedUrl(String expandedUrl) {
         this.expandedUrl = expandedUrl;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
     }
 }

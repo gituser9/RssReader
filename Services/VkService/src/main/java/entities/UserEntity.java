@@ -59,27 +59,6 @@ public class UserEntity implements Serializable {
         return vkPassword;
     }
 
-    /*public String getDecryptVkPassword(String salt) {
-        String nonce = "37b8e8a308c354048d245f6d";
-        String key = "AES128Key-16Char";
-
-        if (vkPassword == null || vkPassword.isEmpty()) {
-            return null;
-        }
-
-        try {
-            Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
-            GCMParameterSpec spec = new GCMParameterSpec(128, nonce.getBytes());
-            Key aesKey = new SecretKeySpec(key.getBytes(), "AES");
-            cipher.init(Cipher.DECRYPT_MODE, aesKey, spec);
-            byte[] original = cipher.doFinal(vkPassword.getBytes());
-
-            return new String(original);    // decoded password
-        } catch (Exception e) {
-            return null;
-        }
-    }*/
-
     public void setVkPassword(String vkPassword) {
         this.vkPassword = vkPassword;
     }

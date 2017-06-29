@@ -79,7 +79,7 @@ function MainController ($scope, mainService, vkService, rssService, twitterServ
     $scope.showTwitter = function () {
         $scope.currentSource = $scope.Sources.Twitter;
 
-        if (twitterService.model.news.length === 0) {
+        if (twitterService.model.News.length === 0) {
             twitterService.getPageData($scope.userId);
         }
     };

@@ -6,7 +6,8 @@ function TwitterService($http) {
             News: [],
             Sources: [],
             IsLoad: false,
-            IsAll: false
+            IsAll: false,
+            SourceMap: {}
         }
     };
 
@@ -15,10 +16,22 @@ function TwitterService($http) {
         var config = {};
         config.params = { id: id };
 
-        $http.get("/get-", config).then(function (response) {
+        $http.get("/get-twitter-page", config).then(function (response) {
             factory.model.News = response.data.News;
-            factory.model.Sources = response.data.Groups;
+            factory.model.Sources = response.data.Sources;
             factory.model.IsLoad = false;
+
+            factory.model.Sources.forEach(function (item) {
+                factory.model.SourceMap[item.Id] = {
+                    image: item.Image,
+                    name: item.Name,
+                    link: item.Url,
+                    screenName: item.ScreenName
+                }
+            });
+
+            console.log(factory.model.SourceMap);
+
         });
     };
 
@@ -31,7 +44,7 @@ function TwitterService($http) {
         var config = {};
         config.params = { id: userId, page: page };
 
-        $http.get("/get-", config).then(function (response) {
+        $http.get("/get-twitter-news", config).then(function (response) {
             if (response.data.length === 0) {
                 factory.model.IsAll = true;
                 return;
@@ -45,7 +58,7 @@ function TwitterService($http) {
         });
     };
 
-    factory.getVkGroups = function(userId) {
+    factory.getSources = function(userId) {
         var config = {};
         config.params = { id: userId };
 
@@ -58,7 +71,7 @@ function TwitterService($http) {
         var data = {
             GroupId: Number(filters.GroupId)
         };
-        $http.post('/get-', data).then(function (response) {
+        $http.post('/get-twitter-news-by-filters', data).then(function (response) {
             factory.model.News = response.data;
         });
     };

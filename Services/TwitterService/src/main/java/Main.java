@@ -1,9 +1,7 @@
 import com.google.gson.JsonArray;
-import com.sun.istack.internal.Nullable;
 import entity.SettingsEntity;
 import entity.UserEntity;
 import model.AppProperties;
-import model.TwitterNews;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.Projections;
@@ -26,20 +24,35 @@ public class Main {
             return;
         }
 
-        try {
-            updateTwitterNews(appProperties);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        do {
+            try {
+                appProperties = getProperties();
+
+                if (appProperties == null) {
+                    continue;
+                }
+
+                updateTwitterNews(appProperties);
+                Thread.sleep(appProperties.getSleepMinutes() * 1000 * 60);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } while (true);
     }
 
     public static void updateTwitterNews(AppProperties appProperties) {
         DataProvider dataProvider = new DataProvider(appProperties);
-        Session session = HibernateSessionFactory.getSessionFactory(appProperties).openSession();
+        HibernateSessionFactory.buildSessionFactory(appProperties);
+        Session session = HibernateSessionFactory.getSessionFactory().openSession();
         Criteria settingsCriteria = session.createCriteria(SettingsEntity.class);
         settingsCriteria.add(Restrictions.eq("twitterNewsEnabled", true));
         settingsCriteria.setProjection(Projections.property("userId"));
         Object[] userIds = settingsCriteria.list().toArray();
+
+        if (userIds.length == 0) {
+            return;
+        }
+
         Criteria usersCriteria = session.createCriteria(UserEntity.class);
         usersCriteria.add(Restrictions.in("id", userIds));
         List<UserEntity> users = (List<UserEntity>) usersCriteria.list();
@@ -55,13 +68,12 @@ public class Main {
             }
         } catch (IOException e) {
             e.printStackTrace();
-            return;
+        } finally {
+            session.close();
+            HibernateSessionFactory.shutdown();
         }
-
-        session.close();
     }
 
-    @Nullable
     private static AppProperties getProperties() {
         Properties properties = new Properties();
         AppProperties appProperties = new AppProperties();

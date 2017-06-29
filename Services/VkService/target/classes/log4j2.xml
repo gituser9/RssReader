@@ -7,9 +7,6 @@
         <Appender type="Console" name="Console">
             <Layout type="PatternLayout" pattern="%d %p [%t] %m%n" />
         </Appender>
-        <!--<Appender type="File" name="File" fileName="${filename}">
-            <Layout type="PatternLayout" pattern="%d %p %C{1.} [%t] %m%n" />
-        </Appender>-->
     </Appenders>
     <Loggers>
         <Logger name="com.memorynotfound" level="error"/>

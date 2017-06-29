@@ -20,15 +20,14 @@ import java.util.List;
 
 
 public class VkService {
-    private AppProperties appProperties;
 
     public VkService(AppProperties appProperties) {
-        this.appProperties = appProperties;
+        AppProperties appProperties1 = appProperties;
     }
 
     public void saveNews(WorkData workData, Session session) {
         List<VkNewsEntity> data = convertData(workData, session);
-        saveData(data);
+        saveData(data, session);
     }
 
     private List<VkNewsEntity> convertData(WorkData workData, Session session) {
@@ -37,6 +36,7 @@ public class VkService {
         Collections.sort(newsIds);
 
         List<VkNewsEntity> result = new ArrayList<>(workData.getNews().size());
+        List<Integer> updateGroups = new ArrayList<>(groupIds.size());
         long userId = workData.getUserId();
 
         // get new only and convert
@@ -59,6 +59,8 @@ public class VkService {
                 // add new group for user
                 addGroup(groupId, workData, session);
                 groupIds.add(groupId);
+            } else {
+                updateGroups.add(groupId);
             }
 
             VkNewsEntity entity = new VkNewsEntity();
@@ -73,13 +75,45 @@ public class VkService {
             result.add(entity);
         }
 
-        cleanGroups(workData, groupIds, session);  // todo: in thread
+        //cleanGroups(workData, groupIds, session);  // todo: in thread
+        updateGroups(workData, groupIds, session);
 
         return result;
     }
 
-    private void saveData(List<VkNewsEntity> news) {
-        Session session = HibernateSessionFactory.getSessionFactory(appProperties).openSession();
+    private void updateGroups(WorkData workData, List<Integer> groupIds, Session session) {
+        session.beginTransaction();
+        Criteria groupCriteria = session.createCriteria(VkGroupEntity.class);
+        groupCriteria.add(Restrictions.in("id", groupIds));
+        List<VkGroupEntity> entities = groupCriteria.list();
+
+        for (VkGroupEntity entity : entities) {
+            for (JsonElement item : workData.getGroups()) {
+                JsonObject json = item.getAsJsonObject();
+                int id = json.get("gid").getAsInt();
+
+                if (entity.getGid() == id) {
+                    entity.setName(json.get("name").getAsString());
+                    entity.setLinkedName(json.get("screen_name").getAsString());
+                    entity.setImage(json.get("photo").getAsString());
+
+                    try {
+                        session.save(entity);
+                    } catch (Exception e) {
+                        continue;
+                    }
+                }
+            }
+        }
+
+        try {
+            session.getTransaction().commit();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void saveData(List<VkNewsEntity> news, Session session) {
         session.beginTransaction();
         SQLQuery query = session.createSQLQuery("SET NAMES utf8mb4");
         query.executeUpdate();
@@ -92,8 +126,11 @@ public class VkService {
             }
         }
 
-        session.getTransaction().commit();
-        session.close();
+        try {
+            session.getTransaction().commit();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void addGroup(int groupId, WorkData workData, Session session) {
@@ -149,6 +186,11 @@ public class VkService {
 
     @NotNull
     private ImageLink getImageLink(JsonObject json) {
+        if (!json.has("attachment")) {
+            return new ImageLink("", "");
+        }
+
+
         JsonObject attachment = json.get("attachment").getAsJsonObject();
         String postType = attachment.get("type").getAsString();
         String image = null;

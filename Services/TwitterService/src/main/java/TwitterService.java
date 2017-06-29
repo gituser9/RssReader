@@ -1,7 +1,6 @@
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.sun.istack.internal.Nullable;
 import entity.SettingsEntity;
 import entity.TwitterNewsEntity;
 import entity.TwitterSourceEntity;
@@ -10,7 +9,6 @@ import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
-import utils.HibernateSessionFactory;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -47,6 +45,7 @@ public class TwitterService {
             String text = newsObject.get("text").getAsString();
             TwitterNewsEntity entity = new TwitterNewsEntity(id, userId, sourceId, text);
             entity.setExpandedUrl(getExpandedUrl(newsObject));
+            entity.setImage(getImage(newsObject));
 
             newsEntities.add(entity);
         }
@@ -68,17 +67,22 @@ public class TwitterService {
             JsonObject userObject = newsObject.get("user").getAsJsonObject();
             String name = userObject.get("name").getAsString();
             String screenName = userObject.get("screen_name").getAsString();
-            String url = userObject.get("url").getAsString();
+            String url = "";
+
+            if (!userObject.get("url").isJsonNull()) {
+                url = userObject.get("url").getAsString();
+            }
+
             String image = userObject.get("profile_image_url").getAsString();
             TwitterSourceEntity entity = new TwitterSourceEntity(sourceId, userId, name, screenName, url, image);
 
             sourcesEntities.add(entity);
+            existingSourceIds.add(sourceId);
         }
 
         return sourcesEntities;
     }
 
-    @Nullable
     private String getExpandedUrl(JsonObject json) {
         if (!json.has("entities")) {
             return null;
@@ -91,9 +95,40 @@ public class TwitterService {
         }
 
         JsonArray urls = entitiesObject.get("urls").getAsJsonArray();
+
+        if (urls.size() == 0) {
+            return null;
+        }
+
         JsonObject url = urls.get(0).getAsJsonObject();
 
         return url.get("expanded_url").getAsString();
+    }
+
+    private String getImage(JsonObject json) {
+        if (!json.has("entities")) {
+            return null;
+        }
+
+        JsonObject entities = json.get("entities").getAsJsonObject();
+
+        if (!entities.has("media")) {
+            return null;
+        }
+
+        JsonObject media = entities.get("media").getAsJsonArray().get(0).getAsJsonObject();
+
+        if (!media.get("type").getAsString().equals("photo")) {
+            return null;
+        }
+        if (media.has("media_url_https")) {
+            return media.get("media_url_https").getAsString();
+        }
+        if (media.has("media_url_http")) {
+            return media.get("media_url_http").getAsString();
+        }
+
+        return null;
     }
 
     private void prepareData() {
@@ -102,8 +137,8 @@ public class TwitterService {
         newsCriteria.setProjection(Projections.property("id"));
 
         Criteria sourceCriteria = session.createCriteria(TwitterSourceEntity.class);
-        newsCriteria.add(Restrictions.eq("userId", userId));
-        newsCriteria.setProjection(Projections.property("id"));
+        sourceCriteria.add(Restrictions.eq("userId", userId));
+        sourceCriteria.setProjection(Projections.property("id"));
 
         existingNewsIds = newsCriteria.list();
         existingSourceIds = sourceCriteria.list();

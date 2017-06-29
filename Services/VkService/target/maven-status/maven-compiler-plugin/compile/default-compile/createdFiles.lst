@@ -1,9 +1,9 @@
 services\VkService.class
 entities\VkGroupEntity.class
 datamodels\AppProperties.class
+utils\HibernateSessionFactory.class
 datamodels\WorkData.class
 entities\VkNewsEntity.class
-utils\HibernateSessionFactory.class
 entities\SettingsEntity.class
 services\NetService.class
 Main.class

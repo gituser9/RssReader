@@ -42,7 +42,9 @@ public class DataProvider {
                     .url(urlTemplate + friendScreenName)
                     .build();
             Response response = client.newCall(request).execute();
-            JsonArray newsArray = gson.fromJson(response.body().string(), JsonArray.class);
+            String body = response.body().string();
+            System.out.println(body);
+            JsonArray newsArray = gson.fromJson(body, JsonArray.class);
             allNews.addAll(newsArray);
         }
 
