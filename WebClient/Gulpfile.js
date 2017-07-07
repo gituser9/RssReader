@@ -58,11 +58,11 @@ gulp.task('minifycss', function() {
 gulp.task('dist', ['minifycss', 'jslibs', 'compile', 'revts']);
 
 gulp.task('watch', function() {
-    gulp.watch('static/typescript/*.js', ['compile']);
-    gulp.watch('static/typescript/rss/*.js', ['compile']);
-    gulp.watch('static/typescript/vk/*.js', ['compile']);
-    gulp.watch('static/typescript/twitter/*.js', ['compile']);
-    gulp.watch('static/typescript/models/*.js', ['compile']);
+    gulp.watch('static/typescript/**/*.js', ['compile']);
+    // gulp.watch('static/typescript/rss/*.js', ['compile']);
+    // gulp.watch('static/typescript/vk/*.js', ['compile']);
+    // gulp.watch('static/typescript/twitter/*.js', ['compile']);
+    // gulp.watch('static/typescript/models/*.js', ['compile']);
     gulp.watch('static/html/index.html', ['revts']);
     gulp.watch('static/css/*.css', ['minifycss']);
 });

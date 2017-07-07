@@ -4,7 +4,8 @@ function TwitterCtrl($scope, twitterService) {
     $scope.searchSource = 0;
     $scope.filters = {
         SourceId: 0,
-        Page: 1
+        Page: 1,
+        SearchString: ''
     };
 
     $scope.$watch(function() {
@@ -22,6 +23,10 @@ function TwitterCtrl($scope, twitterService) {
 
     $scope.getByFilters = function () {
         twitterService.getByFilters($scope.filters);
+    };
+
+    $scope.search = function () {
+        twitterService.search($scope.filters.SearchString, $scope.filters.SourceId);
     };
 }
 TwitterCtrl.$inject = ['$scope', 'twitterService'];

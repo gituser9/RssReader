@@ -2,7 +2,8 @@ function RssService ($http){
 
     var factory = {
         articles: [],
-        articlesCount: 0
+        articlesCount: 0,
+        showWaitBar: false
     };
 
     factory.getArticles = function(feedId, page, userId) {
@@ -60,8 +61,8 @@ function RssService ($http){
         });
     };
 
-    factory.addFeed = function(url) {
-        $http.post("/add-article", { url: url, userId: factory.currentUserId }).then(function(response) {
+    factory.addFeed = function(url, userId) {
+        $http.post("/add-article", { url: url, userId: userId }).then(function(response) {
             factory.feeds = response.data;
         });
     };

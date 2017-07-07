@@ -44,6 +44,15 @@
 #menu-btn-icon {
     color: #fff;
 }
+#right-menu {
+    position: fixed;
+    right: 5px;
+    top: 85px;
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: 0 1px 0 0 #d7d8db, 0 0 0 1px #e3e4e8;
+    width: 200px;
+}
 
 /* Rss
 ===================================================================================================================== */
@@ -51,21 +60,17 @@
 .article-title {
     padding: 10px;
 }
-
 .feed-title:hover,
 .article-title:hover {
     cursor: pointer;
     text-decoration: underline;
 }
-
 .is-read {
     font-weight: bold;
 }
-
 .inline {
     display: inline-block;
 }
-
 .delete-feed {
     font-size: 18px !important;
     color: #808080;
@@ -76,23 +81,15 @@
      color: #808080;
      font-weight: bold;
  }
-
- .delete-feed {
-     margin-top: 10px;
- }
-
  .hidden {
      display: none;
  }
-
  .bookmark {
      cursor: pointer;
  }
-
 .center {
     text-align: center;
 }
-
 .bookmark {
     font-size: 18px !important;
     width: 35px;
@@ -101,16 +98,13 @@
     padding-right: 30px;
     margin-top: 3px;
 }
-
 .bookmark:hover {
     background-color: #e2e2e2;
     border: 1px solid #c3c3c3;
 }
-
 button {
     font-family: Roboto,"Helvetica Neue",sans-serif !important;
 }
-
 #search-container {
     float: right;
 }
@@ -118,11 +112,6 @@ button {
 .wp-post-image {
     width: 100%;
 }
-
-/*#search-container md-input-container {
-    margin: 0;
-}*/
-
 .button-icon {
     cursor: pointer;
 }
@@ -143,10 +132,6 @@ button {
     top: 4px;
 }
 
-/*md-fab-actions i {
-    padding-top: 8px;
-}*/
-
 .md-fab.md-warn i {
     padding-top: 12px;
     font-size: 33px;
@@ -157,6 +142,11 @@ button {
 .tabs {
     height: 1100px !important;
 }
+
+.content-preview img {
+    max-width: 100%;
+}
+
 
 
 /* Vk
@@ -171,7 +161,7 @@ button {
 }
 
 .vk-news-item {
-    width: 60%;
+    width: 40%;
     margin: 20px auto;
     padding-bottom: 30px;
     background-color: #fff !important;
@@ -211,20 +201,6 @@ button {
     text-decoration: none;
 }
 
-#vk-menu {
-    position: fixed;
-    right: 5px;
-    top: 85px;
-    background-color: #fff;
-    border-radius: 5px;
-    box-shadow: 0 1px 0 0 #d7d8db, 0 0 0 1px #e3e4e8;
-    width: 200px;
-}
-
-#vk-groups {
-    /*margin-right: 50px;*/
-}
-
 #go-to-top-btn {
     position: fixed;
     right: 5px;
@@ -240,8 +216,10 @@ button {
 /* Twitter
 ======================================================================================================================*/
 #twitter-content md-list-item {
-    margin: 10px 0;
-    background-color: #fff;
+    margin: 20px 0;
+}
+.twitter-tweet.twitter-tweet-rendered {
+    margin: auto !important;
 }
 .twitter-news-image {
     width: 100%;

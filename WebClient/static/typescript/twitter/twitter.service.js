@@ -68,10 +68,23 @@ function TwitterService($http) {
     };
 
     factory.getByFilters = function (filters) {
+        factory.model.News = [];
         var data = {
-            GroupId: Number(filters.GroupId)
+            SourceId: Number(filters.SourceId)
         };
         $http.post('/get-twitter-news-by-filters', data).then(function (response) {
+
+            factory.model.News = response.data;
+        });
+    };
+
+    factory.search = function (searchString, sourceId) {
+        factory.model.IsSearch = true;
+        var data = {
+            SearchString: searchString,
+            SourceId: sourceId
+        };
+        $http.post('/search-twitter-news', data).then(function (response) {
             factory.model.News = response.data;
         });
     };

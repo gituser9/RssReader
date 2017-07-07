@@ -15,7 +15,7 @@
         <i class="material-icons col-md-1 bookmark" ng-if="article.IsBookmark" ng-click="vm.unsetBookmark(article.Id)">bookmark</i>
         <i class="material-icons col-md-1 bookmark" ng-if="!article.IsBookmark" ng-click="vm.setBookmark(article.Id)">bookmark_border</i>
         <div class="article-title" ng-bind="article.Title" ng-click="vm.getArticle(article)" ng-class="{ 'is-read': !article.IsRead }"></div>
-        <md-content ng-if="article.Body.length > 0">
+        <md-content ng-if="article.Body.length > 0" class="content-preview">
             <div ng-bind-html="article.Body"></div>
             <md-button class="md-primary" ng-href="{{ article.Link }}" target="_blank">Read →</md-button>
         </md-content>

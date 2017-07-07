@@ -36,12 +36,7 @@ function VkController ($scope, $timeout, vkService, mainService) {
         vkService.getByFilters($scope.filters);
     };
 
-    $scope.goToTop = function () {
-        $('html,body').scrollTop(0);
-    };
-
     $scope.search = function () {
-        console.log($scope.filters.SearchString);
         vkService.search($scope.filters.SearchString, $scope.filters.GroupId);
     };
 }

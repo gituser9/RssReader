@@ -8,9 +8,10 @@ angular.module("app", ["ngSanitize", "bw.paging", "ngFileUpload", "ngMaterial", 
     .service("vkService", VkService)
     .service("rssService", RssService)
     .service("twitterService", TwitterService)
+    .directive('toTop', ToTopDirective);
 
     /*.config(["$mdThemingProvider", function ($mdThemingProvider) {
         $mdThemingProvider.theme('default')
             .primaryPalette('teal')
             .accentPalette('blue');
-    }])*/;
+    }])*/

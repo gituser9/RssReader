@@ -1,5 +1,5 @@
 
-function RssController ($scope, $timeout, $mdDialog, $mdToast, $upload, mainService, rssService){
+function RssController ($scope, $timeout, $mdToast, $upload, mainService, rssService){
         $scope.vm = $scope;
         $scope.searchFeed = 0;
         $scope.currentPage = 1;
@@ -13,7 +13,7 @@ function RssController ($scope, $timeout, $mdDialog, $mdToast, $upload, mainServ
             $scope.feeds = rssService.feeds;
             $scope.articles = rssService.articles;
             $scope.article = rssService.article;
-            $scope.showWaitBar = rssService.showWaitbar;
+            $scope.showWaitBar = rssService.showWaitBar;
             $scope.showArticle = rssService.showArticle;
             $scope.articlesCount = rssService.articlesCount;
             $scope.userId = mainService.currentUserId;
@@ -30,7 +30,7 @@ function RssController ($scope, $timeout, $mdDialog, $mdToast, $upload, mainServ
     $scope.getArticles = function(feed) {
         $scope.hideMarkReadAll = false;
 
-        if (feed.Feed.Id != $scope.currentFeedId) {
+        if (feed.Feed.Id !== $scope.currentFeedId) {
             $scope.currentPage = 1;
         }
 
@@ -57,11 +57,12 @@ function RssController ($scope, $timeout, $mdDialog, $mdToast, $upload, mainServ
 
     $scope.getArticlesByPage = function(page) {
         $scope.currentPage = page;
-            if ($scope.isBookmark) {
-                rssService.getBookmarks(page);
-            } else {
-                $scope.getArticles($scope.currentFeed);
-            }
+
+        if ($scope.isBookmark) {
+            rssService.getBookmarks(page);
+        } else {
+            $scope.getArticles($scope.currentFeed);
+        }
     };
 
     $scope.search = function() {
@@ -151,22 +152,23 @@ function RssController ($scope, $timeout, $mdDialog, $mdToast, $upload, mainServ
     };
 
     $scope.uploadOpml = function(file) {
-        $scope.showWaitBar = true;
-        var selfScope = $scope;
+        rssService.showWaitBar = true;
+        rssService.articles = [];
+        $scope.currentFeedTitle = '';
 
-        $scope.$upload.upload({
+        $upload.upload({
             url: 'upload-opml',
             data: { file: file, userId: $scope.userId }
         }).success(function(data) {
-            selfScope.showWaitBar = false;
-            selfScope.feeds = data;
+            rssService.showWaitBar = false;
+            rssService.feeds = data;
         });
     };
 
     $scope.addTab = function(id, title) {
         // if tab exists - show toast and return
         for (var i = 0; i < $scope.tabs.length; ++i) {
-            if ($scope.tabs[i].article.Id == id) {
+            if ($scope.tabs[i].article.Id === id) {
                 $mdToast.show(
                     $mdToast.simple()
                         .textContent('Tab already exists')
@@ -180,15 +182,13 @@ function RssController ($scope, $timeout, $mdDialog, $mdToast, $upload, mainServ
         // add new tab
         var tab = {};
         tab.title = title;
-
         $scope.tabs.push(tab);
 
         rssService.getArticlePromise(id).then(function(response) {
             tab.article = response.data;
 
-
             rssService.articles.forEach(function(item) {
-                if (item.Id == id) {
+                if (item.Id === id) {
                     if (!item.IsRead) {
                         $scope.setRead();
                     }
@@ -262,7 +262,6 @@ function RssController ($scope, $timeout, $mdDialog, $mdToast, $upload, mainServ
 RssController.$inject = [
     "$scope",
     "$timeout",
-    "$mdDialog",
     "$mdToast",
     "Upload",
     "mainService",

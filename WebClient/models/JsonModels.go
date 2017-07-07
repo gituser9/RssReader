@@ -55,4 +55,5 @@ type VkData struct {
 
 type TwitterData struct {
 	SourceId int `json:"SourceId"`
+	SearchString string `json:"SearchString"`
 }

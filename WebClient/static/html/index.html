@@ -79,7 +79,7 @@
 <div ng-if="settings.RssEnabled && currentSource == Sources.Rss" ng-controller="rssCtrl">
     <!-- Rss -->
     <!-- left side -->
-    <!--<aside id="feed-titles" class="col-md-4 col-xs-4">-->
+
     <aside id="feed-titles" flex="35">
         <div layout="row" ng-hide="showWaitBar">
             <md-button class="md-primary" ng-click="getAll()">
@@ -92,8 +92,7 @@
                 Close all tabs
             </md-button>
         </div>
-        <!--<md-progress-linear ng-show="showWaitBar" md-mode="indeterminate" style="margin: auto"></md-progress-linear>-->
-        <md-progress-circular ng-show="showWaitBar" md-mode="indeterminate" style="margin: auto"></md-progress-circular>
+        <md-progress-circular ng-if="showWaitBar" md-mode="indeterminate" style="position: absolute; top: 45%; left: 50px"></md-progress-circular>
         <div ng-repeat="feed in feeds" class="row col-md-12 col-xs-12" ng-click="getArticles(feed)" ng-hide="showWaitBar">
             <div layout="row" layout-align="space-between center">
                 <div flex>
@@ -110,12 +109,10 @@
                     <i class="material-icons delete-feed col-md-1" ng-click="openDelete(feed.Feed)">delete_forever</i>
                 </div>
             </div>
-
         </div>
     </aside>
 
     <!-- right side -->
-    <!--<section id="feed-articles" class="col-md-8 col-xs-8" layout="column">-->
     <section id="feed-articles" flex="65" layout="column">
         <!-- Rss titles list -->
         <div ng-show="tabs.length == 0">
@@ -134,6 +131,7 @@
 
 <!-- Twitter -->
 <div id="twitter-container" ng-if="settings.TwitterEnabled && currentSource == Sources.Twitter" ng-controller="twitterCtrl">
+
     <ng-include src="'static/html/twitter/news-list.html'"></ng-include>
 </div>
 

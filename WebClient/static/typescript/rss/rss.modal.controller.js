@@ -1,4 +1,4 @@
-function RssModalController ($scope, $mdDialog, rssService, modalData){
+function RssModalController ($scope, $mdDialog, rssService, modalData, mainService){
     $scope.vm = this;
     $scope.feedUrl = "";
     $scope.modalData = modalData;
@@ -20,8 +20,7 @@ function RssModalController ($scope, $mdDialog, rssService, modalData){
         if (!$scope.feedUrl || !$scope.feedUrl.trim().length) {
             return;
         }
-
-        rssService.addFeed($scope.feedUrl);
+        rssService.addFeed($scope.feedUrl, mainService.currentUserId);
         $scope.cancel();
     };
 
@@ -39,5 +38,6 @@ RssModalController.$inject = [
     "$scope",
     "$mdDialog",
     "rssService",
-    "modalData"
+    "modalData",
+    "mainService"
 ];

@@ -123,7 +123,7 @@ func main() {
 	http.HandleFunc("/get-twitter-page", twitterCtrl.GetPageData)
 	http.HandleFunc("/get-twitter-news", twitterCtrl.GetNews)
 	http.HandleFunc("/get-twitter-news-by-filters", twitterCtrl.GetByFilters)
-	//http.HandleFunc("/search-twitter-news", twitterCtrl.Search)
+	http.HandleFunc("/search-twitter-news", twitterCtrl.Search)
 
 	log.Println("server start on port " + strconv.Itoa(conf.Port))
 	err := http.ListenAndServe(":"+strconv.Itoa(conf.Port), nil)

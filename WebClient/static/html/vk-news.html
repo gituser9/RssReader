@@ -5,7 +5,7 @@
     <!-- list with news -->
     <md-content id="vk-news">
         <!-- menu -->
-        <aside id="vk-menu" layout="column" layout-align="center center">
+        <aside id="right-menu" layout="column" layout-align="center center">
             <md-button md-no-ink class="md-primary" ng-click="refresh()">Refresh</md-button>
             <md-select flex id="vk-groups" ng-model="filters.GroupId" class="inline" aria-label="Search in Vk News" ng-change="getByFilters()">
                 <md-option value="0">All groups</md-option>
@@ -19,14 +19,14 @@
                     <input ng-model="filters.SearchString">
                 </md-input-container>
             </form>
-
         </aside>
 
         <!-- news list -->
         <div infinite-scroll='getVkNews()' infinite-scroll-disabled='model.IsLoad' infinite-scroll-distance='5'>
-            <md-button id="go-to-top-btn" class="md-fab" aria-label="To Up" ng-click="goToTop()">
+            <!--<md-button id="go-to-top-btn" class="md-fab" aria-label="To Up" ng-click="goToTop()">
                 <i class="material-icons">keyboard_arrow_up</i>
-            </md-button>
+            </md-button>-->
+            <to-top></to-top>
             <div class="vk-news-item" ng-repeat="item in model.VkNews">
                 <div layout="row">
                     <img class="group-image" src="{{:: model.VkGroupMap[item.GroupId].image }}" />
@@ -43,6 +43,37 @@
                     <!--<md-button ng-click="loadComments(item)">Show comments</md-button>-->
                     <md-button href="https://vk.com/wall-{{:: item.GroupId }}_{{:: item.PostId }}" target="_blank">Open →</md-button>
                 </div>
+
+
+                <!--<div id="vk_post_1_45616"></div>
+                <script async type="text/javascript">
+                    (function(d, s, id) {
+                        var js, fjs = d.getElementsByTagName(s)[0];
+                        if (d.getElementById(id))
+                            return;
+                        js = d.createElement(s);
+                        js.id = id;
+                        js.src = "//vk.com/js/api/openapi.js?146";
+                        fjs.parentNode.insertBefore(js, fjs); }(document, 'script', 'vk_openapi_js'));
+
+                    (function() {
+                        if (!window.VK || !VK.Widgets || !VK.Widgets.Post || !VK.Widgets.Post('vk_post_1_45616', 1, 45616, 'Y8w5adljoQ9Bf5ZdAMb0if01egtr'))
+                        if (!window.VK || !VK.Widgets || !VK.Widgets.Post || !VK.Widgets.Post('vk_post_1_45616', item.GroupId, item.PostId, 'Y8w5adljoQ9Bf5ZdAMb0if01egtr'))
+                            setTimeout(arguments.callee, 50);
+                    }());
+                </script>-->
+
+
+
+
+
+
+
+
+
+
+
+
             </div>
         </div>
         <div ng-show='model.IsLoad' layout="row" layout-sm="column" layout-align="space-around">
