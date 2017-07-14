@@ -1,19 +1,16 @@
 <md-content id="vk-content">
-    <!-- select with groups -->
-
-
     <!-- list with news -->
     <md-content id="vk-news">
         <!-- menu -->
         <aside id="right-menu" layout="column" layout-align="center center">
-            <md-button md-no-ink class="md-primary" ng-click="refresh()">Refresh</md-button>
-            <md-select flex id="vk-groups" ng-model="filters.GroupId" class="inline" aria-label="Search in Vk News" ng-change="getByFilters()">
+            <md-button md-no-ink class="md-primary" ng-click="vkc.refresh()">Refresh</md-button>
+            <md-select flex id="vk-groups" ng-model="filters.GroupId" class="inline" aria-label="Search in Vk News" ng-change="vkc.getByFilters()">
                 <md-option value="0">All groups</md-option>
                 <md-option ng-repeat="group in model.VkGroups" value="{{:: group.Gid }}">
                     {{:: group.Name }}
                 </md-option>
             </md-select>
-            <form ng-submit="search()">
+            <form ng-submit="vkc.search()">
                 <md-input-container class="md-block" flex-gt-sm>
                     <label>Search</label>
                     <input ng-model="filters.SearchString">
@@ -22,10 +19,7 @@
         </aside>
 
         <!-- news list -->
-        <div infinite-scroll='getVkNews()' infinite-scroll-disabled='model.IsLoad' infinite-scroll-distance='5'>
-            <!--<md-button id="go-to-top-btn" class="md-fab" aria-label="To Up" ng-click="goToTop()">
-                <i class="material-icons">keyboard_arrow_up</i>
-            </md-button>-->
+        <div infinite-scroll='vkc.getVkNews()' infinite-scroll-disabled='model.IsLoad' infinite-scroll-distance='5'>
             <to-top></to-top>
             <div class="vk-news-item" ng-repeat="item in model.VkNews">
                 <div layout="row">
@@ -39,11 +33,11 @@
                 <article ng-bind-html="item.Text" class="vk-news-text"></article>
                 <img ng-src="{{:: item.Image }}" />
                 <div><a class="external-link" ng-if="item.Link.length > 0" href="{{:: item.Link }}" target="_blank">{{:: item.Link }}</a></div>
-                <div class="vk-news-manage-buttons" layout="row" layout-align="space-between center">
+                <div class="vk-news-manage-buttons" layout="row">
                     <!--<md-button ng-click="loadComments(item)">Show comments</md-button>-->
-                    <md-button href="https://vk.com/wall-{{:: item.GroupId }}_{{:: item.PostId }}" target="_blank">Open →</md-button>
+                    <md-button class="md-raised" href="https://vk.com/wall-{{:: item.GroupId }}_{{:: item.PostId }}" target="_blank">Open</md-button>
+                    <md-button class="md-raised" ng-if="item.Link.length > 0" href="{{:: item.Link }}" target="_blank">Open link</md-button>
                 </div>
-
 
                 <!--<div id="vk_post_1_45616"></div>
                 <script async type="text/javascript">
@@ -62,23 +56,10 @@
                             setTimeout(arguments.callee, 50);
                     }());
                 </script>-->
-
-
-
-
-
-
-
-
-
-
-
-
             </div>
         </div>
         <div ng-show='model.IsLoad' layout="row" layout-sm="column" layout-align="space-around">
             <md-progress-circular md-mode="indeterminate"></md-progress-circular>
         </div>
-
     </md-content>
 </md-content>

@@ -15,41 +15,42 @@
     <!-- end -->
 </head>
 
-<body ng-controller="mainCtrl" ng-cloak>
-<header flex ng-init="init()">
+
+<body ng-controller="mainCtrl as mc" ng-cloak>
+<header flex ng-init="mc.init()">
     <md-toolbar>
         <div class="md-toolbar-tools">
-            <md-button aria-label="rss" ng-click="showRss()" ng-if="settings.RssEnabled">
+            <md-button aria-label="rss" ng-click="mc.showRss()" ng-if="settings.RssEnabled">
                 Rss
             </md-button>
-            <md-button aria-label="refresh" ng-click="showVk()" ng-if="settings.VkNewsEnabled">
+            <md-button aria-label="refresh" ng-click="mc.showVk()" ng-if="settings.VkNewsEnabled">
                 Vkontakte
             </md-button>
-            <md-button aria-label="refresh" ng-click="showTwitter()" ng-if="settings.TwitterEnabled">
+            <md-button aria-label="refresh" ng-click="mc.showTwitter()" ng-if="settings.TwitterEnabled">
                 Twitter
             </md-button>
 
             <md-menu id="main-menu">
-                <md-button aria-label="menu" class="md-icon-button" ng-click="openMenu($mdOpenMenu, $event)">
+                <md-button aria-label="menu" class="md-icon-button" ng-click="mc.openMenu($mdOpenMenu, $event)">
                     <i id="menu-btn-icon" class="material-icons">more_vert</i>
                 </md-button>
                 <md-menu-content width="4">
-                    <span ng-controller="rssCtrl" ng-if="settings.RssEnabled && currentSource == Sources.Rss">
+                    <span ng-controller="rssCtrl as rssc" ng-if="settings.RssEnabled && currentSource == Sources.Rss">
                         <!-- rss menu items -->
                         <md-menu-item >
-                            <md-button aria-label="Twitter" ng-click="openAdd()">
+                            <md-button aria-label="Twitter" ng-click="rssc.openAdd()">
                                 <i class="material-icons menu-icons">add</i>
                                 Add feed
                             </md-button>
                         </md-menu-item>
                         <md-menu-item>
-                            <md-button aria-label="Twitter" ngf-select="uploadOpml($file)">
+                            <md-button aria-label="Twitter" ngf-select="rssc.uploadOpml($file)">
                                 <i class="material-icons menu-icons">file_upload</i>
                                 Upload OPML
                             </md-button>
                         </md-menu-item>
                         <md-menu-item>
-                            <md-button aria-label="Twitter" ng-click="createOpml()">
+                            <md-button aria-label="Twitter" ng-click="rssc.createOpml()">
                                 <i class="material-icons menu-icons">file_download</i>
                                 Download OPML
                             </md-button>
@@ -57,14 +58,14 @@
 
                     </span>
                     <md-menu-item>
-                        <md-button aria-label="settings" ng-click="openSettings()">
+                        <md-button aria-label="settings" ng-click="mc.openSettings()">
                             <i class="material-icons menu-icons">settings</i>
                             Settings
                         </md-button>
                     </md-menu-item>
                     <md-menu-divider></md-menu-divider>
                     <md-menu-item>
-                        <md-button aria-label="Twitter" ng-click="logout()">
+                        <md-button aria-label="Twitter" ng-click="mc.logout()">
                             <i class="material-icons menu-icons">exit_to_app</i>
                             Logout
                         </md-button>
@@ -76,37 +77,37 @@
 </header>
 
 <!-- RSS -->
-<div ng-if="settings.RssEnabled && currentSource == Sources.Rss" ng-controller="rssCtrl">
+<div ng-if="settings.RssEnabled && currentSource == Sources.Rss" ng-controller="rssCtrl as rssc">
     <!-- Rss -->
     <!-- left side -->
 
     <aside id="feed-titles" flex="35">
         <div layout="row" ng-hide="showWaitBar">
-            <md-button class="md-primary" ng-click="getAll()">
+            <md-button class="md-primary" ng-click="rssc.getAll()">
                 Refresh
             </md-button>
-            <md-button class="md-primary" aria-label="refresh" ng-click="getBookmarks()">
+            <md-button class="md-primary" aria-label="refresh" ng-click="rssc.getBookmarks()">
                 Bookmarks
             </md-button>
-            <md-button class="md-primary" ng-click="removeAllTabs()" ng-show="tabs.length != 0">
+            <md-button class="md-primary" ng-click="rssc.removeAllTabs()" ng-show="tabs.length != 0">
                 Close all tabs
             </md-button>
         </div>
         <md-progress-circular ng-if="showWaitBar" md-mode="indeterminate" style="position: absolute; top: 45%; left: 50px"></md-progress-circular>
-        <div ng-repeat="feed in feeds" class="row col-md-12 col-xs-12" ng-click="getArticles(feed)" ng-hide="showWaitBar">
+        <div ng-repeat="feed in feeds" class="row col-md-12 col-xs-12" ng-click="rssc.getArticles(feed)" ng-hide="showWaitBar">
             <div layout="row" layout-align="space-between center">
                 <div flex>
                     <div ng-if="!feed.ExistUnread" class="feed-title inline col-md-10" ng-bind="feed.Feed.Name"
-                         ng-click="getArticles(feed)"></div>
+                         ng-click="rssc.getArticles(feed)"></div>
                     <div ng-if="feed.ExistUnread" class="feed-title inline col-md-10 is-read">
                         <span>{{:: feed.Feed.Name }}</span>
                         <span ng-if="feed.ExistUnread" class="badge">{{ feed.ArticlesCount }}</span>
                     </div>
                 </div>
                 <div>
-                    <i class="material-icons delete-feed col-md-1" ng-click="markReadAllById(feed.Feed.Id)">done</i>
-                    <i class="material-icons delete-feed col-md-1" ng-click="openEditName(feed.Feed)">mode_edit</i>
-                    <i class="material-icons delete-feed col-md-1" ng-click="openDelete(feed.Feed)">delete_forever</i>
+                    <i class="material-icons delete-feed col-md-1" ng-click="rssc.markReadAllById(feed.Feed.Id)">done</i>
+                    <i class="material-icons delete-feed col-md-1" ng-click="rssc.openEditName(feed.Feed)">mode_edit</i>
+                    <i class="material-icons delete-feed col-md-1" ng-click="rssc.openDelete(feed.Feed)">delete_forever</i>
                 </div>
             </div>
         </div>
@@ -125,12 +126,12 @@
 </div>
 
 <!-- Vkontakte -->
-<div id="vk-container" ng-if="settings.VkNewsEnabled && currentSource == Sources.Vk" ng-controller="vkCtrl">
+<div id="vk-container" ng-if="settings.VkNewsEnabled && currentSource == Sources.Vk" ng-controller="vkCtrl as vkc">
     <ng-include src="'static/html/vk-news.html'"></ng-include>
 </div>
 
 <!-- Twitter -->
-<div id="twitter-container" ng-if="settings.TwitterEnabled && currentSource == Sources.Twitter" ng-controller="twitterCtrl">
+<div id="twitter-container" ng-if="settings.TwitterEnabled && currentSource == Sources.Twitter" ng-controller="twitterCtrl as tc">
 
     <ng-include src="'static/html/twitter/news-list.html'"></ng-include>
 </div>
@@ -142,16 +143,6 @@
     <!-- rev-hash -->
     <script src="dist/libs.js"></script>
     <script src="dist/output.js"></script>
-    <!--<script src="dist/main.service.js"></script>
-    <script src="dist/main.modal.controller.js"></script>
-    <script src="dist/main.controller.js"></script>
-
-    <script src="dist/rss/rss.service.js"></script>
-    <script src="dist/rss/rss.modal.controller.js"></script>
-    <script src="dist/rss/rss.controller.js"></script>
-    <script src="dist/vk/vk.service.js"></script>
-    <script src="dist/vk/vk.controller.js"></script>
-    <script src="dist/app.js"></script>-->
     <!-- end -->
 </footer>
 </body>

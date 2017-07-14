@@ -1,134 +1,140 @@
+class RssController {
+    constructor($scope, $timeout, $mdToast, Upload, mainService, rssService) {
+        this.$scope = $scope;
+        this.$timeout = $timeout;
+        this.$mdToast = $mdToast;
+        this.Upload = Upload;
+        this.mainService = mainService;
+        this.rssService = rssService;
 
-function RssController ($scope, $timeout, $mdToast, $upload, mainService, rssService){
-        $scope.vm = $scope;
-        $scope.searchFeed = 0;
-        $scope.currentPage = 1;
-        $scope.isBookmark = false;
-        $scope.isAuth = false;
-        $scope.showArticleCount = true;
-        $scope.currentFeedId = 0;
-        $scope.tabs = [];
+        this.$scope.searchFeed = 0;
+        this.$scope.currentPage = 1;
+        this.$scope.isBookmark = false;
+        this.$scope.isAuth = false;
+        this.$scope.showArticleCount = true;
+        this.$scope.currentFeedId = 0;
+        this.$scope.tabs = [];
 
-        $scope.$watch(function() {
-            $scope.feeds = rssService.feeds;
-            $scope.articles = rssService.articles;
-            $scope.article = rssService.article;
-            $scope.showWaitBar = rssService.showWaitBar;
-            $scope.showArticle = rssService.showArticle;
-            $scope.articlesCount = rssService.articlesCount;
-            $scope.userId = mainService.currentUserId;
+        this.$scope.$watch(() => {
+            this.$scope.feeds = this.rssService.feeds;
+            this.$scope.articles = this.rssService.articles;
+            this.$scope.article = this.rssService.article;
+            this.$scope.showWaitBar = this.rssService.showWaitBar;
+            this.$scope.showArticle = this.rssService.showArticle;
+            this.$scope.articlesCount = this.rssService.articlesCount;
+            this.$scope.userId = this.mainService.currentUserId;
         });
+    }
 
-    $scope.getAll = function() {
-        rssService.showWaitBar = true;
-        /*$timeout(function () {
+    getAll() {
+        this.rssService.showWaitBar = true;
+        /*this.$timeout(() => {
             rssService.getAll($scope.userId);
         }, 3000);*/
-        rssService.getAll($scope.userId);
+        this.rssService.getAll(this.$scope.userId);
     };
 
-    $scope.getArticles = function(feed) {
-        $scope.hideMarkReadAll = false;
+    getArticles(feed) {
+        this.$scope.hideMarkReadAll = false;
 
-        if (feed.Feed.Id !== $scope.currentFeedId) {
-            $scope.currentPage = 1;
+        if (feed.Feed.Id !== this.$scope.currentFeedId) {
+            this.$scope.currentPage = 1;
         }
 
-        $scope.isBookmark = false;
-        $scope.currentFeed = feed;
-        $scope.currentFeedId = feed.Feed.Id;
-        $scope.currentFeedTitle = feed.Feed.Name;
+        this.$scope.isBookmark = false;
+        this.$scope.currentFeed = feed;
+        this.$scope.currentFeedId = feed.Feed.Id;
+        this.$scope.currentFeedTitle = feed.Feed.Name;
 
-        rssService.getArticles(feed.Feed.Id, $scope.currentPage, $scope.userId);
+        this.rssService.getArticles(feed.Feed.Id, this.$scope.currentPage, this.$scope.userId);
     };
 
-    $scope.stepBack = function() {
-        rssService.showArticle = false;
+    stepBack() {
+        this.rssService.showArticle = false;
     };
 
-    $scope.getArticle = function(article) {
-        rssService.getArticle(article.Id);
-        $scope.setRead();
+    getArticle(article) {
+        this.rssService.getArticle(article.Id);
+        this.setRead();
     };
 
-    $scope.updateAll = function() {
-        rssService.updateAll();
+    updateAll() {
+        this.rssService.updateAll();
     };
 
-    $scope.getArticlesByPage = function(page) {
-        $scope.currentPage = page;
+    getArticlesByPage(page) {
+        this.$scope.currentPage = page;
 
-        if ($scope.isBookmark) {
-            rssService.getBookmarks(page);
+        if (this.$scope.isBookmark) {
+            this.rssService.getBookmarks(page);
         } else {
-            $scope.getArticles($scope.currentFeed);
+            this.$scope.getArticles(this.$scope.currentFeed);
         }
     };
 
-    $scope.search = function() {
-        $scope.hideMarkReadAll = true;
-        rssService.search($scope.searchText, $scope.searchInBookmark, $scope.searchFeed);
-        $scope.currentFeedTitle = 'Search: ' + $scope.searchText;
+    search() {
+        this.$scope.hideMarkReadAll = true;
+        this.rssService.search(this.$scope.searchText, this.$scope.searchInBookmark, this.$scope.searchFeed);
+        this.$scope.currentFeedTitle = 'Search: ' + this.$scope.searchText;
     };
 
-    // todo: split $scope and unset
-    $scope.setBookmark = function(articleId) {
-        rssService.toggleBookmark(
+    // todo: split this.$scope and unset
+    setBookmark(articleId) {
+        this.rssService.toggleBookmark(
             articleId,
-            $scope.currentPage,
+            this.$scope.currentPage,
             true,
-            $scope.isBookmark,
-            $scope.currentFeedId
+            this.$scope.isBookmark,
+            this.$scope.currentFeedId
         );
     };
 
-    $scope.unsetBookmark = function(articleId) {
-        rssService.toggleBookmark(
+    unsetBookmark(articleId) {
+        this.rssService.toggleBookmark(
             articleId,
-            $scope.currentPage,
+            this.$scope.currentPage,
             false,
-            $scope.isBookmark,
-            $scope.currentFeedId
+            this.$scope.isBookmark,
+            this.$scope.currentFeedId
         );
     };
 
-    $scope.getBookmarks = function() {
-        $scope.isBookmark = true;
-        $scope.hideMarkReadAll = true;
-        $scope.currentFeedTitle = "Bookmarks";
+    getBookmarks() {
+        this.$scope.isBookmark = true;
+        this.$scope.hideMarkReadAll = true;
+        this.$scope.currentFeedTitle = "Bookmarks";
 
-        rssService.getBookmarks(1);
+        this.rssService.getBookmarks(1);
     };
 
-    $scope.markReadAll = function() {
-        rssService.markReadAll($scope.currentFeedId, $scope.userId);
+    markReadAll() {
+        this.rssService.markReadAll(this.$scope.currentFeedId, this.$scope.userId);
 
-        $scope.currentFeed.ArticlesCount = 0;
-        $scope.currentFeed.ExistUnread = false;
+        this.$scope.currentFeed.ArticlesCount = 0;
+        this.$scope.currentFeed.ExistUnread = false;
     };
 
-    $scope.markReadAllById = function(id) {
-        rssService.markReadAll(id, $scope.userId);
+    markReadAllById(id) {
+        this.rssService.markReadAll(id, this.$scope.userId);
 
-        $scope.currentFeed.ArticlesCount = 0;
-        $scope.currentFeed.ExistUnread = false;
+        this.$scope.currentFeed.ArticlesCount = 0;
+        this.$scope.currentFeed.ExistUnread = false;
     };
 
-    $scope.toggleAsRead = function(id, isRead) {
-        rssService.markAsRead(id, $scope.currentFeedId, $scope.currentPage, isRead, $scope.userId);
+    toggleAsRead(id, isRead) {
+        this.rssService.markAsRead(id, this.$scope.currentFeedId, this.$scope.currentPage, isRead, this.$scope.userId);
 
         if (isRead) {
-            $scope.setRead();
+            this.setRead();
         } else {
-            ++$scope.currentFeed.ArticlesCount;
-            $scope.currentFeed.ExistUnread = true;
+            ++this.$scope.currentFeed.ArticlesCount;
+            this.$scope.currentFeed.ExistUnread = true;
         }
     };
 
-    $scope.createOpml = function() {
-        console.log($scope.userId);
-        rssService.createOpml($scope.userId).then(function() {
-            var a = document.createElement("a");
+    createOpml() {
+        this.rssService.createOpml(this.$scope.userId).then(() => {
+            let a = document.createElement("a");
             a.download = name;
             a.href = 'static/rss.opml';
 
@@ -141,36 +147,36 @@ function RssController ($scope, $timeout, $mdToast, $upload, mainService, rssSer
         });
     };
 
-    $scope.openUploadFile = function() {
-        var elem = document.querySelector('#upload-opml');
+    openUploadFile() {
+        let elem = document.querySelector('#upload-opml');
 
         if (elem && document.createEvent) {
-            var evt = document.createEvent("MouseEvents");
+            let evt = document.createEvent("MouseEvents");
             evt.initEvent("click", true, false);
             elem.dispatchEvent(evt);
         }
     };
 
-    $scope.uploadOpml = function(file) {
-        rssService.showWaitBar = true;
-        rssService.articles = [];
-        $scope.currentFeedTitle = '';
+    uploadOpml(file) {
+        this.rssService.showWaitBar = true;
+        this.rssService.articles = [];
+        this.$scope.currentFeedTitle = '';
 
-        $upload.upload({
+        this.$upload.upload({
             url: 'upload-opml',
-            data: { file: file, userId: $scope.userId }
+            data: { file: file, userId: this.$scope.userId }
         }).success(function(data) {
-            rssService.showWaitBar = false;
-            rssService.feeds = data;
+            this.rssService.showWaitBar = false;
+            this.rssService.feeds = data;
         });
     };
 
-    $scope.addTab = function(id, title) {
+    addTab(id, title) {
         // if tab exists - show toast and return
-        for (var i = 0; i < $scope.tabs.length; ++i) {
-            if ($scope.tabs[i].article.Id === id) {
-                $mdToast.show(
-                    $mdToast.simple()
+        for (let tab of this.$scope.tabs) {
+            if (tab.article.Id === id) {
+                this.$mdToast.show(
+                    this.$mdToast.simple()
                         .textContent('Tab already exists')
                         .position("top end")
                         .hideDelay(1500)
@@ -180,82 +186,82 @@ function RssController ($scope, $timeout, $mdToast, $upload, mainService, rssSer
         }
 
         // add new tab
-        var tab = {};
+        let tab = {};
         tab.title = title;
-        $scope.tabs.push(tab);
+        this.$scope.tabs.push(tab);
 
-        rssService.getArticlePromise(id).then(function(response) {
+        this.rssService.getArticlePromise(id).then((response) => {
             tab.article = response.data;
 
-            rssService.articles.forEach(function(item) {
-                if (item.Id === id) {
-                    if (!item.IsRead) {
-                        $scope.setRead();
+            for (let article of this.rssService.articles) {
+                if (article.Id === id) {
+                    if (!article.IsRead) {
+                        this.setRead();
                     }
-                    item.IsRead = true;
+                    article.IsRead = true;
                     return;
                 }
-            });
+            }
         });
     };
 
-    $scope.removeTab = function(tab) {
-        var index = $scope.tabs.indexOf(tab);
-        $scope.tabs.splice(index, 1);
+    removeTab(tab) {
+        let index = this.$scope.tabs.indexOf(tab);
+        this.$scope.tabs.splice(index, 1);
     };
 
-    $scope.removeAllTabs = function() {
-        $scope.tabs = [];
+    removeAllTabs() {
+        this.$scope.tabs = [];
     };
 
-    $scope.showPreview = function(article) {
+    showPreview(article) {
         if (!article.IsRead) {
-            $scope.setRead();
+            this.setRead();
         }
         article.IsRead = true;
 
-        rssService.getArticlePromise(article.Id).then(function(response) {
+        this.rssService.getArticlePromise(article.Id).then((response) => {
             article.Body = response.data.Body;
             article.Link = response.data.Link;
         });
     };
 
-    $scope.hidePreview = function(article) {
+    hidePreview(article) {
         article.Body = "";
     };
 
     /* Modals
     =========================================================== */
 
-    $scope.openDelete = function(rss) {
-        var modalData = {};
+    openDelete(rss) {
+        let modalData = {};
         modalData.Feed = rss;
-        mainService.openModal("deleteModal.html", RssModalController, modalData);
+        this.mainService.openModal("deleteModal.html", RssModalController, modalData);
     };
 
-    $scope.openAdd = function() {
-        mainService.openModal("addModal.html", RssModalController, null);
+    openAdd() {
+        this.mainService.openModal("addModal.html", RssModalController, null);
     };
 
-    $scope.openEditName = function(rss) {
-        var modalData = {};
+    openEditName(rss) {
+        let modalData = {};
         modalData.Feed = rss;
-        mainService.openModal("editModal.html", RssModalController, modalData);
+        this.mainService.openModal("editModal.html", RssModalController, modalData);
     };
 
     /* Private
     ================================================================================ */
-    $scope.setRead = function() {
-        if ($scope.isBookmark) {
+    setRead() {
+        if (this.$scope.isBookmark) {
             return;
         }
 
-        if ($scope.currentFeed.ArticlesCount > 0) {
-            --$scope.currentFeed.ArticlesCount;
+        if (this.$scope.currentFeed.ArticlesCount > 0) {
+            --this.$scope.currentFeed.ArticlesCount;
         }
 
-        if ($scope.currentFeed.ArticlesCount === 0) {
-            $scope.currentFeed.ExistUnread = false;
+        if (this.$scope.currentFeed.ArticlesCount === 0) {
+            this.$scope.currentFeed.ExistUnread = false;
         }
     }
 }
@@ -267,3 +273,5 @@ RssController.$inject = [
     "mainService",
     "rssService"
 ];
+
+angular.module('app').controller('rssCtrl', RssController);

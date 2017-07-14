@@ -1,116 +1,103 @@
-function MainController ($scope, mainService, vkService, rssService, twitterService) {
+class MainController {
+    constructor($scope, mainService, vkService, rssService, twitterService) {
+        this.$scope = $scope;
+        this.mainService = mainService;
+        this.vkService = vkService;
+        this.rssService = rssService;
+        this.twitterService = twitterService;
 
-    var setStartedSource = function(settings) {
+        this.$scope.Sources = {
+            Rss: 1,
+            Vk: 2,
+            Twitter: 3
+        };
+        this.$scope.currentSource = $scope.Sources.Rss;
+        this.$scope.isAuth = false;
+
+        this.$scope.$watch(() => {
+            this.$scope.userId = mainService.currentUserId;
+            this.$scope.settings = mainService.settings;
+        });
+    }
+
+    setStartedSource(settings) {
         if (settings.RssEnabled) {
-            rssService.getAll(settings.UserId);
+            this.rssService.getAll(settings.UserId);
             return;
         }
 
         if (settings.VkNewsEnabled) {
-            vkService.getPageData(settings.UserId);
+            this.vkService.getPageData(settings.UserId);
             return;
         }
 
         if (settings.TwitterEnabled) {
-            twitterService.getPageData(settings.UserId);
+            this.twitterService.getPageData(settings.UserId);
             return;
         }
     };
 
-    $scope.Sources = {
-        Rss: 1,
-        Vk: 2,
-        Twitter: 3
-    };
-    $scope.currentSource = $scope.Sources.Rss;
-    $scope.isAuth = false;
-
-
-    $scope.$watch(function () {
-        $scope.userId = mainService.currentUserId;
-        $scope.settings = mainService.settings;
-    });
-
-    $scope.init = function () {
-        var storage = window.localStorage;
-        var userStr = storage.getItem("RssReaderUser");
+    init() {
+        let storage = window.localStorage;
+        let userStr = storage.getItem("RssReaderUser");
 
         if (userStr) {
-            var user = JSON.parse(userStr);
+            let user = JSON.parse(userStr);
 
-            // mainService.settings = user.Settings;
-            mainService.updateSettings(user.Id);
-            setStartedSource(user.Settings);
+            this.mainService.updateSettings(user.Id);
+            this.setStartedSource(user.Settings);
 
-            mainService.currentUserId = user.Id;
-            $scope.isAuth = true;
-            $scope.username = user.Name;
+            this.mainService.currentUserId = user.Id;
+            this.$scope.isAuth = true;
+            this.$scope.username = user.Name;
         } else {
             // modal for auth
-            // mainService.openAuthModal();
-            mainService.openModal("authModal.html", ModalController, null);
+            this.mainService.openModal("authModal.html", ModalController, null);
         }
     };
 
-    $scope.logout = function () {
-        var storage = window.localStorage;
+    logout() {
+        let storage = window.localStorage;
         storage.removeItem("RssReaderUser");
 
         // emit event?
-        mainService.openAuthModal();
+        this.mainService.openModal("authModal.html", ModalController, null);
     };
 
-    $scope.showRss = function () {
-        $scope.currentSource = $scope.Sources.Rss;
+    showRss() {
+        this.$scope.currentSource = this.$scope.Sources.Rss;
 
-        if (!rssService.feeds || rssService.feeds.length === 0) {
-            rssService.getAll($scope.userId);
+        if (!this.rssService.feeds || this.rssService.feeds.length === 0) {
+            this.rssService.getAll(this.$scope.userId);
         }
     };
 
-    $scope.showVk = function () {
-        $scope.currentSource = $scope.Sources.Vk;
+    showVk() {
+        this.$scope.currentSource = this.$scope.Sources.Vk;
 
-        if (vkService.model.VkNews.length === 0) {
-            vkService.getPageData($scope.userId);
+        if (this.vkService.model.VkNews.length === 0) {
+            this.vkService.getPageData(this.$scope.userId);
         }
     };
 
-    $scope.showTwitter = function () {
-        $scope.currentSource = $scope.Sources.Twitter;
+    showTwitter() {
+        this.$scope.currentSource = this.$scope.Sources.Twitter;
 
-        if (twitterService.model.News.length === 0) {
-            twitterService.getPageData($scope.userId);
+        if (this.twitterService.model.News.length === 0) {
+            this.twitterService.getPageData(this.$scope.userId);
         }
     };
 
-    $scope.openMenu = function($mdOpenMenu, ev) {
+    openMenu($mdOpenMenu, ev) {
         $mdOpenMenu(ev);
     };
 
-/*
-Modals
-================================================================================
-*/
-
-    $scope.openSettings = function() {
-        var storage = window.localStorage;
-        var userStr = storage.getItem("RssReaderUser");
-        var user = JSON.parse(userStr);
-
-        mainService.getSettings(user.Id).then(function (response) {
-            var modalData = {};
-            modalData.Settings = response;
-            mainService.openModal("settingModal.html", ModalController, modalData);
+    openSettings() {
+        this.mainService.getSettings(this.$scope.userId).then((response) => {
+            let modalData = { Settings: response };
+            this.mainService.openModal("settingModal.html", ModalController, modalData);
         });
-    };
-
-/*
-Private
-================================================================================ */
-
-
-
+    }
 }
 MainController.$inject = [
     "$scope",
@@ -119,3 +106,6 @@ MainController.$inject = [
     "rssService",
     "twitterService"
 ];
+
+
+angular.module('app').controller('mainCtrl', MainController);

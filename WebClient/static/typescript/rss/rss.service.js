@@ -1,12 +1,13 @@
+/*
 function RssService ($http){
 
-    var factory = {
+    let factory = {
         articles: [],
         articlesCount: 0,
         showWaitBar: false
     };
 
-    factory.getArticles = function(feedId, page, userId) {
+    getArticles(feedId, page, userId) {
         var config = {};
         config.params = { "id": feedId, "page": page, "userId": userId };
 
@@ -147,3 +148,155 @@ function RssService ($http){
     return factory;
 }
 RssService.$inject = ["$http"];
+*/
+
+
+class RssService {
+    constructor($http) {
+        this.articles = [];
+        this.articlesCount = 0;
+        this.showWaitBar = false;
+
+        this.http = $http;
+    }
+
+    getArticles(feedId, page, userId) {
+        let config = {};
+        config.params = { "id": feedId, "page": page, "userId": userId };
+
+        this.http.get("/get-articles", config).then((response) => {
+            this.articles = response.data.Articles;
+            this.articlesCount = response.data.Count;
+            this.showArticle = false;
+        });
+    };
+
+    search(searchText, isBookmark, feedId) {
+        let config = {};
+        config.params = { searchString: searchText, isBookmark: isBookmark, feedId: feedId };
+
+        this.http.get("/search", config).then((response) => {
+            this.articles = response.data.Articles;
+            this.articlesCount = response.data.Count;
+            this.showArticle = false;
+        });
+    };
+
+    getArticle(id) {
+        let config = {};
+        config.params = { id: id };
+
+        this.http.get("/get-article", config).then((response) => {
+            this.article = response.data;
+            this.showArticle = true;
+
+            this.articles.forEach(function(item) {
+                if (item.Id === this.article.Id) {
+                    item.IsRead = true;
+                }
+            });
+        });
+    };
+
+    getArticlePromise(id) {
+        let config = {};
+        config.params = { id: id };
+
+        return this.http.get("/get-article", config);
+    };
+
+    getAll(id) {
+        let config = {};
+        config.params = { id: id };
+
+        this.http.get("/get-all", config).then((response) => {
+            this.feeds = response.data;
+            this.showWaitBar = false;
+        });
+    };
+
+    addFeed(url, userId) {
+        this.http.post("/add-article", { url: url, userId: userId }).then((response) => {
+            this.feeds = response.data;
+        });
+    };
+
+    deleteFeed(id){
+        this.http.post('/delete', { feedId: id }).then((response) => {
+            this.feeds = response.data;
+        });
+    };
+
+    setNewFeedName(id, name) {
+        this.http.post('/set-new-name', { feedId: id, name: name }).then((response) => {
+            this.feeds = response.data;
+        });
+    };
+
+    updateAll() {
+        this.showWaitbar = true;
+
+        this.http.get('/update-all').then((response) => {
+            this.feeds = response.data;
+            this.showWaitbar = false;
+        });
+    };
+
+    toggleBookmark(articleId, page, isBookmark, isBookmarkPage, feedId) {
+        this.http.post("/toggle-bookmark", { articleId: articleId, page: page, isBookmark: isBookmark }).then((response) => {
+            if (!response.data) {
+                return;
+            }
+
+            if (isBookmarkPage) {
+                this.getBookmarks(page);
+            } else {
+                this.getArticles(feedId, page);
+            }
+        });
+    };
+
+    getBookmarks(page) {
+        let config = {};
+        config.params = { page: page };
+
+        this.http.get("/get-bookmarks", config).then((response) => {
+            this.articles = response.data.Articles;
+            this.articlesCount = response.data.Count;
+            this.showArticle = false;
+        });
+    };
+
+    markReadAll(feedId, userId) {
+        let config = {};
+        config.params = { id: feedId, userId: userId };
+
+        this.http.get("/mark-read-all", config).then((response) => {
+            this.articles = response.data.Articles;
+            this.articlesCount = response.data.Count;
+        });
+    };
+
+    createOpml(userId) {
+        let config = {};
+        config.params = { id: userId };
+
+        return this.http.get('/create-opml', config);
+    };
+
+    markAsRead(id, feedId, page, isRead, userId) {
+        let params = { articleId: id, feedId: feedId, page: page, isRead: isRead, userId: userId };
+
+        this.http.post("/toggle-as-read", params).then((response) => {
+            this.articles = response.data.Articles;
+            this.articlesCount = response.data.Count;
+        });
+    };
+
+    setUnread(isUnread) {
+        this.http.post('/toggle-unread', { isUnread: isUnread });
+    };
+}
+RssService.$inject = ['$http'];
+
+angular.module('app').service('rssService', RssService);

@@ -1,33 +1,45 @@
-function TwitterCtrl($scope, twitterService) {
-    'use strict';
+class TwitterCtrl {
+    constructor($scope, twitterService) {
+        this.$scope = $scope;
+        this.twitterService = twitterService;
 
-    $scope.searchSource = 0;
-    $scope.filters = {
-        SourceId: 0,
-        Page: 1,
-        SearchString: ''
+        this.$scope.searchSource = 0;
+        this.$scope.filters = {
+            SourceId: 0,
+            Page: 1,
+            SearchString: ''
+        };
+        this.$scope.$watch(() => {
+            this.$scope.model = twitterService.model;
+        });
+    }
+
+    getNews() {
+        ++this.$scope.filters.Page;  // for scroll
+        this.twitterService.getNews(this.$scope.userId, this.$scope.filters.Page);
     };
 
-    $scope.$watch(function() {
-        $scope.model = twitterService.model;
-    });
-
-    $scope.getNews = function () {
-        ++$scope.filters.Page;  // for scroll
-        twitterService.getNews($scope.userId, $scope.filters.Page);
+    getPageData() {
+        this.twitterService.getPageData(this.$scope.userId);
     };
 
-    $scope.getPageData = function () {
-        twitterService.getPageData($scope.userId);
+    getByFilters() {
+        this.twitterService.getByFilters(this.$scope.filters);
     };
 
-    $scope.getByFilters = function () {
-        twitterService.getByFilters($scope.filters);
+    search() {
+        this.twitterService.search(this.$scope.filters.SearchString, this.$scope.filters.SourceId);
     };
 
-    $scope.search = function () {
-        twitterService.search($scope.filters.SearchString, $scope.filters.SourceId);
+    refresh() {
+        this.$scope.filters.Page = 0;
+        this.twitterService.model.IsSearch = false;
+        this.twitterService.model.IsAll = false;
+        this.twitterService.model.News = [];
+        this.getNews();
     };
 }
 TwitterCtrl.$inject = ['$scope', 'twitterService'];
 
+
+angular.module('app').controller('twitterCtrl', TwitterCtrl);

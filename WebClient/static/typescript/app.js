@@ -1,17 +1,1 @@
-﻿
-angular.module("app", ["ngSanitize", "bw.paging", "ngFileUpload", "ngMaterial", 'infinite-scroll'])
-    .controller("mainCtrl", MainController)
-    .controller("vkCtrl", VkController)
-    .controller("rssCtrl", RssController)
-    .controller("twitterCtrl", TwitterCtrl)
-    .service("mainService", MainService)
-    .service("vkService", VkService)
-    .service("rssService", RssService)
-    .service("twitterService", TwitterService)
-    .directive('toTop', ToTopDirective);
-
-    /*.config(["$mdThemingProvider", function ($mdThemingProvider) {
-        $mdThemingProvider.theme('default')
-            .primaryPalette('teal')
-            .accentPalette('blue');
-    }])*/
+﻿angular.module("app", ["ngSanitize", "bw.paging", "ngFileUpload", "ngMaterial", 'infinite-scroll']);

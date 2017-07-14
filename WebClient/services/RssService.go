@@ -85,7 +85,7 @@ func (service *RssService) GetArticles(id uint, userId uint, page int) *models.A
 	whereObject := models.Articles{FeedId: id}
 
 	query := service.dbp().Where(&whereObject).
-		Select("Id, Title, IsBookmark, IsRead").
+		Select("Id, Title, IsBookmark, IsRead, Link").
 		Limit(service.config.PageSize).
 		Offset(offset).
 		Order("Id desc")

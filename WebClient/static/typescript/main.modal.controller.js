@@ -1,73 +1,77 @@
-function ModalController ($scope, $mdDialog, mainService, modalData) {
+class ModalController {
+    constructor($scope, $mdDialog, mainService, modalData) {
+        this.$scope = $scope;
+        this.$mdDialog = $mdDialog;
+        this.mainService = mainService;
+        this.modalData = modalData;
+        this.$scope.feedUrl = "";
+        this.$scope.vm = this;
 
-    $scope.vm = this;
-    $scope.feedUrl = "";
-
-    if (modalData != null) {
-        $scope.modalData = modalData;
+        if (modalData !== null) {
+            this.$scope.modalData = modalData;
+        }
     }
 
-
-    $scope.hide = function() {
-        $mdDialog.hide();
+    hide() {
+        this.$mdDialog.hide();
     };
 
-    $scope.cancel = function() {
-        $mdDialog.cancel();
+    cancel() {
+        this.$mdDialog.cancel();
     };
 
-    
+    auth() {
+        this.mainService.auth(this.$scope.username, this.$scope.password).then((response) => {
+            if (response.data !== null) {
+                this.cancel();
+                this.mainService.currentUserId = response.data.Id;
+                this.mainService.settings = response.data.Settings;
+                // this.mainService.getAll(this.mainService.currentUserId);
+                this.mainService.updateSettings(response.data.Id);
 
-    $scope.auth = function() {
-        mainService.auth($scope.username, $scope.password).then(function (response) {
-            if (response.data != null) {
-                $scope.cancel();
-                mainService.currentUserId = response.data.Id;
-                mainService.settings = response.data.Settings;
-                // mainService.getAll(mainService.currentUserId);
-                mainService.updateSettings(response.data.Id);
-
-                var storage = window.localStorage;
+                let storage = window.localStorage;
                 storage.setItem("RssReaderUser", JSON.stringify(response.data));
+
             }
         });
     };
 
-    $scope.registration = function() {
-        mainService.registration($scope.username, $scope.password).then(function (response) {
-            if (response.data != null) {
-                var data = response.data;
+    registration() {
+        this.mainService.registration(this.$scope.username, this.$scope.password).then((response) => {
+            if (response.data !== null) {
+                let data = response.data;
 
-                if (data.User == null) {
-                    $scope.errorMessage = data.Message;
+                if (data.User === null) {
+                    this.$scope.errorMessage = data.Message;
                     return
                 }
 
-                $scope.cancel();
+                this.$scope.cancel();
 
-                $scope.errorMessage = "";
-                mainService.currentUserId = data.User.Id;
-                mainService.settings = data.User.Settings;
+                this.$scope.errorMessage = "";
+                this.mainService.currentUserId = data.User.Id;
+                this.mainService.settings = data.User.Settings;
                 
-                var storage = window.localStorage;
+                let storage = window.localStorage;
                 storage.setItem("RssReaderUser", JSON.stringify(data.User));
 
-                mainService.openModal("settingModal.html", ModalController, {});
+                this.mainService.openModal("settingModal.html", ModalController, {});
             }
         });
     };
 
-    $scope.saveSettings = function() {
-        mainService.setSettings($scope.modalData.Settings);
-        mainService.settings = $scope.modalData.Settings;
+
+    saveSettings() {
+        this.mainService.setSettings(this.$scope.modalData.Settings);
+        this.mainService.settings = this.$scope.modalData.Settings;
         
-        var storage = window.localStorage;
-        var userStr = storage.getItem("RssReaderUser");
-        var user = JSON.parse(userStr);
-        user.Settings = $scope.modalData.Settings;
+        let storage = window.localStorage;
+        let userStr = storage.getItem("RssReaderUser");
+        let user = JSON.parse(userStr);
+        user.Settings = this.$scope.modalData.Settings;
 
         storage.setItem("RssReaderUser", JSON.stringify(user));
-        $scope.cancel();
+        this.$scope.cancel();
     }
 }
 ModalController.$inject = [
@@ -76,3 +80,5 @@ ModalController.$inject = [
     "mainService",
     "modalData"
 ];
+
+// angular.module('app').controller('twitterCtrl', ModalController);
