@@ -1,56 +1,46 @@
-function MainService ($http, $mdDialog) {
+class MainService {
+    constructor($http, $mdDialog) {
+        this.$http = $http;
+        this.$mdDialog = $mdDialog;
+        this.modalUrl = "static/html/modals/";
+        this.settings = {};
+    }
 
-    var factory = {
-        modalUrl: "static/html/modals/"
-    };
-
-    factory.getSettings = function (userId) {
-        var config = {};
+    getSettings(userId) {
+        let config = {};
         config.params = { id: userId };
 
-        return $http.get("/get-settings", config).then(function(response) {
+        return this.$http.get("/get-settings", config).then((response) => {
             return response.data;
         });
     };
 
-    factory.updateSettings = function (userId) {
-        var config = {};
+    updateSettings(userId) {
+        let config = {};
         config.params = { id: userId };
 
-        $http.get("/get-settings", config).then(function(response) {
-            factory.settings = response.data;
-            var storage = window.localStorage;
-            var userStr = storage.getItem("RssReaderUser");
-            var user = JSON.parse(userStr);
+        this.$http.get("/get-settings", config).then((response) => {
+            this.settings = response.data;
+            let storage = window.localStorage;
+            let userStr = storage.getItem("RssReaderUser");
+            let user = JSON.parse(userStr);
             user.Settings = response.data;
             storage.setItem("RssReaderUser", JSON.stringify(user));
         });
     };
 
-    factory.auth = function (username, password) {
-        return $http.post('/auth', { username: username, password: password });
+    auth(username, password) {
+        return this.$http.post('/auth', { username: username, password: password });
     };
 
-    factory.registration = function (username, password) {
-        return $http.post('/registration', { username: username, password: password });
+    registration(username, password) {
+        return this.$http.post('/registration', { username: username, password: password });
     };
 
-    /*factory.openAuthModal = function () {
-        $mdDialog.show({
-            controller: ModalController,
-            templateUrl: factory.modalUrl + "authModal.html",
-            parent: angular.element(document.body),
-            clickOutsideToClose: false,
-            locals: {
-                modalData: null
-            }
-        });
-    };*/
-
-    factory.openModal = function (template, ctrl, modalData) {
-        return $mdDialog.show({
+    openModal(template, ctrl, modalData) {
+        return this.$mdDialog.show({
             controller: ctrl,
-            templateUrl: factory.modalUrl + template,
+            templateUrl: this.modalUrl + template,
             parent: angular.element(document.body),
             clickOutsideToClose: true,
             locals: {
@@ -59,10 +49,10 @@ function MainService ($http, $mdDialog) {
         });
     };
 
-    factory.setSettings = function (settings) {
-        $http.post('/set-settings', settings);
+    setSettings(settings) {
+        this.$http.post('/set-settings', settings);
     };
-
-    return factory;
 }
 MainService.$inject = ["$http", "$mdDialog"];
+
+angular.module('app').service('mainService', MainService);

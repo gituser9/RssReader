@@ -8,8 +8,8 @@
                 <a class="title-link" ng-href="{{:: tab.article.Link }}" target="_blank" ng-bind="tab.article.Title"></a>
             </h3>
             <div layout="row">
-                <md-button class="md-primary" ng-click="vm.removeTab(tab)">Close</md-button>
-                <md-button class="md-primary" ng-click="vm.setBookmark(tab.article.Id)">Set as bookmark</md-button>
+                <md-button class="md-primary" ng-click="rssc.removeTab(tab)">Close</md-button>
+                <md-button class="md-primary" ng-click="rssc.setBookmark(tab.article.Id)">Set as bookmark</md-button>
             </div>
             <div ng-bind-html="tab.article.Body"></div>
         </article>

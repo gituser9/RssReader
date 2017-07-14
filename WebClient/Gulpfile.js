@@ -6,6 +6,18 @@ var rev = require('gulp-rev-simple-hash');
 var sourcemaps = require('gulp-sourcemaps');
 
 
+
+var babel = require('gulp-babel');
+// var browserify = require('gulp-browserify');
+var browserify  = require('browserify');
+var babelify    = require('babelify');
+var source      = require('vinyl-source-stream');
+var buffer      = require('vinyl-buffer');
+var uglify      = require('gulp-uglify');
+var sourcemaps  = require('gulp-sourcemaps');
+var livereload  = require('gulp-livereload');
+
+
 var bc = './bower_components/';
 
 gulp.task('jslibs', function() {
@@ -42,27 +54,23 @@ gulp.task('revts', function() {
 gulp.task('compile', function() {
     gulp.src('static/typescript/**/*.js')
         .pipe(sourcemaps.init())
+        .pipe(babel({
+            presets: ['es2015']
+        }))
         .pipe(concat('output.js'))
         .pipe(uglify())
         .pipe(sourcemaps.write('.'))
         .pipe(gulp.dest('dist'));
 });
-
 gulp.task('minifycss', function() {
     return gulp.src('static/css/*.css')
         .pipe(concat('app.css'))
         .pipe(cleanCSS({compatibility: 'ie8'}))
         .pipe(gulp.dest('dist'));
 });
-
 gulp.task('dist', ['minifycss', 'jslibs', 'compile', 'revts']);
-
 gulp.task('watch', function() {
     gulp.watch('static/typescript/**/*.js', ['compile']);
-    // gulp.watch('static/typescript/rss/*.js', ['compile']);
-    // gulp.watch('static/typescript/vk/*.js', ['compile']);
-    // gulp.watch('static/typescript/twitter/*.js', ['compile']);
-    // gulp.watch('static/typescript/models/*.js', ['compile']);
     gulp.watch('static/html/index.html', ['revts']);
     gulp.watch('static/css/*.css', ['minifycss']);
 });

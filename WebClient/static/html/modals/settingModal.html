@@ -1,80 +1,82 @@
 <md-dialog id="settings-modal"  flex-gt-sm="55" flex-sm="65">
-    <h3>Settings</h3>
+    <md-content layout-padding>
+        <h3>Settings</h3>
 
-    <md-tabs id="setting-tabs">
-        <md-tab label="Sources">
-            <md-list>
-                <!-- Rss -->
-                <md-list-item>
-                    <md-checkbox ng-model="modalData.Settings.RssEnabled"></md-checkbox>
-                    <p> Rss enabled </p>
-                </md-list-item>
-                <!-- Vk -->
-                <md-list-item>
-                    <md-checkbox ng-model="modalData.Settings.VkNewsEnabled"></md-checkbox>
-                    <p> Vk news enabled </p>
-                </md-list-item>
-                <md-list-item ng-if="modalData.Settings.VkNewsEnabled">
-                    <!-- vk credentials -->
-                    <i class="material-icons">account_box</i>
-                    <md-input-container>
-                        <label>Login</label>
-                        <input ng-model="modalData.Settings.VkLogin">
-                    </md-input-container>
-                    <md-input-container>
-                        <label>Password</label>
-                        <input ng-model="modalData.Settings.VkPassword" type="password">
-                    </md-input-container>
-                </md-list-item>
-                <!-- Twitter -->
-                <md-list-item>
-                    <md-checkbox ng-model="modalData.Settings.TwitterEnabled"></md-checkbox>
-                    <p>Twitter enabled</p>
-                </md-list-item>
-                <md-list-item ng-if="modalData.Settings.TwitterEnabled">
-                    <i class="material-icons">account_box</i>
-                    <md-input-container>
-                        <label>Twitter name</label>
-                        <input ng-model="modalData.Settings.TwitterName">
-                    </md-input-container>
-                </md-list-item>
-            </md-list>
-        </md-tab>
-        <md-tab label="Rss" ng-if="modalData.Settings.RssEnabled">
-            <md-list ng-cloak>
-                <md-subheader class="md-no-sticky">Data</md-subheader>
-                <md-list-item>
-                    <md-checkbox ng-model="modalData.Settings.UnreadOnly"></md-checkbox>
-                    <p> Unread only </p>
-                </md-list-item>
-                <md-list-item>
-                    <md-checkbox ng-model="modalData.Settings.MarkSameRead"></md-checkbox>
-                    <p> Mark Same Read </p>
-                </md-list-item>
-                <md-divider></md-divider>
-                <md-subheader class="md-no-sticky">UI</md-subheader>
-                <md-list-item>
-                    <md-checkbox ng-model="modalData.Settings.ShowPreviewButton"></md-checkbox>
-                    <p> Show preview button </p>
-                </md-list-item>
-                <md-list-item>
-                    <md-checkbox ng-model="modalData.Settings.ShowTabButton"></md-checkbox>
-                    <p> Show tab button </p>
-                </md-list-item>
-                <md-list-item>
-                    <md-checkbox ng-model="modalData.Settings.ShowReadButton"></md-checkbox>
-                    <p> Show read/unread button </p>
-                </md-list-item>
-            </md-list>
-        </md-tab>
-    </md-tabs>
+        <md-tabs id="setting-tabs">
+            <md-tab label="Sources">
+                <md-list>
+                    <!-- Rss -->
+                    <md-list-item>
+                        <md-checkbox ng-model="modalData.Settings.RssEnabled"></md-checkbox>
+                        <p> Rss enabled </p>
+                    </md-list-item>
+                    <!-- Vk -->
+                    <md-list-item>
+                        <md-checkbox ng-model="modalData.Settings.VkNewsEnabled"></md-checkbox>
+                        <p> Vk news enabled </p>
+                    </md-list-item>
+                    <md-list-item ng-if="modalData.Settings.VkNewsEnabled">
+                        <!-- vk credentials -->
+                        <i class="material-icons">account_box</i>
+                        <md-input-container>
+                            <label>Login</label>
+                            <input ng-model="modalData.Settings.VkLogin">
+                        </md-input-container>
+                        <md-input-container>
+                            <label>Password</label>
+                            <input ng-model="modalData.Settings.VkPassword" type="password">
+                        </md-input-container>
+                    </md-list-item>
+                    <!-- Twitter -->
+                    <md-list-item>
+                        <md-checkbox ng-model="modalData.Settings.TwitterEnabled"></md-checkbox>
+                        <p>Twitter enabled</p>
+                    </md-list-item>
+                    <md-list-item ng-if="modalData.Settings.TwitterEnabled">
+                        <i class="material-icons">account_box</i>
+                        <md-input-container>
+                            <label>Twitter name</label>
+                            <input ng-model="modalData.Settings.TwitterName">
+                        </md-input-container>
+                    </md-list-item>
+                </md-list>
+            </md-tab>
+            <md-tab label="Rss" ng-if="modalData.Settings.RssEnabled">
+                <md-list ng-cloak>
+                    <md-subheader class="md-no-sticky">Data</md-subheader>
+                    <md-list-item>
+                        <md-checkbox ng-model="modalData.Settings.UnreadOnly"></md-checkbox>
+                        <p> Unread only </p>
+                    </md-list-item>
+                    <md-list-item>
+                        <md-checkbox ng-model="modalData.Settings.MarkSameRead"></md-checkbox>
+                        <p> Mark Same Read </p>
+                    </md-list-item>
+                    <md-divider></md-divider>
+                    <md-subheader class="md-no-sticky">UI</md-subheader>
+                    <md-list-item>
+                        <md-checkbox ng-model="modalData.Settings.ShowPreviewButton"></md-checkbox>
+                        <p> Show preview button </p>
+                    </md-list-item>
+                    <md-list-item>
+                        <md-checkbox ng-model="modalData.Settings.ShowTabButton"></md-checkbox>
+                        <p> Show tab button </p>
+                    </md-list-item>
+                    <md-list-item>
+                        <md-checkbox ng-model="modalData.Settings.ShowReadButton"></md-checkbox>
+                        <p> Show read/unread button </p>
+                    </md-list-item>
+                </md-list>
+            </md-tab>
+        </md-tabs>
+    </md-content>
 
     <!-- Buttons -->
     <md-dialog-actions layout="row">
-        <md-button ng-click="cancel()">
+        <md-button ng-click="vm.cancel()">
             Cancel
         </md-button>
-        <md-button ng-click="saveSettings()">
+        <md-button ng-click="vm.saveSettings()">
             Save
         </md-button>
     </md-dialog-actions>

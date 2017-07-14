@@ -1,48 +1,46 @@
-function VkController ($scope, $timeout, vkService, mainService) {
+class VkController {
+    constructor($scope, vkService) {
+        this.vkService = vkService;
+        this.$scope = $scope;
+        this.$scope.searchVkGroup = 0;
+        this.$scope.filters = {
+            GroupId: 0,
+            Page: 1,
+            SearchString: ''
+        };
+        this.$scope.$watch(() => {
+            this.$scope.model = this.vkService.model;
+        });
+    }
 
-    $scope.searchVkGroup = 0;
-    $scope.filters = {
-        GroupId: 0,
-        Page: 1,
-        SearchString: ''
+    refresh() {
+        this.$scope.filters.Page = 0;
+        this.vkService.model.IsSearch = false;
+        this.vkService.model.VkNews = [];
+        this.getVkNews();
     };
 
-    $scope.$watch(function() {
-        $scope.model = vkService.model;
-    });
-
-    $scope.refresh = function () {
-        $scope.filters.Page = 0;
-        $scope.goToTop();
-        vkService.model.IsSearch = false;
-        vkService.model.VkNews = [];
-        $scope.getVkNews();
+    getVkNews() {
+        ++this.$scope.filters.Page;  // for scroll
+        this.vkService.getVkNews(this.$scope.userId, this.$scope.filters.Page);
     };
 
-    $scope.getVkNews = function () {
-        ++$scope.filters.Page;  // for scroll
-        vkService.getVkNews($scope.userId, $scope.filters.Page);
+    getPageData() {
+        this.vkService.getPageData(this.$scope.userId);
     };
 
-    $scope.getPageData = function () {
-        vkService.getPageData($scope.userId);
+    loadComments(news) {
+        this.vkService.loadComments(news);
     };
 
-    $scope.loadComments = function (news) {
-        vkService.loadComments(news);
+    getByFilters() {
+        this.vkService.getByFilters(this.$scope.filters);
     };
 
-    $scope.getByFilters = function () {
-        vkService.getByFilters($scope.filters);
-    };
-
-    $scope.search = function () {
-        vkService.search($scope.filters.SearchString, $scope.filters.GroupId);
+    search() {
+        this.vkService.search(this.$scope.filters.SearchString, this.$scope.filters.GroupId);
     };
 }
-VkController.$inject = [
-    "$scope",
-    "$timeout",
-    "vkService",
-    "mainService"
-];
+VkController.$inject = ['$scope', 'vkService'];
+
+angular.module('app').controller('vkCtrl', VkController);

@@ -1,71 +1,71 @@
-function VkService ($http) {
-
-    var factory = {
-        model: {
+class VkService {
+    constructor($http) {
+        this.model = {
             VkNews: [],
             VkGroups: [],
             IsLoad: false,
             IsAll: false,
             VkGroupMap: {},
             IsSearch: false
-        }
-    };
+        };
+        this.http = $http;
+    }
 
-    factory.getPageData = function(id) {
-        factory.model.IsLoad = true;
-        var config = {};
+    getPageData(id) {
+        this.model.IsLoad = true;
+        let config = {};
         config.params = { id: id };
 
-        $http.get("/get-vk-page", config).then(function (response) {
-            factory.model.VkNews = response.data.News;
-            factory.model.VkGroups = response.data.Groups;
-            factory.model.IsLoad = false;
+        this.http.get("/get-vk-page", config).then((response) => {
+            this.model.VkNews = response.data.News;
+            this.model.VkGroups = response.data.Groups;
+            this.model.IsLoad = false;
 
-            response.data.Groups.forEach(function (item) {
-                factory.model.VkGroupMap[item.Gid] = {
+            response.data.Groups.forEach((item) => {
+                this.model.VkGroupMap[item.Gid] = {
                     image: item.Image,
                     name: item.Name,
                     link: item.LinkedName
                 };
             });
         });
-    };
+    }
 
-    factory.getVkNews = function(userId, page) {
-        if (factory.model.IsLoad || factory.model.IsAll || factory.model.IsSearch) {
+    getVkNews(userId, page) {
+        if (this.model.IsLoad || this.model.IsAll || this.model.IsSearch) {
             return;
         }
 
-        factory.model.IsLoad = true;
-        var config = {};
+        this.model.IsLoad = true;
+        let config = {};
         config.params = { id: userId, page: page };
 
-        $http.get("/get-vk-news", config).then(function (response) {
-            factory.model.IsLoad = false;
+        this.http.get("/get-vk-news", config).then((response) => {
+            this.model.IsLoad = false;
 
             if (response.data.length === 0) {
-                factory.model.IsAll = true;
+                this.model.IsAll = true;
                 return;
             }
 
-            for (var i = 0; i < response.data.length; ++i) {
-                factory.model.VkNews.push(response.data[i]);
+            for (let item of response.data) {
+                this.model.VkNews.push(item);
             }
         });
     };
 
-    factory.getVkGroups = function(userId) {
-        var config = {};
+    getVkGroups(userId) {
+        let config = {};
         config.params = { id: userId };
 
-        $http.get("/get-vk-groups", config).then(function (response) {
+        this.http.get("/get-vk-groups", config).then((response) => {
             factory.model.VkGroups = response.data;
         });
     };
 
-    factory.loadComments = function (news) {
-        var url = "https://api.vk.com/method/wall.getComments";
-        var cfg = {
+    loadComments(news) {
+        let url = "https://api.vk.com/method/wall.getComments";
+        let cfg = {
             params: {
                 post_id: news.PostId,
                 count: 100,
@@ -73,32 +73,33 @@ function VkService ($http) {
                 owner_id: '-' + news.GroupId
             }
         };
-        $http.jsonp(url, cfg).then(function (response) {
+        this.http.jsonp(url, cfg).then((response) => {
             console.log(response);
         });
     };
 
-    factory.getByFilters = function (filters) {
-        factory.model.IsSearch = false;
-        var data = {
+    getByFilters(filters) {
+        this.model.IsSearch = false;
+        let data = {
             GroupId: Number(filters.GroupId)
         };
-        $http.post('/get-vk-news-by-filters', data).then(function (response) {
-            factory.model.VkNews = response.data;
+        this.http.post('/get-vk-news-by-filters', data).then((response) => {
+            this.model.VkNews = response.data;
         });
     };
 
-    factory.search = function (searchString, groupId) {
-        factory.model.IsSearch = true;
-        var data = {
+    search(searchString, groupId) {
+        this.model.IsSearch = true;
+        let data = {
             SearchString: searchString,
             GroupId: groupId
         };
-        $http.post('/search-vk-news', data).then(function (response) {
-            factory.model.VkNews = response.data;
+        this.http.post('/search-vk-news', data).then((response) => {
+            this.model.VkNews = response.data;
         });
     };
-
-    return factory;
 }
-VkService.$inject = ["$http"];
+VkService.$inject = ['$http'];
+
+
+angular.module('app').service('vkService', VkService);
