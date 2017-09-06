@@ -34,6 +34,9 @@
                     </md-list-item>
                     <md-list-item ng-if="modalData.Settings.TwitterEnabled">
                         <i class="material-icons">account_box</i>
+                    <md-list-item>
+                        <md-checkbox ng-model="modalData.Settings.TwitterEnabled"></md-checkbox>
+                        <p>Twitter enabled</p>
                         <md-input-container>
                             <label>Twitter name</label>
                             <input ng-model="modalData.Settings.TwitterName">
@@ -65,6 +68,14 @@
                     <md-list-item>
                         <md-checkbox ng-model="modalData.Settings.ShowReadButton"></md-checkbox>
                         <p> Show read/unread button </p>
+                    </md-list-item>
+                </md-list>
+            </md-tab>
+            <md-tab label="Twitter" ng-if="modalData.Settings.TwitterEnabled">
+                <md-list>
+                    <md-list-item>
+                        <md-checkbox ng-model="modalData.Settings.TwitterSimpleVersion"></md-checkbox>
+                        <p> Simple Version <small>(show text and images only)</small></p>
                     </md-list-item>
                 </md-list>
             </md-tab>

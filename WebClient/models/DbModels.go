@@ -53,6 +53,7 @@ type Settings struct {
 	RssEnabled        bool `gorm:"column:RssEnabled"`
 	VkNewsEnabled     bool `gorm:"column:VkNewsEnabled"`
 	TwitterEnabled    bool `gorm:"column:TwitterEnabled"`
+	TwitterSimpleVersion    bool `gorm:"column:TwitterSimpleVersion"`
 	ShowPreviewButton bool `gorm:"column:ShowPreviewButton"`
 	ShowTabButton     bool `gorm:"column:ShowTabButton"`
 	ShowReadButton    bool `gorm:"column:ShowReadButton"`

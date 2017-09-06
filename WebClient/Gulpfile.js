@@ -52,7 +52,7 @@ gulp.task('revts', function() {
 });
 
 gulp.task('compile', function() {
-    gulp.src('static/typescript/**/*.js')
+    gulp.src('static/js/**/*.js')
         .pipe(sourcemaps.init())
         .pipe(babel({
             presets: ['es2015']
@@ -70,7 +70,7 @@ gulp.task('minifycss', function() {
 });
 gulp.task('dist', ['minifycss', 'jslibs', 'compile', 'revts']);
 gulp.task('watch', function() {
-    gulp.watch('static/typescript/**/*.js', ['compile']);
+    gulp.watch('static/js/**/*.js', ['compile']);
     gulp.watch('static/html/index.html', ['revts']);
     gulp.watch('static/css/*.css', ['minifycss']);
 });

@@ -70,6 +70,7 @@ func (ctrl *UserController) GetUserSettings(w http.ResponseWriter, r *http.Reque
 		UserId:            userId,
 		TwitterEnabled:    settings.TwitterEnabled,
 		TwitterName:       user.TwitterScreenName,
+		TwitterSimpleVersion: settings.TwitterSimpleVersion,
 	}
 
 	w.Header().Set("Content-Type", "application/json")
@@ -88,6 +89,7 @@ func (ctrl *UserController) SaveSettings(w http.ResponseWriter, r *http.Request)
 		ShowTabButton:     settingsData.ShowTabButton,
 		UserId:            settingsData.UserId,
 		TwitterEnabled:    settingsData.TwitterEnabled,
+		TwitterSimpleVersion: settingsData.TwitterSimpleVersion,
 	}
 	settingsObject := services.SettingsService{}
 	settingService := settingsObject.Init(ctrl.config)

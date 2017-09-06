@@ -40,6 +40,7 @@ type SettingsData struct {
 	TwitterName       string `json:"TwitterName"`
 	VkNewsEnabled     bool   `json:"VkNewsEnabled"`
 	TwitterEnabled    bool   `json:"TwitterEnabled"`
+	TwitterSimpleVersion    bool   `json:"TwitterSimpleVersion"`
 	MarkSameRead      bool   `json:"MarkSameRead"`
 	UnreadOnly        bool   `json:"UnreadOnly"`
 	RssEnabled        bool   `json:"RssEnabled"`

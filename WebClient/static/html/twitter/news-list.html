@@ -22,7 +22,7 @@
     <div infinite-scroll='tc.getNews()' infinite-scroll-disabled='model.IsLoad' infinite-scroll-distance='5' layout="row" layout-align="center center">
         <to-top></to-top>
         <md-list flex="45">
-            <md-list-item ng-repeat="item in model.News" class="md-3-line md-long-text" layout="row" layout-align="center center">
+            <md-list-item ng-repeat="item in model.News" class="md-3-line md-long-text" layout="row" layout-align="center center" ng-if="!IsSimpleVersion">
                 <blockquote class="twitter-tweet" data-lang="en">
                     <p lang="ru" dir="ltr">
                         <md-progress-circular md-mode="indeterminate" style="position: absolute; left: 45%"></md-progress-circular>
@@ -32,32 +32,33 @@
                 <script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
             </md-list-item>
 
-            <!--<div class="md-list-item-text">
-                <div>
-                    <a class="twitter-source-link" href="https://twitter.com/{{:: model.SourceMap[item.SourceId].screenName }}" layout="row" target="_blank">
-                        <div class="twitter-source-name">{{:: model.SourceMap[item.SourceId].name }}</div>
-                        <div class="twitter-source-screen-name">@{{:: model.SourceMap[item.SourceId].screenName }}</div>
-                    </a>
+            <md-list-item ng-repeat="item in model.News" class="md-3-line md-long-text" layout="row" layout-align="center center" ng-if="IsSimpleVersion">
+                <div class="md-list-item-text" ng-if="model.">
+                    <div>
+                        <a class="twitter-source-link" href="https://twitter.com/{{:: model.SourceMap[item.SourceId].screenName }}" layout="row" target="_blank">
+                            <div class="twitter-source-name">{{:: model.SourceMap[item.SourceId].name }}</div>
+                            <div class="twitter-source-screen-name">@{{:: model.SourceMap[item.SourceId].screenName }}</div>
+                        </a>
+                    </div>
+                    <br/>
+                    <p>
+                        <a href="https://twitter.com/{{:: model.SourceMap[item.SourceId].screenName }}/status/{{:: item.Id }}" class="twitter-news-text" target="_blank">
+                            {{:: item.Text }}
+                        </a>
+                    </p>
+                    <p ng-if="item.Image.length > 0">
+                        <img flex class="twitter-news-image" src="{{:: item.Image }}" alt="News Image">
+                    </p>
+                    <p>
+                        <md-button href="https://twitter.com/{{:: model.SourceMap[item.SourceId].screenName }}/status/{{:: item.Id }}" target="_blank" class="md-primary">
+                            Open
+                        </md-button>
+                        <md-button href="{{:: item.ExpandedUrl }}" target="_blank" class="md-primary" ng-if="item.ExpandedUrl">
+                            Open link
+                        </md-button>
+                    </p>
                 </div>
-                <br/>
-                <p>
-                    <a href="https://twitter.com/{{:: model.SourceMap[item.SourceId].screenName }}/status/{{:: item.Id }}" class="twitter-news-text" target="_blank">
-                        {{:: item.Text }}
-                    </a>
-                </p>
-                <p ng-if="item.Image.length > 0">
-                    <img flex class="twitter-news-image" src="{{:: item.Image }}" alt="News Image">
-                </p>
-                <p>
-                    <md-button href="https://twitter.com/{{:: model.SourceMap[item.SourceId].screenName }}/status/{{:: item.Id }}" target="_blank" class="md-primary">
-                        Open
-                    </md-button>
-                    <md-button href="{{:: item.ExpandedUrl }}" target="_blank" class="md-primary" ng-if="item.ExpandedUrl">
-                        Open link
-                    </md-button>
-                </p>
-            </div>-->
-
+            </md-list-item>
         </md-list>
     </div>
 </md-content>
