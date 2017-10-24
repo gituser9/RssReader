@@ -7,13 +7,17 @@ class RssController {
         this.mainService = mainService;
         this.rssService = rssService;
 
-        this.$scope.searchFeed = 0;
         this.$scope.currentPage = 1;
         this.$scope.isBookmark = false;
         this.$scope.isAuth = false;
         this.$scope.showArticleCount = true;
         this.$scope.currentFeedId = 0;
         this.$scope.tabs = [];
+        this.$scope.filters = {
+            searchText: '',
+            searchFeed: 0,
+            searchInBookmark: false
+        };
 
         this.$scope.$watch(() => {
             this.$scope.feeds = this.rssService.feeds;
@@ -74,8 +78,10 @@ class RssController {
 
     search() {
         this.$scope.hideMarkReadAll = true;
-        this.rssService.search(this.$scope.searchText, this.$scope.searchInBookmark, this.$scope.searchFeed);
-        this.$scope.currentFeedTitle = 'Search: ' + this.$scope.searchText;
+
+        this.rssService.search(this.$scope.filters);
+        // this.rssService.search(this.$scope.searchText, false, this.$scope.searchFeed);
+        this.$scope.currentFeedTitle = 'Search: ' + this.$scope.filters.searchText;
     };
 
     // todo: split this.$scope and unset

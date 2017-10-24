@@ -171,9 +171,13 @@ class RssService {
         });
     };
 
-    search(searchText, isBookmark, feedId) {
+    search(filters) {
         let config = {};
-        config.params = { searchString: searchText, isBookmark: isBookmark, feedId: feedId };
+        config.params = {
+            searchString: filters.searchText,
+            isBookmark: filters.searchInBookmark,
+            feedId: filters.searchFeed
+        };
 
         this.http.get("/search", config).then((response) => {
             this.articles = response.data.Articles;

@@ -1,10 +1,8 @@
 <md-content  id="twitter-content">
-
-
     <!-- menu -->
     <aside id="right-menu" layout="column" layout-align="center center">
         <md-button md-no-ink class="md-primary" ng-click="tc.refresh()">Refresh</md-button>
-        <md-select flex id="vk-groups" ng-model="filters.SourceId" class="inline" aria-label="Search in Vk News" ng-change="tc.getByFilters()">
+        <md-select flex id="vk-groups" ng-model="filters.SourceId" class="inline" aria-label="Search in Twitter" ng-change="tc.getByFilters()">
             <md-option value="0">All sources</md-option>
             <md-option ng-repeat="item in model.Sources" value="{{:: item.Id }}">
                 {{:: item.Name }}
@@ -18,7 +16,7 @@
         </form>
     </aside>
 
-
+    <!-- News List -->
     <div infinite-scroll='tc.getNews()' infinite-scroll-disabled='model.IsLoad' infinite-scroll-distance='5' layout="row" layout-align="center center">
         <to-top></to-top>
         <md-list flex="45">
@@ -33,7 +31,7 @@
             </md-list-item>
 
             <md-list-item ng-repeat="item in model.News" class="md-3-line md-long-text" layout="row" layout-align="center center" ng-if="IsSimpleVersion">
-                <div class="md-list-item-text" ng-if="model.">
+                <div class="md-list-item-text">
                     <div>
                         <a class="twitter-source-link" href="https://twitter.com/{{:: model.SourceMap[item.SourceId].screenName }}" layout="row" target="_blank">
                             <div class="twitter-source-name">{{:: model.SourceMap[item.SourceId].name }}</div>
@@ -50,10 +48,10 @@
                         <img flex class="twitter-news-image" src="{{:: item.Image }}" alt="News Image">
                     </p>
                     <p>
-                        <md-button href="https://twitter.com/{{:: model.SourceMap[item.SourceId].screenName }}/status/{{:: item.Id }}" target="_blank" class="md-primary">
+                        <md-button class="md-raised" href="https://twitter.com/{{:: model.SourceMap[item.SourceId].screenName }}/status/{{:: item.Id }}" target="_blank" class="md-primary">
                             Open
                         </md-button>
-                        <md-button href="{{:: item.ExpandedUrl }}" target="_blank" class="md-primary" ng-if="item.ExpandedUrl">
+                        <md-button class="md-raised" href="{{:: item.ExpandedUrl }}" target="_blank" class="md-primary" ng-if="item.ExpandedUrl">
                             Open link
                         </md-button>
                     </p>

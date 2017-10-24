@@ -1,0 +1,65 @@
+<md-content id="vk-content">
+    <!-- list with news -->
+    <md-content id="vk-news">
+        <!-- menu -->
+        <aside id="right-menu" layout="column" layout-align="center center">
+            <md-button md-no-ink class="md-primary" ng-click="vkc.refresh()">Refresh</md-button>
+            <md-select flex id="vk-groups" ng-model="filters.GroupId" class="inline" aria-label="Search in Vk News" ng-change="vkc.getByFilters()">
+                <md-option value="0">All Groups</md-option>
+                <md-option ng-repeat="group in model.VkGroups" value="{{:: group.Gid }}">
+                    {{:: group.Name }}
+                </md-option>
+            </md-select>
+            <form ng-submit="vkc.search()">
+                <md-input-container class="md-block" flex-gt-sm>
+                    <label>Search</label>
+                    <input ng-model="filters.SearchString">
+                </md-input-container>
+            </form>
+        </aside>
+
+        <!-- news list -->
+        <div infinite-scroll='vkc.getVkNews()' infinite-scroll-disabled='model.IsLoad' infinite-scroll-distance='5'>
+            <to-top></to-top>
+            <div class="vk-news-item" ng-repeat="item in model.VkNews">
+                <div layout="row">
+                    <img class="group-image" src="{{:: model.VkGroupMap[item.GroupId].image }}" />
+                    <div class="group-name">
+                        <a target="_blank" href="{{:: 'https://vk.com/' + model.VkGroupMap[item.GroupId].link }}">
+                            {{:: model.VkGroupMap[item.GroupId].name }}
+                        </a>
+                    </div>
+                </div>
+                <article ng-bind-html="item.Text" class="vk-news-text"></article>
+                <img ng-src="{{:: item.Image }}" />
+                <div><a class="external-link" ng-if="item.Link.length > 0" href="{{:: item.Link }}" target="_blank">{{:: item.Link }}</a></div>
+                <div class="vk-news-manage-buttons" layout="row">
+                    <!--<md-button ng-click="loadComments(item)">Show comments</md-button>-->
+                    <md-button class="md-raised" href="https://vk.com/wall-{{:: item.GroupId }}_{{:: item.PostId }}" target="_blank">Open</md-button>
+                    <md-button class="md-raised" ng-if="item.Link.length > 0" href="{{:: item.Link }}" target="_blank">Open link</md-button>
+                </div>
+
+                <!--<div id="vk_post_1_45616"></div>
+                <script async type="text/javascript">
+                    (function(d, s, id) {
+                        var js, fjs = d.getElementsByTagName(s)[0];
+                        if (d.getElementById(id))
+                            return;
+                        js = d.createElement(s);
+                        js.id = id;
+                        js.src = "//vk.com/js/api/openapi.js?146";
+                        fjs.parentNode.insertBefore(js, fjs); }(document, 'script', 'vk_openapi_js'));
+
+                    (function() {
+                        if (!window.VK || !VK.Widgets || !VK.Widgets.Post || !VK.Widgets.Post('vk_post_1_45616', 1, 45616, 'Y8w5adljoQ9Bf5ZdAMb0if01egtr'))
+                        if (!window.VK || !VK.Widgets || !VK.Widgets.Post || !VK.Widgets.Post('vk_post_1_45616', item.GroupId, item.PostId, 'Y8w5adljoQ9Bf5ZdAMb0if01egtr'))
+                            setTimeout(arguments.callee, 50);
+                    }());
+                </script>-->
+            </div>
+        </div>
+        <div ng-show='model.IsLoad' layout="row" layout-sm="column" layout-align="space-around">
+            <md-progress-circular md-mode="indeterminate"></md-progress-circular>
+        </div>
+    </md-content>
+</md-content>

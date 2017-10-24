@@ -1,6 +1,7 @@
 body {
     font-family: "Roboto", "Helvetica", "Arial", sans-serif;
     /*font-family: 'Open Sans', Arial, sans-serif;*/
+    height: calc(100vh - 64px - 48px);
 }
 
 .material-icons {
@@ -61,6 +62,11 @@ body {
 
 /* Rss
 ===================================================================================================================== */
+#feed-list-container,
+#feed-articles-container {
+    height: calc(100vh - 64px - 48px);
+    overflow: auto;
+}
 .feed-title,
 .article-title {
     padding: 10px;
@@ -225,6 +231,11 @@ button {
 #twitter-content md-list-item {
     margin: 20px 0;
 }
+#twitter-content .md-list-item-text {
+    background: #fff;
+    border-radius: 5px;
+    box-shadow: 0 1px 0 0 #d7d8db, 0 0 0 1px #e3e4e8;
+}
 .twitter-tweet.twitter-tweet-rendered {
     margin: auto !important;
 }
@@ -235,6 +246,8 @@ button {
 .twitter-news-text:hover {
     color: black;
     text-decoration: none;
+    padding-left: 10px;
+    padding-right: 10px;
 }
 .twitter-source-name {
     margin-top: 12px;
@@ -249,4 +262,5 @@ button {
 .twitter-source-link,
 .twitter-source-link:hover {
     text-decoration: none;
+    padding-left: 10px;
 }

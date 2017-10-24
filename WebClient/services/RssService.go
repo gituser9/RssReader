@@ -27,14 +27,6 @@ type RssService struct {
 	AppSettings models.AppSettings
 }
 
-// Migrate DB
-/*func Migrate(db *gorm.DB) {
-	db.AutoMigrate(&models.Feeds{}, &models.Articles{}, &models.Users{}, &models.Settings{})
-	db.Model(&models.Articles{}).AddForeignKey("FeedId", "feeds(Id)", "CASCADE", "RESTRICT")
-	db.Model(&models.Settings{}).AddForeignKey("UserId", "users(Id)", "CASCADE", "RESTRICT")
-	db.Model(&models.Feeds{}).AddForeignKey("UserId", "users(Id)", "CASCADE", "RESTRICT")
-}*/
-
 // Init - create new struct pointer with collection
 func (service *RssService) Init(config *models.Config) *RssService {
 	db, err := gorm.Open(config.Driver, config.ConnectionString)
@@ -43,8 +35,6 @@ func (service *RssService) Init(config *models.Config) *RssService {
 		log.Println(err)
 	}
 
-	//Migrate(db)
-
 	// set default settings
 	settings := models.AppSettings{
 		MarkSameRead:  true,
@@ -52,6 +42,14 @@ func (service *RssService) Init(config *models.Config) *RssService {
 	}
 
 	return &RssService{db: db, config: config, AppSettings: settings}
+}
+
+func (service *RssService) SetDb(db *gorm.DB) {
+	service.db = db
+}
+
+func (service *RssService) SetConfig(cfg *models.Config) {
+	service.config = cfg
 }
 
 // GetRss - get all rss
@@ -244,7 +242,6 @@ func (service *RssService) Export(userId uint) {
 func (service *RssService) AddFeed(url string, userId uint) {
 	// get rss xml
 	response, err := http.Get(url)
-	defer response.Body.Close()
 
 	if err != nil {
 		log.Println(err.Error())
@@ -255,6 +252,8 @@ func (service *RssService) AddFeed(url string, userId uint) {
 		log.Println("Get XML error: ", err.Error())
 		return
 	}
+
+	defer response.Body.Close()
 
 	// parse feed xml and create structure
 	var xmlModel models.XMLFeed
@@ -307,8 +306,9 @@ func (service *RssService) ToggleBookmark(id uint, isBookmark bool) {
 }
 
 // GetBookmarks - get all bookmarks
-func (service *RssService) GetBookmarks(page int64) *models.ArticlesJSON {
+func (service *RssService) GetBookmarks(page int64, userId uint) *models.ArticlesJSON {
 	articles := []models.Articles{}
+	//whereObject := models.Articles{IsBookmark: true, Feed: models.Feeds{UserId: userId}}
 	whereObject := models.Articles{IsBookmark: true}
 	offset := service.config.PageSize * (int(page) - 1)
 	var count int
@@ -342,21 +342,17 @@ func (service *RssService) CleanOldArticles() {
 }
 
 // Search - search articles by title or body
-func (service *RssService) Search(searchString string, isBookmark bool, feedID uint) *models.ArticlesJSON {
-	// fixme
-	bm := 0
-
-	if isBookmark {
-		bm = 1
-	}
-
+func (service *RssService) Search(searchString string, isBookmark bool, feedId uint) *models.ArticlesJSON {
 	var articles []models.Articles
 	query := service.dbp().
-		Select("Id, Title, IsBookmark, IsRead").
-		Where("IsBookmark = ? AND (Title LIKE ? OR Body LIKE ?)", bm, "%"+searchString+"%", "%"+searchString+"%")
+		Select("Id, Title, IsBookmark, IsRead, Link").
+		Where("(Title LIKE ? OR Body LIKE ?)", "%"+searchString+"%", "%"+searchString+"%")
 
-	if feedID != 0 {
-		query = query.Where(&models.Articles{Id: feedID})
+	if feedId != 0 {
+		query = query.Where(&models.Articles{Id: feedId})
+	}
+	if isBookmark {
+		query = query.Where("IsBookmark = 1")
 	}
 
 	query.Find(&articles)
@@ -375,13 +371,6 @@ func (service *RssService) ToggleAsRead(id uint, isRead bool) {
 		updateArticle.UpdateColumn("IsRead", "0")
 	}
 	// fixme: end
-}
-
-// Backup - backup DB
-func (service *RssService) Backup() {
-	if len(service.config.DbBackupPath) == 0 {
-		return
-	}
 }
 
 /*==============================================================================

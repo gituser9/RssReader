@@ -1,0 +1,35 @@
+<aside id="feed-titles" flex >
+    <div layout="row" ng-hide="showWaitBar">
+        <md-button class="md-primary" ng-click="rssc.getAll()">
+            Refresh
+        </md-button>
+        <md-button class="md-primary" aria-label="refresh" ng-click="rssc.getBookmarks()">
+            Bookmarks
+        </md-button>
+        <md-button class="md-primary" ng-click="rssc.removeAllTabs()" ng-show="tabs.length != 0">
+            Close all tabs
+        </md-button>
+    </div>
+    <md-progress-circular ng-if="showWaitBar" md-mode="indeterminate" style="position: absolute; top: 45%; left: 50px"></md-progress-circular>
+
+    <div id="feed-list-container">
+        <div ng-repeat="feed in feeds" flex ng-click="rssc.getArticles(feed)" ng-hide="showWaitBar">
+            <div layout="row" layout-align="space-between center">
+                <div flex>
+                    <div ng-if="!feed.ExistUnread" class="feed-title inline col-md-10" ng-bind="feed.Feed.Name"
+                         ng-click="rssc.getArticles(feed)"></div>
+                    <div ng-if="feed.ExistUnread" class="feed-title inline col-md-10 is-read">
+                        <span>{{:: feed.Feed.Name }}</span>
+                        <span ng-if="feed.ExistUnread" class="badge">{{ feed.ArticlesCount }}</span>
+                    </div>
+                </div>
+                <div>
+                    <i class="material-icons delete-feed col-md-1" ng-click="rssc.markReadAllById(feed.Feed.Id)">done</i>
+                    <i class="material-icons delete-feed col-md-1" ng-click="rssc.openEditName(feed.Feed)">mode_edit</i>
+                    <i class="material-icons delete-feed col-md-1" ng-click="rssc.openDelete(feed.Feed)">delete_forever</i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</aside>

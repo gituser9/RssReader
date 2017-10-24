@@ -1,0 +1,17 @@
+<md-tabs md-selected="selectedIndex" class="tabs">
+    <md-tab label="News list" md-active="true">
+            <ng-include src="'static/html/rss/title-list.html'"></ng-include>
+    </md-tab>
+    <md-tab ng-repeat="tab in tabs" label="{{:: tab.title }}">
+        <article layout="column">
+            <h3>
+                <a class="title-link" ng-href="{{:: tab.article.Link }}" target="_blank" ng-bind="tab.article.Title"></a>
+            </h3>
+            <div layout="row">
+                <md-button class="md-primary" ng-click="rssc.removeTab(tab)">Close</md-button>
+                <md-button class="md-primary" ng-click="rssc.setBookmark(tab.article.Id)">Set as bookmark</md-button>
+            </div>
+            <div ng-bind-html="tab.article.Body"></div>
+        </article>
+    </md-tab>
+</md-tabs>
