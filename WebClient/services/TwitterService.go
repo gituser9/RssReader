@@ -15,6 +15,14 @@ type TwitterService struct {
 	config *models.Config
 }
 
+func (service *TwitterService) SetConfig(config *models.Config) {
+	service.config = config
+}
+
+func (service *TwitterService) SetDb(db *gorm.DB) {
+	service.db = db
+}
+
 // Init - create new struct pointer with collection
 func (service *TwitterService) Init(config *models.Config) *TwitterService {
 	db, err := gorm.Open(config.Driver, config.ConnectionString)
@@ -47,6 +55,7 @@ func (service *TwitterService) GetAllSources(id int) []models.TwitterSource {
 	return result
 }
 
+// TODO: userId
 func (service *TwitterService) GetNewsByFilters(filters models.TwitterData) []models.TwitterNewsView {
 	var dbModels []models.TwitterNews
 	var conditions models.TwitterNews

@@ -57,9 +57,8 @@ func mockDbForRss() *gorm.DB {
 
 			db.Create(&article)
 		}
-
-		db.Preload("Articles").Find(&feeds)
 	}
+	db.Preload("Articles").Find(&feeds)
 
 	return db
 }

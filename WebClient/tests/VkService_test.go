@@ -62,8 +62,9 @@ func mockDbForVk() *gorm.DB {
 			}
 			db.Create(&vkItem)
 		}
-		db.Find(&vkNews)
+
 	}
+	db.Find(&vkNews)
 
 	return db
 }
