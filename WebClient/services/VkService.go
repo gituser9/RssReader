@@ -25,6 +25,14 @@ func (service *VkService) Init(config *models.Config) *VkService {
 	return &VkService{db: db, config: config}
 }
 
+func (service *VkService) SetDb(db *gorm.DB) {
+	service.db = db
+}
+
+func (service *VkService) SetConfig(cfg *models.Config) {
+	service.config = cfg
+}
+
 func (service *VkService) GetNews(id int, page int) []models.VkNews {
 	var result []models.VkNews
 	offset := service.config.PageSize * (page - 1)
