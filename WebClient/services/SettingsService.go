@@ -23,6 +23,10 @@ func (service SettingsService) Init(config *models.Config) *SettingsService {
 	return &SettingsService{db: db}
 }
 
+func (service *SettingsService) SetDb(db *gorm.DB) {
+	service.db = db
+}
+
 func (service *SettingsService) Create(userId uint) {
 	settings := models.Settings{UserId: userId}
 	service.db.Create(&settings)

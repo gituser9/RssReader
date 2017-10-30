@@ -38,7 +38,7 @@ func startTimers(config *models.Config) {
 		case <-weekTimer:
 			service.CleanOldArticles()
 			//			service.Export()
-			service.Backup()
+			// service.Backup()
 		}
 	}
 }

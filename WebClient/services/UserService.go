@@ -32,6 +32,14 @@ func (service *UserService) Init(config *models.Config) *UserService {
 	return &UserService{db: db, config: config}
 }
 
+func (service *UserService) SetDb(db *gorm.DB) {
+	service.db = db
+}
+
+func (service *UserService) SetConfig(cfg *models.Config) {
+	service.config = cfg
+}
+
 // Auth - authorization an existing user
 func (service *UserService) Auth(name, password string) *models.Users {
 	var user models.Users

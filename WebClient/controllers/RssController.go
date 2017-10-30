@@ -133,7 +133,7 @@ func (ctrl *RssController) ToggleBookmark(w http.ResponseWriter, r *http.Request
 
 func (ctrl *RssController) GetBookmarks(w http.ResponseWriter, r *http.Request) {
 	page, _ := strconv.ParseInt(r.URL.Query().Get("page"), 10, 32)
-	articles := ctrl.service.GetBookmarks(page)
+	articles := ctrl.service.GetBookmarks(page, 1)
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(articles)
