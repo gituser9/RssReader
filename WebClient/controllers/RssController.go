@@ -56,8 +56,10 @@ func (ctrl *RssController) GetArticle(w http.ResponseWriter, r *http.Request) {
 	userId, _ := strconv.ParseUint(r.URL.Query().Get("userId"), 10, 32)
 	article := ctrl.service.GetArticle(uint(id), uint(userId))
 
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(article)
+	if id != 0 {
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(article)
+	}
 }
 
 // GetSettings - get app settings
