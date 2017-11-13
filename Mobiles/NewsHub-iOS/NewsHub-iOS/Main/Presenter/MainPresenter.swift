@@ -13,16 +13,18 @@ class MainPresenter {
         if preferences.integer(forKey: "userId") == 0 {
             router.routeToLogin(view!)
         } else {
-            guard let settings = preferences.object(forKey: "settings") as? Settings else { return }
+            let rssEnabled = preferences.bool(forKey: Constant.rssEnabledKey)
+            let vkEnabled = preferences.bool(forKey: Constant.vkEnabledKey)
+            let twitterEnabled = preferences.bool(forKey: Constant.twitterEnabledKey)
 
-            if (settings.RssEnabled) {
+            if (rssEnabled) {
                 router.routeToRss(view!)
                 return
             }
-            if (settings.VkNewsEnabled) {
+            if (vkEnabled) {
                 router.routeToVk()
             }
-            if (settings.TwitterEnabled) {
+            if (twitterEnabled) {
                 router.routeToTwitter()
             }
         }

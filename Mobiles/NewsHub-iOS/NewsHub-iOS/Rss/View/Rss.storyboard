@@ -9,7 +9,7 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--Feed List View Controller-->
+        <!--Feed List-->
         <scene sceneID="vHd-YR-4CQ">
             <objects>
                 <viewController storyboardIdentifier="FeedListViewController" id="yhL-kY-QHp" customClass="FeedListViewController" customModule="NewsHub_iOS" customModuleProvider="target" sceneMemberID="viewController">
@@ -55,7 +55,7 @@
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="1yN-sf-a6U"/>
                     </view>
-                    <navigationItem key="navigationItem" id="QbR-Xp-Wyy"/>
+                    <navigationItem key="navigationItem" title="Feed List" id="QbR-Xp-Wyy"/>
                     <connections>
                         <outlet property="tableView" destination="XMM-Yu-KOG" id="4IX-9D-4vN"/>
                     </connections>

@@ -12,6 +12,8 @@ class ArticlesListTableViewController: UITableViewController {
         
         presenter = ArticlesListPresenter(view: self)
         presenter?.getArticles(feedId: feedModel?.Feed?.Id ?? 0)
+        
+        navigationItem.title = feedModel?.Feed?.Name
     }
     
 

@@ -42,7 +42,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
     
     // MARK: Actions
     @IBAction func loginAction(_ sender: UIButton) {
-        waitIndicator.stopAnimating()
+        waitIndicator.startAnimating()
         presenter?.login(username: loginTextField.text, password: passwordTextField.text)
     }
     

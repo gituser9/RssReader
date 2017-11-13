@@ -43,7 +43,7 @@ func (service *UserService) SetConfig(cfg *models.Config) {
 // Auth - authorization an existing user
 func (service *UserService) Auth(name, password string) *models.Users {
 	var user models.Users
-	service.db.Where(&models.Users{Name: name}).First(&user)
+	service.db.Preload("Settings").Where(&models.Users{Name: name}).First(&user)
 	err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
 
 	if err != nil {

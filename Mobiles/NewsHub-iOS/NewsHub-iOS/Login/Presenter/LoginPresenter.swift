@@ -41,11 +41,10 @@ class LoginPresenter {
         let preferences = UserDefaults.standard
 
         // todo: consts
-        preferences.set(settings.TwitterEnabled, forKey: "twitterEnabled")
-        preferences.set(settings.VkNewsEnabled, forKey: "vkEnabled")
-        preferences.set(settings.RssEnabled, forKey: "rssEnabled")
+        preferences.set(settings.TwitterEnabled, forKey: Constant.twitterEnabledKey)
+        preferences.set(settings.VkNewsEnabled, forKey: Constant.vkEnabledKey)
+        preferences.set(settings.RssEnabled, forKey: Constant.rssEnabledKey)
         preferences.set(settings.UserId, forKey: "userId")
-        preferences.set(settings, forKey: "settings")
 
         let didSave = preferences.synchronize()
 
@@ -54,3 +53,50 @@ class LoginPresenter {
         }
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

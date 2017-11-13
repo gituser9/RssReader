@@ -37,8 +37,7 @@ type Users struct {
 	VkPassword        string `gorm:"column:VkPassword"`
 	TwitterScreenName string `gorm:"column:TwitterScreenName"`
 	VkNewsEnabled     bool   `gorm:"column:VkNewsEnabled"`
-	Settings          Settings
-	Feeds             []Feeds
+	Settings          Settings `gorm:"ForeignKey:UserId"`
 }
 
 func (Users) TableName() string {
