@@ -47,6 +47,8 @@ type SettingsData struct {
 	ShowPreviewButton bool   `json:"ShowPreviewButton"`
 	ShowTabButton     bool   `json:"ShowTabButton"`
 	ShowReadButton    bool   `json:"ShowReadButton"`
+	ShowLinkButton    bool   `json:"ShowLinkButton"`
+	ShowBookmarkButton    bool   `json:"ShowBookmarkButton"`
 }
 
 type VkData struct {

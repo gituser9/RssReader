@@ -1,4 +1,10 @@
 <md-content  id="twitter-content">
+    <div id="twitter-mode-switch">
+        <md-switch ng-model="IsSimpleVersion" aria-label="Simple View Mode">
+            <md-tooltip md-direction="top">Not save this state in settings</md-tooltip>
+            Simple View Mode
+        </md-switch>
+    </div>
     <!-- menu -->
     <aside id="right-menu" layout="column" layout-align="center center">
         <md-button md-no-ink class="md-primary" ng-click="tc.refresh()">Refresh</md-button>

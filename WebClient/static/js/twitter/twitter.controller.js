@@ -31,7 +31,7 @@ class TwitterCtrl {
     };
 
     search() {
-        this.twitterService.search(this.$scope.filters.SearchString, this.$scope.filters.SourceId);
+        this.twitterService.search(this.$scope.filters.SearchString, Number(this.$scope.filters.SourceId));
     };
 
     refresh() {

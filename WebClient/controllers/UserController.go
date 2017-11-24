@@ -58,19 +58,21 @@ func (ctrl *UserController) GetUserSettings(w http.ResponseWriter, r *http.Reque
 	}*/
 
 	result := models.SettingsData{
-		VkNewsEnabled:     settings.VkNewsEnabled,
-		MarkSameRead:      settings.MarkSameRead,
-		RssEnabled:        settings.RssEnabled,
-		ShowPreviewButton: settings.ShowPreviewButton,
-		ShowReadButton:    settings.ShowReadButton,
-		ShowTabButton:     settings.ShowTabButton,
-		UnreadOnly:        settings.UnreadOnly,
-		VkLogin:           user.VkLogin,
-		VkPassword:        user.VkPassword,
-		UserId:            userId,
-		TwitterEnabled:    settings.TwitterEnabled,
-		TwitterName:       user.TwitterScreenName,
+		VkNewsEnabled:        settings.VkNewsEnabled,
+		MarkSameRead:         settings.MarkSameRead,
+		RssEnabled:           settings.RssEnabled,
+		ShowPreviewButton:    settings.ShowPreviewButton,
+		ShowReadButton:       settings.ShowReadButton,
+		ShowTabButton:        settings.ShowTabButton,
+		UnreadOnly:           settings.UnreadOnly,
+		VkLogin:              user.VkLogin,
+		VkPassword:           user.VkPassword,
+		UserId:               userId,
+		TwitterEnabled:       settings.TwitterEnabled,
+		TwitterName:          user.TwitterScreenName,
 		TwitterSimpleVersion: settings.TwitterSimpleVersion,
+		ShowLinkButton:       settings.ShowLinkButton,
+		ShowBookmarkButton:   settings.ShowBookmarkButton,
 	}
 
 	w.Header().Set("Content-Type", "application/json")
@@ -80,16 +82,18 @@ func (ctrl *UserController) GetUserSettings(w http.ResponseWriter, r *http.Reque
 func (ctrl *UserController) SaveSettings(w http.ResponseWriter, r *http.Request) {
 	settingsData := postSettingsData(r)
 	settings := models.Settings{
-		MarkSameRead:      settingsData.MarkSameRead,
-		RssEnabled:        settingsData.RssEnabled,
-		UnreadOnly:        settingsData.UnreadOnly,
-		VkNewsEnabled:     settingsData.VkNewsEnabled,
-		ShowPreviewButton: settingsData.ShowPreviewButton,
-		ShowReadButton:    settingsData.ShowReadButton,
-		ShowTabButton:     settingsData.ShowTabButton,
-		UserId:            settingsData.UserId,
-		TwitterEnabled:    settingsData.TwitterEnabled,
+		MarkSameRead:         settingsData.MarkSameRead,
+		RssEnabled:           settingsData.RssEnabled,
+		UnreadOnly:           settingsData.UnreadOnly,
+		VkNewsEnabled:        settingsData.VkNewsEnabled,
+		ShowPreviewButton:    settingsData.ShowPreviewButton,
+		ShowReadButton:       settingsData.ShowReadButton,
+		ShowTabButton:        settingsData.ShowTabButton,
+		UserId:               settingsData.UserId,
+		TwitterEnabled:       settingsData.TwitterEnabled,
 		TwitterSimpleVersion: settingsData.TwitterSimpleVersion,
+		ShowLinkButton:       settingsData.ShowLinkButton,
+		ShowBookmarkButton:   settingsData.ShowBookmarkButton,
 	}
 	settingsObject := services.SettingsService{}
 	settingService := settingsObject.Init(ctrl.config)

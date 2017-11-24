@@ -72,7 +72,7 @@ class RssController {
         if (this.$scope.isBookmark) {
             this.rssService.getBookmarks(page);
         } else {
-            this.$scope.getArticles(this.$scope.currentFeed);
+            this.getArticles(this.$scope.currentFeed);
         }
     };
 

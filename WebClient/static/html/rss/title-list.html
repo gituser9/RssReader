@@ -11,21 +11,20 @@
             <label>Search</label>
             <input ng-model="filters.searchText">
         </md-input-container>
-        <div>{{ filters.searchText }}</div>
     </form>
 </aside>
 
-<div ng-show="!showArticle" flex layout="column">
+<div ng-show="!showArticle" flex layout="column" id="feed-articles-container" ng-class="{'tabs': tabs.length != 0, 'title-list': tabs.length == 0}">
     <h3>{{ currentFeedTitle }}</h3>
-    <md-button class="md-primary" ng-click="rssc.markReadAll()" ng-show="articles.length > 0 && !hideMarkReadAll">Mark
-        read all
+    <md-button class="md-raised" ng-click="rssc.markReadAll()" ng-show="articles.length > 0 && !hideMarkReadAll" style="width: 150px;">
+        Mark read all
     </md-button>
 
-    <div id="feed-articles-container">
+    <div>
         <article ng-repeat="article in articles" class="title" flex layout="column">
             <div layout="row">
                 <!--<a ng-if="settings.ShowOpenTab" class="material-icons col-md-1 bookmark" href="{{:: article.Link }}">link</a>-->
-                <a class="material-icons col-md-1 bookmark" href="{{:: article.Link }}" target="_blank">link</a>
+                <a ng-if="settings.ShowLinkButton" class="material-icons col-md-1 bookmark" href="{{:: article.Link }}" target="_blank">link</a>
                 <i ng-if="settings.ShowPreviewButton && article.Body.length == 0" class="material-icons col-md-1 bookmark" ng-click="rssc.showPreview(article)">keyboard_arrow_down</i>
                 <i ng-if="settings.ShowPreviewButton && article.Body.length > 0" class="material-icons col-md-1 bookmark" ng-click="rssc.hidePreview(article)">keyboard_arrow_up</i>
                 <i ng-if="settings.ShowTabButton" class="material-icons col-md-1 bookmark" ng-click="rssc.addTab(article.Id, article.Title)">tab</i>
@@ -34,8 +33,10 @@
                 <i ng-if="settings.ShowReadButton && !article.IsRead" class="material-icons col-md-1 bookmark" ng-click="rssc.toggleAsRead(article.Id, !article.IsRead)">label</i>
 
                 <!--<i class="material-icons col-md-1 bookmark" ng-if="article.IsBookmark" ng-click="rssc.toggleBookmark(article)">bookmark</i>-->
-                <i class="material-icons col-md-1 bookmark" ng-if="article.IsBookmark" ng-click="rssc.unsetBookmark(article.Id)">bookmark</i>
-                <i class="material-icons col-md-1 bookmark" ng-if="!article.IsBookmark" ng-click="rssc.setBookmark(article.Id)">bookmark_border</i>
+                <span ng-if="settings.ShowBookmarkButton">
+                    <i ng-if="article.IsBookmark"  class="material-icons col-md-1 bookmark" ng-click="rssc.unsetBookmark(article.Id)">bookmark</i>
+                    <i ng-if="!article.IsBookmark" class="material-icons col-md-1 bookmark" ng-click="rssc.setBookmark(article.Id)">bookmark_border</i>
+                </span>
                 <div class="article-title" ng-bind="article.Title" ng-click="rssc.getArticle(article)" ng-class="{ 'is-read': !article.IsRead }"></div>
             </div>
 
@@ -44,13 +45,13 @@
                 <md-button class="md-raised" ng-href="{{ article.Link }}" target="_blank">Read</md-button>
             </md-content>
         </article>
+
+
     </div>
+</div>
 
-
-
-
-    <div flex class="center" ng-show="articles.length > 0">
-        <paging
+<div flex class="center" ng-show="articles.length > 0">
+    <paging
             page="page"
             page-size="20"
             total="articlesCount"
@@ -61,13 +62,12 @@
             show-prev-next="true"
             show-first-last="true"
             paging-action="rssc.getArticlesByPage(page)"
-        >
-        </paging>
-    </div>
+    >
+    </paging>
 </div>
 
 <!-- one article -->
-<article ng-show="showArticle" flex layout="column" layout-align="start start">
+<article ng-show="showArticle" flex layout="column" layout-align="start start" id="article-preview-container">
     <h3>
         <a class="title-link" ng-href="{{ article.Link }}" target="_blank" ng-bind="article.Title"></a>
     </h3>

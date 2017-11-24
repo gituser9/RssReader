@@ -22,10 +22,10 @@ interface NewsHubApi {
 
     // Rss
     @GET("get-all")
-    fun getAllFeeds(@Query("id") count: Int): Call<List<FeedModel>>
+    fun getAllFeeds(@Query("id") id: Int): Call<List<FeedModel>>
 
     @GET("get-settings")
-    fun getSettings(@Query("id") count: Int): Call<Settings>
+    fun getSettings(@Query("id") id: Int): Call<Settings>
 
     @GET("get-articles")
     fun getArticles(@Query("id") id: Int, @Query("page") page: Int, @Query("userId") userId: Int): Call<Articles>

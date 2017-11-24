@@ -56,6 +56,8 @@ type Settings struct {
 	ShowPreviewButton bool `gorm:"column:ShowPreviewButton"`
 	ShowTabButton     bool `gorm:"column:ShowTabButton"`
 	ShowReadButton    bool `gorm:"column:ShowReadButton"`
+	ShowLinkButton    bool `gorm:"column:ShowLinkButton"`
+	ShowBookmarkButton    bool `gorm:"column:ShowBookmarkButton"`
 }
 
 func (Settings) TableName() string {

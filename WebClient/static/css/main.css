@@ -62,9 +62,17 @@ body {
 
 /* Rss
 ===================================================================================================================== */
-#feed-list-container,
-#feed-articles-container {
+#feed-list-container {
     height: calc(100vh - 64px - 48px);
+    overflow: auto;
+}
+.title-list,
+#article-preview-container {
+    height: calc(100vh - 64px - 80px);
+    overflow: auto;
+}
+#tab-container {
+    height: calc(100vh - 64px - 60px);
     overflow: auto;
 }
 .feed-title,
@@ -149,11 +157,6 @@ button {
     color: #fff;
 }
 
-/* rss-fixme */
-.tabs {
-    height: 1100px !important;
-}
-
 .content-preview img {
     max-width: 100%;
 }
@@ -235,6 +238,11 @@ button {
     background: #fff;
     border-radius: 5px;
     box-shadow: 0 1px 0 0 #d7d8db, 0 0 0 1px #e3e4e8;
+}
+#twitter-mode-switch {
+    position: absolute;
+    left: 20px;
+    top: 20px;
 }
 .twitter-tweet.twitter-tweet-rendered {
     margin: auto !important;

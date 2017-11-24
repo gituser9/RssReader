@@ -149,6 +149,9 @@ func (service *RssService) UpdateFeed(url string, userId uint) {
 		log.Println("get rss error: ", err.Error())
 		return
 	}
+	if rssBody == nil {
+		return
+	}
 
 	// get feed from DB by url, if not - add
 	defer rssBody.Close()
@@ -436,7 +439,7 @@ func (service *RssService) getFeedBody(url string) (io.ReadCloser, error) {
 
 	if response.StatusCode == 404 {
 		log.Println(url, "404")
-		return nil, err
+		return nil, nil
 	}
 
 	return response.Body, nil

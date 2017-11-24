@@ -38,7 +38,7 @@ class VkController {
     };
 
     search() {
-        this.vkService.search(this.$scope.filters.SearchString, this.$scope.filters.GroupId);
+        this.vkService.search(this.$scope.filters.SearchString, Number(this.$scope.filters.GroupId));
     };
 }
 VkController.$inject = ['$scope', 'vkService'];

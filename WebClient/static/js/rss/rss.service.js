@@ -194,11 +194,14 @@ class RssService {
             this.article = response.data;
             this.showArticle = true;
 
-            this.articles.forEach(function(item) {
-                if (item.Id === this.article.Id) {
-                    item.IsRead = true;
-                }
-            });
+            if (this.article) {
+                this.articles.forEach(function(item) {
+                    if (item.Id === this.article.Id) {
+                        item.IsRead = true;
+                    }
+                });
+            }
+
         });
     };
 

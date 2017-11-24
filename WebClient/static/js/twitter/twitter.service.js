@@ -74,6 +74,7 @@ class TwitterService {
     getByFilters(filters) {
         this.model.News = [];
         let data = {
+            SearchString: filters.SearchString,
             SourceId: Number(filters.SourceId)
         };
         this.$http.post('/get-twitter-news-by-filters', data).then((response) => {
