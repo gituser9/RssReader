@@ -11,6 +11,7 @@ class RssController {
         this.$scope.isBookmark = false;
         this.$scope.isAuth = false;
         this.$scope.showArticleCount = true;
+        this.$scope.showFeedList = true;
         this.$scope.currentFeedId = 0;
         this.$scope.tabs = [];
         this.$scope.filters = {
@@ -235,6 +236,10 @@ class RssController {
     hidePreview(article) {
         article.Body = "";
     };
+
+    toggleFeedList() {
+        this.$scope.showFeedList = !this.$scope.showFeedList;
+    }
 
     /* Modals
     =========================================================== */

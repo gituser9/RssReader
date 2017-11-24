@@ -9,6 +9,10 @@
         <md-button class="md-primary" ng-click="rssc.removeAllTabs()" ng-show="tabs.length != 0">
             Close all tabs
         </md-button>
+        <md-button class="md-icon-button" aria-label="More" ng-click="rssc.toggleFeedList()">
+            <md-tooltip md-direction="right">Hide Feed List</md-tooltip>
+            <i class="material-icons">keyboard_arrow_left</i>
+        </md-button>
     </div>
     <md-progress-circular ng-if="showWaitBar" md-mode="indeterminate" style="position: absolute; top: 45%; left: 50px"></md-progress-circular>
 

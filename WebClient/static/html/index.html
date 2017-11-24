@@ -80,11 +80,15 @@
 <div ng-if="settings.RssEnabled && currentSource == Sources.Rss" ng-controller="rssCtrl as rssc" layout="row" style="height: calc(100vh - 64px - 48px);">
     <!-- Rss -->
     <!-- left side -->
-    <div flex="30">
-        <ng-include src="'static/html/rss/feed-list.html'"></ng-include>
+    <div flex="30" ng-show="showFeedList">
+        <span>
+            <ng-include src="'static/html/rss/feed-list.html'"></ng-include>
+        </span>
     </div>
-
-
+    <md-button ng-show="!showFeedList" class="md-icon-button" aria-label="More" ng-click="rssc.toggleFeedList()">
+        <md-tooltip md-direction="right">Show Feed List</md-tooltip>
+        <i class="material-icons">keyboard_arrow_right</i>
+    </md-button>
 
     <!-- right side -->
     <section id="feed-articles" flex layout="column">
