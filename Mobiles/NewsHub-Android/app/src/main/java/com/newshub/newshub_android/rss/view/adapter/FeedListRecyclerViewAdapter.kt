@@ -6,13 +6,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-
 import com.newshub.newshub_android.R
-import com.newshub.newshub_android.rss.view.FeedListFragment.OnListFragmentInteractionListener
 import com.newshub.newshub_android.rss.model.Feed
 import com.newshub.newshub_android.rss.model.FeedModel
-
-import java.util.ArrayList
+import com.newshub.newshub_android.rss.view.FeedListFragment.OnListFragmentInteractionListener
 
 class FeedListViewHolder(var view: View) : RecyclerView.ViewHolder(view) {
     lateinit var mItem: Feed
@@ -20,7 +17,7 @@ class FeedListViewHolder(var view: View) : RecyclerView.ViewHolder(view) {
 }
 
 
-class FeedListRecyclerViewAdapter() : RecyclerView.Adapter<FeedListViewHolder>() {
+class FeedListRecyclerViewAdapter : RecyclerView.Adapter<FeedListViewHolder>() {
 
     var feeds: List<FeedModel> = emptyList()
     lateinit var listener: OnListFragmentInteractionListener
@@ -35,13 +32,13 @@ class FeedListRecyclerViewAdapter() : RecyclerView.Adapter<FeedListViewHolder>()
     override fun onBindViewHolder(holder: FeedListViewHolder, position: Int) {
         val feedModel = feeds[position]
         val context = holder.view.context
-        holder.mItem = feedModel.feed!!
+        holder.mItem = feedModel.feed
 
         if (feedModel.isExistUnread) {
             holder.mContentView.text = context.getString(R.string.feed_row, feedModel.feed?.name, feedModel.articlesCount.toString())
             holder.mContentView.typeface = Typeface.DEFAULT_BOLD
         } else {
-            holder.mContentView.text = feedModel.feed?.name
+            holder.mContentView.text = feedModel.feed.name
             holder.mContentView.typeface = Typeface.DEFAULT
         }
 
@@ -50,8 +47,6 @@ class FeedListRecyclerViewAdapter() : RecyclerView.Adapter<FeedListViewHolder>()
         }
     }
 
-    override fun getItemCount(): Int {
-        return feeds.size
-    }
+    override fun getItemCount(): Int = feeds.size
 
 }

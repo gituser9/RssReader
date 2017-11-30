@@ -37,13 +37,5 @@ type OPML struct {
 type OPMLOutline struct {
 	Title string `xml:"title,attr"`
 	URL   string `xml:"xmlUrl,attr"`
-	//Version                string `xml:"version, attr"`
-	//Description            string `xml:"description,attr"`
-	//Type                   string `xml:"type,attr"`
-	//ArchiveMode            string `xml:"archiveMode,attr"`
-	Text string `xml:"text,attr"`
-	//ID                     uint64 `xml:"id"`
-	//FetchInterval          int    `xml:"fetchInterval,attr"`
-	//MaxArticleAge          int    `xml:"maxArticleAge,attr"`
-	//UseCustomFetchInterval bool   `xml:"useCustomFetchInterval,attr"`
+	Text  string `xml:"text,attr"`
 }

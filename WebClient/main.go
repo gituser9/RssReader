@@ -19,30 +19,6 @@ var conf models.Config
 
 const defaultConfigPath = "./cfg.json"
 
-func startTimers(config *models.Config) {
-	// todo: DB backup timer (24 hours)
-	service := new(services.RssService).Init(config)
-
-	updateTime := time.Duration(service.AppSettings.UpdateMinutes) * time.Minute
-	updateTimer := time.NewTicker(updateTime).C
-	weekTimer := time.NewTicker(time.Hour * 168).C // week
-
-	// on start
-	//service.CleanOldArticles()
-	go service.UpdateAllFeeds()
-
-	for {
-		select {
-		case <-updateTimer:
-			service.UpdateAllFeeds()
-		case <-weekTimer:
-			service.CleanOldArticles()
-			//			service.Export()
-			// service.Backup()
-		}
-	}
-}
-
 func init() {
 	// read config file
 	pathPtr := flag.String("config", defaultConfigPath, "Path for configuration file")
@@ -79,8 +55,6 @@ func main() {
 	userCtrl := new(controllers.UserController).Init(&conf)
 	vkCtrl := new(controllers.VkController).Init(&conf)
 	twitterCtrl := new(controllers.TwitterController).Init(&conf)
-
-	go startTimers(&conf)
 
 	// todo: websocket for update feed list
 	// todo: gorilla mux for REST API

@@ -55,7 +55,6 @@ class FeedListFragment : BaseRssFragment() {
                 fragment.arguments = bundle
                 fragment.feedModel = item
 
-
                 val transaction = activity.supportFragmentManager.beginTransaction()
                 transaction.replace(R.id.content_rss, fragment)
                 transaction.addToBackStack("Feeds")

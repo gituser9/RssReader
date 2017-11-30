@@ -21,4 +21,8 @@
     <string name="article_image">Article Image</string>
     <string name="login_data_required">Login and Password is required</string>
     <string name="login_data_error">Login error</string>
+    <string name="group_icon">Group Icon</string>
+    <string name="image">Image</string>
+    <string name="open">Open</string>
+    <string name="open_link">Open Link</string>
 </resources>

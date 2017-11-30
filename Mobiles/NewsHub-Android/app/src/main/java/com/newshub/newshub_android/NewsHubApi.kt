@@ -3,11 +3,11 @@ package com.newshub.newshub_android
 import com.newshub.newshub_android.general.LoginData
 import com.newshub.newshub_android.general.User
 import com.newshub.newshub_android.rss.model.Article
-import com.newshub.newshub_android.settings.model.Settings
-import com.newshub.newshub_android.rss.model.ArticleTitle
 import com.newshub.newshub_android.rss.model.Articles
 import com.newshub.newshub_android.rss.model.FeedModel
-
+import com.newshub.newshub_android.settings.model.Settings
+import com.newshub.newshub_android.vk.model.VkNews
+import com.newshub.newshub_android.vk.model.VkPage
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -32,7 +32,14 @@ interface NewsHubApi {
 
     @GET("get-article")
     fun getArticle(@Query("id") id: Int): Call<Article>
-    
+
     @GET("mark-read-all")
     fun markReadAll(@Query("id") id: Int, @Query("userId") userId: Int): Call<Any>
+
+    // Vk
+    @GET("get-vk-news")
+    fun getVkNews(@Query("id") id: Int, @Query("page") page: Int): Call<List<VkNews>>
+
+    @GET("get-vk-page")
+    fun getVkPage(@Query("id") id: Int): Call<VkPage>
 }

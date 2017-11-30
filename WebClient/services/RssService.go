@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"encoding/xml"
-	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -124,62 +123,6 @@ func (service *RssService) GetArticle(id uint, userId uint) *models.Articles {
 	return &article
 }
 
-// UpdateAllFeeds - update all feeds
-func (service *RssService) UpdateAllFeeds() {
-	var feeds []models.Feeds
-	service.dbp().Find(&feeds)
-	var wg sync.WaitGroup
-
-	for _, feed := range feeds {
-		wg.Add(1)
-		go func(feed models.Feeds) {
-			service.UpdateFeed(feed.Url, feed.UserId)
-			wg.Done()
-		}(feed)
-	}
-
-	wg.Wait()
-}
-
-// UpdateFeed - update one feed
-func (service *RssService) UpdateFeed(url string, userId uint) {
-	rssBody, err := service.getFeedBody(url)
-
-	if err != nil {
-		log.Println("get rss error: ", err.Error())
-		return
-	}
-	if rssBody == nil {
-		return
-	}
-
-	// get feed from DB by url, if not - add
-	defer rssBody.Close()
-	var rss models.Feeds
-	service.dbp().Preload("Articles").
-		Where(&models.Feeds{Url: url, UserId: userId}).
-		Find(&rss)
-
-	if rss.Url == "" {
-		service.AddFeed(url, userId)
-		return
-	}
-
-	// unmarshal xml
-	var xmlModel models.XMLFeed
-	decoder := xml.NewDecoder(rssBody)
-	decoder.CharsetReader = charset.NewReaderLabel
-	err = decoder.Decode(&xmlModel)
-
-	if err != nil {
-		log.Println("unmarshal error: " + err.Error())
-		return
-	}
-
-	// update DB
-	service.updateArticles(rss, xmlModel)
-}
-
 // Import - import OPML file
 func (service *RssService) Import(data []byte, userId uint) {
 	// parse opml
@@ -193,19 +136,19 @@ func (service *RssService) Import(data []byte, userId uint) {
 		return
 	}
 
-	var wg sync.WaitGroup
+	/*var wg sync.WaitGroup
 
 	// update feeds
 	for _, item := range opml.Outlines {
 		wg.Add(1)
 		//go service.UpdateFeed(item.URL, &wg, userId)
 		go func(item models.OPMLOutline) {
-			service.UpdateFeed(item.URL, userId)
+			//service.UpdateFeed(item.URL, userId)
 			wg.Done()
 		}(item)
 	}
 
-	wg.Wait()
+	wg.Wait()*/
 }
 
 // Export - export feeds to OPML file
@@ -273,7 +216,7 @@ func (service *RssService) AddFeed(url string, userId uint) {
 	dbModel := service.fromXMLToDbStructure(&xmlModel, userId)
 	dbModel.Url = url
 	service.dbp().Create(&dbModel)
-	service.UpdateFeed(url, userId)
+	//service.UpdateFeed(url, userId)
 
 	if err != nil {
 		log.Println("insert error", err.Error())
@@ -333,15 +276,6 @@ func (service *RssService) MarkReadAll(id uint) {
 		Where(&models.Articles{FeedId: id}).
 		Not(&models.Articles{IsRead: true}).
 		UpdateColumn(models.Articles{IsRead: true})
-}
-
-// CleanOldArticles - remove articles where create date less mounth
-func (service *RssService) CleanOldArticles() {
-	now := time.Now().Unix()
-	month := int64(60 * 60 * 24 * 30)
-	queryTimestamp := now - month
-	// fixme
-	service.dbp().Where("Date < ? AND IsBookmark=0 AND IsRead=1", queryTimestamp).Delete(models.Articles{})
 }
 
 // Search - search articles by title or body
@@ -427,65 +361,6 @@ func (service *RssService) dbp() *gorm.DB {
 	}
 
 	return service.db
-}
-
-func (service *RssService) getFeedBody(url string) (io.ReadCloser, error) {
-	response, err := http.Get(url)
-
-	if err != nil {
-		log.Println(err.Error())
-		return nil, err
-	}
-
-	if response.StatusCode == 404 {
-		log.Println(url, "404")
-		return nil, nil
-	}
-
-	return response.Body, nil
-}
-
-func (service *RssService) updateArticles(rss models.Feeds, xmlModel models.XMLFeed) {
-	links := make([]string, len(rss.Articles))
-	var wg sync.WaitGroup
-
-	for i, article := range rss.Articles {
-		links[i] = article.Link
-	}
-
-	newArticles := make([]models.Articles, len(xmlModel.Articles))
-
-	for i, article := range xmlModel.Articles {
-		wg.Add(1)
-
-		go func(i int, article models.XMLArticle) {
-			defer wg.Done()
-			isExist := false
-
-			// todo: go and channels
-			for _, item := range links {
-				if item == article.Link {
-					isExist = true
-					break
-				}
-			}
-
-			if !isExist {
-				newArticle := service.rssArticleFromXML(&article)
-				newArticle.FeedId = rss.Id
-				newArticles[i] = newArticle
-			}
-
-		}(i, article)
-	}
-
-	wg.Wait()
-
-	for _, article := range newArticles {
-		if article.FeedId != 0 {
-			service.dbp().Create(&article)
-		}
-	}
 }
 
 func (service *RssService) reReadConfig() {

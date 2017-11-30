@@ -2,17 +2,15 @@ package com.newshub.newshub_android
 
 import android.content.Context
 import android.content.Intent
+import android.os.Bundle
 import android.support.design.widget.TabLayout
 import android.support.v4.view.ViewPager
 import android.support.v7.app.AppCompatActivity
-import android.os.Bundle
 import android.view.View
 import android.widget.ProgressBar
 import android.widget.Toast
-
 import com.newshub.newshub_android.general.AppSettings
 import com.newshub.newshub_android.settings.model.Settings
-
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -55,15 +53,13 @@ class MainActivity : AppCompatActivity() {
         App.api?.getSettings(userId)?.enqueue(object : Callback<Settings> {
             override fun onResponse(call: Call<Settings>, response: Response<Settings>) {
                 settings = response.body()
-                //                posts.addAll(response.body());
-                //                recyclerView.getAdapter().notifyDataSetChanged();
+
                 mainProgressBar.visibility = View.GONE
                 createTabs(settings)
                 setupTabLayout()
             }
 
             override fun onFailure(call: Call<Settings>, t: Throwable) {
-                //                System.out.println(t.getMessage());
                 mainProgressBar.visibility = View.GONE
                 Toast.makeText(this@MainActivity, "An error occurred during networking", Toast.LENGTH_SHORT).show()
             }
@@ -92,11 +88,11 @@ class MainActivity : AppCompatActivity() {
             tabLayout.addTab(tabLayout.newTab().setText("Rss"))
             ++sourceNum
         }
-        /*if (settings.isVkNewsEnabled()) {
+        if (settings.isVkNewsEnabled) {
             tabLayout.addTab(tabLayout.newTab().setText("Vk"));
-            ++sourceNum;
+            ++sourceNum
         }
-        if (settings.isTwitterEnabled()) {
+        /*if (settings.isTwitterEnabled()) {
             tabLayout.addTab(tabLayout.newTab().setText("Twitter"));
             ++sourceNum;
         }*/
