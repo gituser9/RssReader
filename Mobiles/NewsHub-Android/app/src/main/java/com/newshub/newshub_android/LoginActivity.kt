@@ -2,19 +2,17 @@ package com.newshub.newshub_android
 
 import android.app.Activity
 import android.content.Context
-import android.support.v7.app.AppCompatActivity
+import android.content.Intent
 import android.os.Bundle
+import android.support.v7.app.AppCompatActivity
 import android.view.View
 import android.widget.Toast
 import com.newshub.newshub_android.general.LoginData
 import com.newshub.newshub_android.general.User
-import com.newshub.newshub_android.rss.model.Articles
 import kotlinx.android.synthetic.main.activity_login.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import android.content.Intent
-
 
 
 class LoginActivity : AppCompatActivity() {
