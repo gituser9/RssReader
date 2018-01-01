@@ -1,33 +1,34 @@
 package main
 
-
 import (
-	//"github.com/jinzhu/gorm"
-	//_ "github.com/jinzhu/gorm/dialects/mysql"
 	"github.com/jinzhu/gorm"
+	_ "github.com/jinzhu/gorm/dialects/mysql"
 
-	"model"
 	"encoding/xml"
-	"golang.org/x/net/html/charset"
-	"log"
 	"io"
+	"log"
+	"model"
 	"net/http"
 	"sync"
 	"time"
+
+	"golang.org/x/net/html/charset"
 )
 
 // Updater - service
 type Updater struct {
-	db          *gorm.DB
-	config      *model.Config
-	saveChan chan saveData
+	db       *gorm.DB
+	config   *model.Config
+	getChan  chan getData
+	saveChan chan model.Articles
 }
 
-type saveData struct {
-	Rss model.Feeds
+type getData struct {
+	Rss  model.Feeds
 	Body io.ReadCloser
 }
 
+// CreateUpdater - create and configure Updater struct
 func CreateUpdater(cfg *model.Config) *Updater {
 	db, err := gorm.Open(cfg.Driver, cfg.ConnectionString)
 
@@ -38,13 +39,16 @@ func CreateUpdater(cfg *model.Config) *Updater {
 	service := new(Updater)
 	service.db = db
 	service.config = cfg
-	service.saveChan = make(chan saveData, 0)
+	service.getChan = make(chan getData, 0)
+	service.saveChan = make(chan model.Articles, 0)
 
 	go service.updateFeedRunner()
+	go service.saveArticle()
 
 	return service
 }
 
+// Update - get new feeds for users
 func (service *Updater) Update() {
 	settings := make([]model.Settings, 0)
 	service.db.Where(&model.Settings{RssEnabled: true}).Find(&settings)
@@ -64,7 +68,7 @@ func (service *Updater) Update() {
 				continue
 			}
 
-			service.saveChan <- saveData{Body: rssBody, Rss: feed}
+			service.getChan <- getData{Body: rssBody, Rss: feed}
 		}
 	}
 }
@@ -87,7 +91,7 @@ func (service Updater) getFeedBody(url string) (io.ReadCloser, error) {
 func (service Updater) updateFeedRunner() {
 	for {
 		select {
-		case data := <-service.saveChan:
+		case data := <-service.getChan:
 			var xmlModel model.XMLFeed
 			decoder := xml.NewDecoder(data.Body)
 			decoder.CharsetReader = charset.NewReaderLabel
@@ -107,45 +111,30 @@ func (service Updater) updateFeedRunner() {
 }
 
 func (service *Updater) updateArticles(rss model.Feeds, xmlModel model.XMLFeed) {
-	links := make([]string, len(rss.Articles))
 	var wg sync.WaitGroup
+	links := make(map[string]bool, 0, len(rss.Articles))
 
 	for i, article := range rss.Articles {
-		links[i] = article.Link
+		links[article.Link] = true
 	}
-
-	newArticles := make([]model.Articles, len(xmlModel.Articles))
 
 	for i, article := range xmlModel.Articles {
 		wg.Add(1)
 
 		go func(i int, article model.XMLArticle) {
 			defer wg.Done()
-			isExist := false
 
-			// todo: go and channels
-			for _, item := range links {
-				if item == article.Link {
-					isExist = true
-					break
-				}
-			}
-			if !isExist {
+			if _, isExist := links[article.Link]; !isExist {
 				newArticle := service.rssArticleFromXML(&article)
 				newArticle.FeedId = rss.Id
-				newArticles[i] = newArticle
+
+				service.saveChan <- newArticle
 			}
 
 		}(i, article)
 	}
 
 	wg.Wait()
-
-	for _, article := range newArticles {
-		if article.FeedId != 0 {
-			service.db.Create(&article)
-		}
-	}
 }
 
 // rssArticleFromXML - create RssArticle from XMLArticle
@@ -159,4 +148,15 @@ func (service *Updater) rssArticleFromXML(xmlArticle *model.XMLArticle) model.Ar
 	}
 
 	return rssArticle
+}
+
+func (service *Updater) saveArticle() {
+	for {
+		select {
+		case article := <-service.saveChan:
+			if article.FeedId != 0 {
+				service.db.Create(&article)
+			}
+		}
+	}
 }

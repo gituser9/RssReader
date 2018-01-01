@@ -9,7 +9,6 @@ import (
 	"net/http"
 	"os"
 	"sync"
-	"time"
 
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
@@ -136,19 +135,7 @@ func (service *RssService) Import(data []byte, userId uint) {
 		return
 	}
 
-	/*var wg sync.WaitGroup
-
-	// update feeds
-	for _, item := range opml.Outlines {
-		wg.Add(1)
-		//go service.UpdateFeed(item.URL, &wg, userId)
-		go func(item models.OPMLOutline) {
-			//service.UpdateFeed(item.URL, userId)
-			wg.Done()
-		}(item)
-	}
-
-	wg.Wait()*/
+	// todo: send message for update
 }
 
 // Export - export feeds to OPML file
@@ -173,9 +160,9 @@ func (service *RssService) Export(userId uint) {
 
 	// create OPML file
 	xmlString, _ := xml.Marshal(opml)
-	bytes, _ := ioutil.ReadFile(service.config.FilePath)
+	opmlBytes, _ := ioutil.ReadFile(service.config.FilePath)
 	var conf models.Config
-	json.Unmarshal(bytes, &conf)
+	json.Unmarshal(opmlBytes, &conf)
 
 	if len(conf.OPMLPath) > 0 {
 		go ioutil.WriteFile(conf.OPMLPath+"/rss.opml", xmlString, 0777)
@@ -213,10 +200,8 @@ func (service *RssService) AddFeed(url string, userId uint) {
 	}
 
 	// insert in DB
-	dbModel := service.fromXMLToDbStructure(&xmlModel, userId)
-	dbModel.Url = url
-	service.dbp().Create(&dbModel)
-	//service.UpdateFeed(url, userId)
+	service.dbp().Create(&models.Feeds{Url: url, UserId: userId, Name: xmlModel.RssName})
+	// todo: send message for update
 
 	if err != nil {
 		log.Println("insert error", err.Error())
@@ -253,7 +238,7 @@ func (service *RssService) ToggleBookmark(id uint, isBookmark bool) {
 
 // GetBookmarks - get all bookmarks
 func (service *RssService) GetBookmarks(page int64, userId uint) *models.ArticlesJSON {
-	articles := []models.Articles{}
+	var articles []models.Articles
 	//whereObject := models.Articles{IsBookmark: true, Feed: models.Feeds{UserId: userId}}
 	whereObject := models.Articles{IsBookmark: true}
 	offset := service.config.PageSize * (int(page) - 1)
@@ -313,34 +298,6 @@ func (service *RssService) ToggleAsRead(id uint, isRead bool) {
 /*==============================================================================
 	Private
 ==============================================================================*/
-// fromXMLToDbStructure - create Rss structure from XMLFeed structure
-func (service *RssService) fromXMLToDbStructure(xmlModel *models.XMLFeed, userId uint) *models.Feeds {
-	feed := models.Feeds{
-		Name:     xmlModel.RssName,
-		Articles: make([]models.Articles, 0),
-		UserId:   userId,
-	}
-
-	for _, article := range xmlModel.Articles {
-		rssArticle := service.rssArticleFromXML(&article)
-		feed.Articles = append(feed.Articles, rssArticle)
-	}
-
-	return &feed
-}
-
-// rssArticleFromXML - create RssArticle from XMLArticle
-func (service *RssService) rssArticleFromXML(xmlArticle *models.XMLArticle) models.Articles {
-	rssArticle := models.Articles{
-		Body:   xmlArticle.Description,
-		Title:  xmlArticle.Title,
-		Link:   xmlArticle.Link,
-		Date:   time.Now().Unix(),
-		IsRead: false,
-	}
-
-	return rssArticle
-}
 
 func (service *RssService) markSameArticles(url string, feedID uint) {
 	updateModel := models.Articles{IsRead: true}
@@ -361,14 +318,4 @@ func (service *RssService) dbp() *gorm.DB {
 	}
 
 	return service.db
-}
-
-func (service *RssService) reReadConfig() {
-	bytes, err := ioutil.ReadFile(service.config.FilePath)
-
-	if err != nil {
-		log.Println("Read config file error")
-	} else {
-		json.Unmarshal(bytes, &service.config)
-	}
 }
