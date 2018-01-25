@@ -1,15 +1,12 @@
 package com.newshub.newshub_android.vk
 
-import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
-import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-
 import com.newshub.newshub_android.R
 import com.newshub.newshub_android.general.EndlessRecyclerViewScrollListener
 import com.newshub.newshub_android.vk.presenter.VkPresenter
@@ -51,10 +48,16 @@ class VkFragment : Fragment() {
             }
         }
         vkRecyclerView.addOnScrollListener(scrollListener)
+        vkSwiperefresh.setOnRefreshListener {
+            page = 0
+            adapter.resetNews()
+            getNews()
+        }
     }
 
     private fun getNews() {
         ++page
         presenter.getNews(page)
+        vkSwiperefresh.isRefreshing = false
     }
 }

@@ -39,7 +39,6 @@ class VkRecyclerViewAdapter(var context: Context) : RecyclerView.Adapter<VkViewH
     private var news: MutableList<VkNews> = mutableListOf()
 
 
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VkViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.fragment_vk_item, parent, false)
         return VkViewHolder(view)
@@ -98,6 +97,11 @@ class VkRecyclerViewAdapter(var context: Context) : RecyclerView.Adapter<VkViewH
 
     fun addNews(newNews: List<VkNews>) {
         news.addAll(newNews)
+        notifyDataSetChanged()
+    }
+
+    fun resetNews() {
+        news.clear()
         notifyDataSetChanged()
     }
 

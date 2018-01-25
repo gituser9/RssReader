@@ -6,12 +6,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-
 import com.newshub.newshub_android.R
-import com.newshub.newshub_android.rss.view.ArticlesListFragment.OnListFragmentInteractionListener
 import com.newshub.newshub_android.rss.model.ArticleTitle
-
-import java.util.ArrayList
+import com.newshub.newshub_android.rss.view.ArticlesListFragment.OnListFragmentInteractionListener
 
 
 class ArticlesListViewHolder(var mView: View) : RecyclerView.ViewHolder(mView) {
@@ -52,5 +49,10 @@ class ArticlesListRecyclerViewAdapter : RecyclerView.Adapter<ArticlesListViewHol
 
     fun setArticles(articles: List<ArticleTitle>) {
         this.articles.addAll(articles)
+    }
+
+    fun resetArticles() {
+        articles.clear()
+        notifyDataSetChanged()
     }
 }

@@ -6,7 +6,6 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-
 import com.newshub.newshub_android.ItemDivider
 import com.newshub.newshub_android.R
 import com.newshub.newshub_android.general.AppSettings
@@ -65,7 +64,7 @@ class ArticlesListFragment : BaseRssFragment() {
         recyclerView = view.findViewById(R.id.articles_list_recycler_view)
 
         // Set the adapter
-        val context = view.getContext()
+        val context = view.context
 
         layoutManager = LinearLayoutManager(context)
         recyclerView.layoutManager = layoutManager
@@ -86,6 +85,11 @@ class ArticlesListFragment : BaseRssFragment() {
         btnMarkReadAll.setOnClickListener {
             presenter.markReadAll(feedModel.feed.id, AppSettings.userId)
         }
+        articleListSwiperefresh.setOnRefreshListener {
+            page = 0
+            adapter.resetArticles()
+            getArticles()
+        }
     }
 
     override fun onDetach() {
@@ -100,11 +104,13 @@ class ArticlesListFragment : BaseRssFragment() {
     private fun getArticles() {
         ++page
         presenter.getArticles(feedModel.feed.id, page)
+        println("${feedModel.feed.id} $page ${AppSettings.userId}")
     }
 
     fun addArticles(articles: List<ArticleTitle>) {
         adapter.setArticles(articles)
         adapter.notifyDataSetChanged()
+        articleListSwiperefresh.isRefreshing = false
     }
 
     fun setAllAsRead() {
