@@ -8,11 +8,10 @@ import (
 	"net/http"
 	"os"
 	"strconv"
-	"time"
 
 	"./controllers"
 	"./models"
-	"./services"
+	// "./services"
 )
 
 var conf models.Config
@@ -71,7 +70,7 @@ func main() {
 	http.HandleFunc("/add-article", rssCtrl.AddFeed)
 	http.HandleFunc("/delete", rssCtrl.Delete)
 	http.HandleFunc("/set-new-name", rssCtrl.SetNewFeedName)
-	http.HandleFunc("/update-all", rssCtrl.UpdateAll)
+	// http.HandleFunc("/update-all", rssCtrl.UpdateAll)
 	http.HandleFunc("/upload-opml", rssCtrl.UploadOpml)
 	http.HandleFunc("/toggle-bookmark", rssCtrl.ToggleBookmark)
 	http.HandleFunc("/get-bookmarks", rssCtrl.GetBookmarks)

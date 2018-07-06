@@ -22,10 +22,10 @@ class LoginPresenter {
             self?.saveSettings(settings)
 
             // routes
-            if (settings.RssEnabled) {
+            //if (settings.RssEnabled) {
                 self?.router.routeToRss(viewController)
                 return
-            }
+            //}
             if (settings.VkNewsEnabled) {
                 self?.router.routeToVk()
             }

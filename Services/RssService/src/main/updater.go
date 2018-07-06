@@ -11,6 +11,8 @@ import (
 	"net/http"
 	"time"
 
+	"encoding/json"
+
 	"golang.org/x/net/html/charset"
 )
 
@@ -45,6 +47,12 @@ func CreateUpdater(cfg *model.Config) *Updater {
 
 // Update - get new feeds for users
 func (service *Updater) Update() {
+	userIds, err := getUserIds(service.config.UserServiceAddress)
+
+	if err != nil {
+		return
+	}
+
 	db, err := gorm.Open(service.config.Driver, service.config.ConnectionString)
 
 	if err != nil {
@@ -55,15 +63,9 @@ func (service *Updater) Update() {
 	defer db.Close()
 	service.db = db
 
-	settings := make([]model.Settings, 0)
-	service.db.Where(&model.Settings{RssEnabled: true}).Find(&settings)
-
-	if settings == nil || len(settings) == 0 {
-		return
-	}
-	for _, item := range settings {
+	for _, id := range userIds {
 		var feeds []model.Feeds
-		service.db.Where(&model.Feeds{UserId: item.UserId}).Find(&feeds)
+		service.db.Where(&model.Feeds{UserId: id}).Find(&feeds)
 
 		if feeds == nil || len(feeds) == 0 {
 			continue
@@ -88,7 +90,7 @@ func (service Updater) getFeedBody(url string) (io.ReadCloser, error) {
 	response, err := http.Get(url)
 
 	if err != nil {
-		log.Println(err.Error())
+		log.Println("get feed error:", err.Error())
 		return nil, err
 	}
 	if response.StatusCode == 404 {
@@ -159,4 +161,18 @@ func (service *Updater) saveArticle() {
 			}
 		}
 	}
+}
+
+func getUserIds(address string) ([]int, error) {
+	result := make([]int, 0)
+	response, err := http.Get(address)
+
+	if err != nil {
+		log.Println("request rss enabled users error:", err.Error())
+		return nil, err
+	}
+
+	json.NewDecoder(response.Body).Decode(&result)
+
+	return result, nil
 }

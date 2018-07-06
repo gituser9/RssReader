@@ -1,15 +1,14 @@
 package main
 
 import (
-	"model"
+	"encoding/json"
 	"flag"
 	"io/ioutil"
-	"os"
-	"encoding/json"
+	"model"
 	"time"
 )
 
-var conf model.Config
+var conf *model.Config
 
 const defaultConfigPath = "./cfg.json"
 
@@ -28,25 +27,18 @@ func init() {
 		panic("Read config file error")
 	}
 
-	if *pathPtr == defaultConfigPath {
-		currentDir, _ := os.Getwd()
-		conf = model.Config{FilePath: currentDir + string(os.PathSeparator) + "cfg.json"}
-	} else {
-		conf = model.Config{FilePath: *pathPtr}
-	}
-
 	// set default values
 	conf.UpdateMinutes = 30
 
-	json.Unmarshal(bytes, &conf)
+	json.Unmarshal(bytes, conf)
 }
 
 func main() {
-	updater := CreateUpdater(&conf)
-	cleaner := CreateCleaner(&conf)
-	updateTime := time.Duration(conf.UpdateMinutes) * time.Minute
-	updateTimer := time.NewTicker(updateTime).C
-	weekTimer := time.NewTicker(time.Hour * 168).C // week
+	updater := CreateUpdater(conf)
+	cleaner := CreateCleaner(conf)
+
+	updateTimer := time.Tick(time.Duration(conf.UpdateMinutes) * time.Minute)
+	weekTimer := time.Tick(time.Hour * 168) // week
 
 	go updater.Update()
 	go cleaner.Clean()

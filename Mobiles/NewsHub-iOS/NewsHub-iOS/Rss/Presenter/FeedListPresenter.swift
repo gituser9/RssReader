@@ -22,6 +22,7 @@ class FeedListPresenter/* : IFeedListPresenter*/ {
     
     private func getUserId() -> Int {
         // todo: preferences
+        // todo: common
         return 2
     }
 }

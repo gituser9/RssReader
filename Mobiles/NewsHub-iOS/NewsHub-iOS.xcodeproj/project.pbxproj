@@ -10,6 +10,7 @@
 		01804C6E93612A6CA07362FE /* FeedListInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2BF062CF98EDA1A09F795D0 /* FeedListInteractor.swift */; };
 		0D604BAF9B3D08B9B0242FF9 /* MainInitializer.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA52ABCBEFE340CBF762A723 /* MainInitializer.swift */; };
 		0FC487A583069358A4FD3531 /* LoginPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5198F5A95328A1D6A0E77672 /* LoginPresenter.swift */; };
+		16EF8BE9FFF42012CA041B00 /* VkRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = E757989B4FE24278FD095550 /* VkRouter.swift */; };
 		205F5F44622B9B01E84B9024 /* MainInteractorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A11BF86D88FFA3AE890C1167 /* MainInteractorTests.swift */; };
 		2222C7B61FA6416E004F3907 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2222C7B51FA6416E004F3907 /* Assets.xcassets */; };
 		2222C7C41FA6416F004F3907 /* NewsHub_iOSTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2222C7C31FA6416F004F3907 /* NewsHub_iOSTests.swift */; };
@@ -27,8 +28,10 @@
 		5FF0F7C2240BF1149B12F3B6 /* RssRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7BF1B6FCE62A7D362FDA329 /* RssRouter.swift */; };
 		6C089D4D0012FC7106593632 /* LoginPresenterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B18414FBF9FD56AE361527B5 /* LoginPresenterTests.swift */; };
 		6C0D44FF255191D122254381 /* Pods_NewsHub_iOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F3762FED88BB4CC7944676D6 /* Pods_NewsHub_iOS.framework */; };
+		6E998BC46A5F16FDBEF2A54D /* VkPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEDBF7F2ECB150813F74C082 /* VkPresenter.swift */; };
 		7EBE938FFFDA1265FE162B7E /* MainPresenterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C00EEC54B9F840C4B10C27D /* MainPresenterTests.swift */; };
 		8087F371732B236E58CE3F6D /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A847E331498ADB8AA0031F0D /* MainViewController.swift */; };
+		8AFB82D037045186D18E0421 /* VkInteractorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E75F4A5785992C0EEAE9AA7 /* VkInteractorTests.swift */; };
 		928B65853575DD7C4A226390 /* MainConfiguratorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81773CEDA3DB9A88979F1674 /* MainConfiguratorTests.swift */; };
 		9505EF10B492D2EC5CCD6786 /* MainViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A80449FB8E9A056E88143CB0 /* MainViewTests.swift */; };
 		95C40477AD98EB4774F6D31D /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9899875301056665662E4F4 /* LoginViewController.swift */; };
@@ -37,9 +40,17 @@
 		A53D81E92C130BA84CE0076D /* LoginInteractorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73A24E372A1AD070795E5EDA /* LoginInteractorTests.swift */; };
 		A58CA4EEF12CCF5A1498E2C7 /* LoginConfiguratorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CE3FA38A2E9AE0053192CE4 /* LoginConfiguratorTests.swift */; };
 		A6750436ADF14F779F582CD3 /* RssViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7811C41F5F2B391646ABB9D5 /* RssViewTests.swift */; };
+		A7C6DB68B647145F431603C9 /* VkRouterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B27A6827E20392108A493614 /* VkRouterTests.swift */; };
 		A89F32BFAFC1954AE3E5C254 /* MainPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D32F1571531A4E24686A3CC /* MainPresenter.swift */; };
+		B0046B5451D80E5D6A806A89 /* VkViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9DE9A68D195DE6324932BB0 /* VkViewTests.swift */; };
+		B186F4DC2F94D2D055B49B4C /* VkRouterInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73B0EFC1455553B615B3E3A9 /* VkRouterInput.swift */; };
 		BA1F441BC7F90F71E85EB425 /* LoginRouterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6B85FEBF05CAE4D3751235C /* LoginRouterTests.swift */; };
 		C743B24D5F3C73AB96AAB45F /* Pods_NewsHub_iOSUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7F242A93273ABDDDFD932F9 /* Pods_NewsHub_iOSUITests.framework */; };
+		CD493BDEC2BC777C2AFCDC09 /* VkPresenterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF103D94118A6D1BCB779CF0 /* VkPresenterTests.swift */; };
+		CD711810EE5153BD411A17C6 /* VkConfiguratorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 703C7DB897E43059F018ACE7 /* VkConfiguratorTests.swift */; };
+		CE7703C91FFE4DF2008A975C /* Vk.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CE7703C81FFE4DF2008A975C /* Vk.storyboard */; };
+		CE7703CB1FFE4E9E008A975C /* VkTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE7703CA1FFE4E9E008A975C /* VkTableViewController.swift */; };
+		CE7703CD1FFE4EF5008A975C /* VkCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE7703CC1FFE4EF5008A975C /* VkCell.swift */; };
 		CE8F19561FACC5E30078CE4A /* ArticlesListTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE8F19551FACC5E30078CE4A /* ArticlesListTableViewController.swift */; };
 		CE8F19581FACC8250078CE4A /* ArticlesListPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE8F19571FACC8250078CE4A /* ArticlesListPresenter.swift */; };
 		CE8F195A1FACC83A0078CE4A /* ArticlesListInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE8F19591FACC83A0078CE4A /* ArticlesListInteractor.swift */; };
@@ -48,6 +59,9 @@
 		CE8F19601FAD02D40078CE4A /* ArticlePresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE8F195F1FAD02D40078CE4A /* ArticlePresenter.swift */; };
 		CE8F19621FAD02F40078CE4A /* ArticleInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE8F19611FAD02F40078CE4A /* ArticleInteractor.swift */; };
 		CE8F19641FAD03110078CE4A /* Article.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE8F19631FAD03110078CE4A /* Article.swift */; };
+		CE95B50A2035811300098A7E /* VkNews.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE95B5092035811300098A7E /* VkNews.swift */; };
+		CE95B50C2035827300098A7E /* VkGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE95B50B2035827300098A7E /* VkGroup.swift */; };
+		CE95B50E203582D000098A7E /* VkPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE95B50D203582D000098A7E /* VkPage.swift */; };
 		CE9DC2E21FAB5412007D02B5 /* Rss.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CE9DC2E11FAB5412007D02B5 /* Rss.storyboard */; };
 		CE9DC2E41FAB6509007D02B5 /* Feed.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE9DC2E31FAB6509007D02B5 /* Feed.swift */; };
 		CE9DC2E61FAB79B7007D02B5 /* FeedListPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE9DC2E51FAB79B7007D02B5 /* FeedListPresenter.swift */; };
@@ -58,6 +72,7 @@
 		D6B382C9321CA2E9BEDFEC81 /* LoginViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D57CD31BD6C5CB6B56B76D3 /* LoginViewTests.swift */; };
 		E37228D37EEA03D1539CD97F /* Pods_NewsHub_iOSTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A62B10947EDEE66EA483C36 /* Pods_NewsHub_iOSTests.framework */; };
 		E594CD46C8B7B0AB62118595 /* MainInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE1BB2DE5B7478EF2F81D4D1 /* MainInteractor.swift */; };
+		EA5760528F1AC76EE942FE26 /* VkInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = B05135F4E9810814AD2DC6ED /* VkInteractor.swift */; };
 		EA626557DF9DEC5FDFEA70CD /* RssPresenterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC4401F957B029C4436A3547 /* RssPresenterTests.swift */; };
 		ED7340014361D12937B0D954 /* RssRouterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22B5BC52C9F3C49A9FED4DDE /* RssRouterTests.swift */; };
 		EE3A48E06047788776AFF6DB /* FeedListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E41ABA858A8168DFFDEC1EF8 /* FeedListViewController.swift */; };
@@ -111,7 +126,10 @@
 		5198F5A95328A1D6A0E77672 /* LoginPresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LoginPresenter.swift; sourceTree = "<group>"; };
 		586C3BC413D1595B45D5E3B5 /* Pods-NewsHub-iOSTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NewsHub-iOSTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-NewsHub-iOSTests/Pods-NewsHub-iOSTests.release.xcconfig"; sourceTree = "<group>"; };
 		6C00EEC54B9F840C4B10C27D /* MainPresenterTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MainPresenterTests.swift; sourceTree = "<group>"; };
+		6E75F4A5785992C0EEAE9AA7 /* VkInteractorTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = VkInteractorTests.swift; sourceTree = "<group>"; };
+		703C7DB897E43059F018ACE7 /* VkConfiguratorTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = VkConfiguratorTests.swift; sourceTree = "<group>"; };
 		73A24E372A1AD070795E5EDA /* LoginInteractorTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LoginInteractorTests.swift; sourceTree = "<group>"; };
+		73B0EFC1455553B615B3E3A9 /* VkRouterInput.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = VkRouterInput.swift; sourceTree = "<group>"; };
 		76028D7BE94AF28B20C7BA88 /* RssConfiguratorTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = RssConfiguratorTests.swift; sourceTree = "<group>"; };
 		7811C41F5F2B391646ABB9D5 /* RssViewTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = RssViewTests.swift; sourceTree = "<group>"; };
 		81773CEDA3DB9A88979F1674 /* MainConfiguratorTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MainConfiguratorTests.swift; sourceTree = "<group>"; };
@@ -126,12 +144,17 @@
 		A9696B73C1BBCDA7B15DB198 /* LoginRouter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LoginRouter.swift; sourceTree = "<group>"; };
 		AA52ABCBEFE340CBF762A723 /* MainInitializer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MainInitializer.swift; sourceTree = "<group>"; };
 		AB3AE06839F60D8AA72C3464 /* RssInteractorTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = RssInteractorTests.swift; sourceTree = "<group>"; };
+		B05135F4E9810814AD2DC6ED /* VkInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = VkInteractor.swift; sourceTree = "<group>"; };
 		B18414FBF9FD56AE361527B5 /* LoginPresenterTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LoginPresenterTests.swift; sourceTree = "<group>"; };
+		B27A6827E20392108A493614 /* VkRouterTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = VkRouterTests.swift; sourceTree = "<group>"; };
 		B7BF1B6FCE62A7D362FDA329 /* RssRouter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = RssRouter.swift; sourceTree = "<group>"; };
 		B9899875301056665662E4F4 /* LoginViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
 		BC4401F957B029C4436A3547 /* RssPresenterTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = RssPresenterTests.swift; sourceTree = "<group>"; };
 		BC984AFDD4ECC1F1840B0DD7 /* Pods-NewsHub-iOSUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NewsHub-iOSUITests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-NewsHub-iOSUITests/Pods-NewsHub-iOSUITests.debug.xcconfig"; sourceTree = "<group>"; };
 		C743616C9E9AFA6D15842CCD /* MainRouter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MainRouter.swift; sourceTree = "<group>"; };
+		CE7703C81FFE4DF2008A975C /* Vk.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Vk.storyboard; sourceTree = "<group>"; };
+		CE7703CA1FFE4E9E008A975C /* VkTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VkTableViewController.swift; sourceTree = "<group>"; };
+		CE7703CC1FFE4EF5008A975C /* VkCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VkCell.swift; sourceTree = "<group>"; };
 		CE8F19551FACC5E30078CE4A /* ArticlesListTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArticlesListTableViewController.swift; sourceTree = "<group>"; };
 		CE8F19571FACC8250078CE4A /* ArticlesListPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArticlesListPresenter.swift; sourceTree = "<group>"; };
 		CE8F19591FACC83A0078CE4A /* ArticlesListInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArticlesListInteractor.swift; sourceTree = "<group>"; };
@@ -140,6 +163,9 @@
 		CE8F195F1FAD02D40078CE4A /* ArticlePresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArticlePresenter.swift; sourceTree = "<group>"; };
 		CE8F19611FAD02F40078CE4A /* ArticleInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArticleInteractor.swift; sourceTree = "<group>"; };
 		CE8F19631FAD03110078CE4A /* Article.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Article.swift; sourceTree = "<group>"; };
+		CE95B5092035811300098A7E /* VkNews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VkNews.swift; sourceTree = "<group>"; };
+		CE95B50B2035827300098A7E /* VkGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VkGroup.swift; sourceTree = "<group>"; };
+		CE95B50D203582D000098A7E /* VkPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VkPage.swift; sourceTree = "<group>"; };
 		CE9DC2E11FAB5412007D02B5 /* Rss.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Rss.storyboard; sourceTree = "<group>"; };
 		CE9DC2E31FAB6509007D02B5 /* Feed.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Feed.swift; sourceTree = "<group>"; };
 		CE9DC2E51FAB79B7007D02B5 /* FeedListPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedListPresenter.swift; sourceTree = "<group>"; };
@@ -148,10 +174,14 @@
 		CEAF6BF51FADD76700FA0FB9 /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
 		D336C5E5B64B8DB98C642414 /* Pods-NewsHub-iOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NewsHub-iOS.release.xcconfig"; path = "Pods/Target Support Files/Pods-NewsHub-iOS/Pods-NewsHub-iOS.release.xcconfig"; sourceTree = "<group>"; };
 		DE1BB2DE5B7478EF2F81D4D1 /* MainInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MainInteractor.swift; sourceTree = "<group>"; };
+		DEDBF7F2ECB150813F74C082 /* VkPresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = VkPresenter.swift; sourceTree = "<group>"; };
 		E41ABA858A8168DFFDEC1EF8 /* FeedListViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FeedListViewController.swift; sourceTree = "<group>"; };
 		E4E90AC6F38EF9A800D1C92B /* RssRouterInput.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = RssRouterInput.swift; sourceTree = "<group>"; };
 		E6B85FEBF05CAE4D3751235C /* LoginRouterTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LoginRouterTests.swift; sourceTree = "<group>"; };
+		E757989B4FE24278FD095550 /* VkRouter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = VkRouter.swift; sourceTree = "<group>"; };
 		E9BA6B0B4D02A1B5AB5F959A /* MainConfigurator.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MainConfigurator.swift; sourceTree = "<group>"; };
+		E9DE9A68D195DE6324932BB0 /* VkViewTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = VkViewTests.swift; sourceTree = "<group>"; };
+		EF103D94118A6D1BCB779CF0 /* VkPresenterTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = VkPresenterTests.swift; sourceTree = "<group>"; };
 		F3762FED88BB4CC7944676D6 /* Pods_NewsHub_iOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_NewsHub_iOS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -234,7 +264,6 @@
 			children = (
 				DE1BB2DE5B7478EF2F81D4D1 /* MainInteractor.swift */,
 			);
-			name = Interactor;
 			path = Interactor;
 			sourceTree = "<group>";
 		};
@@ -243,7 +272,6 @@
 			children = (
 				A80449FB8E9A056E88143CB0 /* MainViewTests.swift */,
 			);
-			name = View;
 			path = View;
 			sourceTree = "<group>";
 		};
@@ -258,6 +286,14 @@
 				16923C1641D7B490EAA1F724 /* Pods-NewsHub-iOSUITests.release.xcconfig */,
 			);
 			name = Pods;
+			sourceTree = "<group>";
+		};
+		1C8F7BF8628C88A85BC741D5 /* Presenter */ = {
+			isa = PBXGroup;
+			children = (
+				EF103D94118A6D1BCB779CF0 /* VkPresenterTests.swift */,
+			);
+			path = Presenter;
 			sourceTree = "<group>";
 		};
 		2222C7A21FA6416E004F3907 = {
@@ -292,6 +328,7 @@
 				36EBC16C6F52959471C3374D /* Info.plist */,
 				814DA0C43E88CFDD86765370 /* Login */,
 				F597E4460F71EB88E81F4968 /* Main */,
+				8D9B0CCD460B2482AD0863A4 /* Vk */,
 			);
 			path = "NewsHub-iOS";
 			sourceTree = "<group>";
@@ -304,6 +341,7 @@
 				BA8ABE605E5D5BC198337877 /* Rss */,
 				913B9A5D7A10A32098528D18 /* Login */,
 				DB1AB03F19227F83C7997EA9 /* Main */,
+				3B09D05B83F0807736C1966C /* Vk */,
 			);
 			path = "NewsHub-iOSTests";
 			sourceTree = "<group>";
@@ -317,12 +355,28 @@
 			path = "NewsHub-iOSUITests";
 			sourceTree = "<group>";
 		};
+		23072F21DFF4CBD19DD75B8D /* Configurator */ = {
+			isa = PBXGroup;
+			children = (
+				703C7DB897E43059F018ACE7 /* VkConfiguratorTests.swift */,
+			);
+			path = Configurator;
+			sourceTree = "<group>";
+		};
 		2582CCE10B0489A89DE6AC28 /* Router */ = {
 			isa = PBXGroup;
 			children = (
 				A9696B73C1BBCDA7B15DB198 /* LoginRouter.swift */,
 			);
 			path = Router;
+			sourceTree = "<group>";
+		};
+		2676EFC53ACFBEA8214E1F79 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				E9DE9A68D195DE6324932BB0 /* VkViewTests.swift */,
+			);
+			path = View;
 			sourceTree = "<group>";
 		};
 		26BAFFF81105BA901DA3D6B8 /* Entity */ = {
@@ -372,6 +426,18 @@
 			path = Interactor;
 			sourceTree = "<group>";
 		};
+		3B09D05B83F0807736C1966C /* Vk */ = {
+			isa = PBXGroup;
+			children = (
+				23072F21DFF4CBD19DD75B8D /* Configurator */,
+				2676EFC53ACFBEA8214E1F79 /* View */,
+				C408D5D3170885654F3F4C97 /* Interactor */,
+				1C8F7BF8628C88A85BC741D5 /* Presenter */,
+				657B7CE155E63CE35AD4B792 /* Router */,
+			);
+			path = Vk;
+			sourceTree = "<group>";
+		};
 		401654CD5C2DB18DC55B9419 /* Router */ = {
 			isa = PBXGroup;
 			children = (
@@ -389,11 +455,29 @@
 			path = Presenter;
 			sourceTree = "<group>";
 		};
+		657B7CE155E63CE35AD4B792 /* Router */ = {
+			isa = PBXGroup;
+			children = (
+				B27A6827E20392108A493614 /* VkRouterTests.swift */,
+			);
+			path = Router;
+			sourceTree = "<group>";
+		};
 		6D3E3C580B1C4A7159C5AFF5 /* View */ = {
 			isa = PBXGroup;
 			children = (
 				B9899875301056665662E4F4 /* LoginViewController.swift */,
 				CEAF6BF11FADCEDF00FA0FB9 /* Login.storyboard */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		80F509C1802BF0806128E9C4 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				CE7703C81FFE4DF2008A975C /* Vk.storyboard */,
+				CE7703CA1FFE4E9E008A975C /* VkTableViewController.swift */,
+				CE7703CC1FFE4EF5008A975C /* VkCell.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -424,6 +508,18 @@
 				8D57CD31BD6C5CB6B56B76D3 /* LoginViewTests.swift */,
 			);
 			path = View;
+			sourceTree = "<group>";
+		};
+		8D9B0CCD460B2482AD0863A4 /* Vk */ = {
+			isa = PBXGroup;
+			children = (
+				80F509C1802BF0806128E9C4 /* View */,
+				B8BAC3288507295218E6E5A9 /* Presenter */,
+				FCA489B2F627428DC63326BD /* Interactor */,
+				FBD3FC2CD045A66596B47E58 /* Router */,
+				9FFF0F63B1DF2AE4EA0EEB97 /* Entity */,
+			);
+			path = Vk;
 			sourceTree = "<group>";
 		};
 		900B364269075952EA1EB972 /* Frameworks */ = {
@@ -467,6 +563,16 @@
 			path = Interactor;
 			sourceTree = "<group>";
 		};
+		9FFF0F63B1DF2AE4EA0EEB97 /* Entity */ = {
+			isa = PBXGroup;
+			children = (
+				CE95B5092035811300098A7E /* VkNews.swift */,
+				CE95B50B2035827300098A7E /* VkGroup.swift */,
+				CE95B50D203582D000098A7E /* VkPage.swift */,
+			);
+			path = Entity;
+			sourceTree = "<group>";
+		};
 		A47277902DE0703BB522BDA9 /* Presenter */ = {
 			isa = PBXGroup;
 			children = (
@@ -488,8 +594,15 @@
 			children = (
 				A11BF86D88FFA3AE890C1167 /* MainInteractorTests.swift */,
 			);
-			name = Interactor;
 			path = Interactor;
+			sourceTree = "<group>";
+		};
+		B8BAC3288507295218E6E5A9 /* Presenter */ = {
+			isa = PBXGroup;
+			children = (
+				DEDBF7F2ECB150813F74C082 /* VkPresenter.swift */,
+			);
+			path = Presenter;
 			sourceTree = "<group>";
 		};
 		BA8ABE605E5D5BC198337877 /* Rss */ = {
@@ -513,6 +626,14 @@
 			path = Entity;
 			sourceTree = "<group>";
 		};
+		C408D5D3170885654F3F4C97 /* Interactor */ = {
+			isa = PBXGroup;
+			children = (
+				6E75F4A5785992C0EEAE9AA7 /* VkInteractorTests.swift */,
+			);
+			path = Interactor;
+			sourceTree = "<group>";
+		};
 		C74FF2762031F2DB8C1E243D /* Router */ = {
 			isa = PBXGroup;
 			children = (
@@ -534,7 +655,6 @@
 			children = (
 				81773CEDA3DB9A88979F1674 /* MainConfiguratorTests.swift */,
 			);
-			name = Configurator;
 			path = Configurator;
 			sourceTree = "<group>";
 		};
@@ -543,7 +663,6 @@
 			children = (
 				C743616C9E9AFA6D15842CCD /* MainRouter.swift */,
 			);
-			name = Router;
 			path = Router;
 			sourceTree = "<group>";
 		};
@@ -553,7 +672,6 @@
 				A847E331498ADB8AA0031F0D /* MainViewController.swift */,
 				36EBC3138498FA58EBDE3485 /* Main.storyboard */,
 			);
-			name = View;
 			path = View;
 			sourceTree = "<group>";
 		};
@@ -566,7 +684,6 @@
 				E6E9859625DB7AAA313576D2 /* Presenter */,
 				F0CD2DEB85327C1348D276BD /* Router */,
 			);
-			name = Main;
 			path = Main;
 			sourceTree = "<group>";
 		};
@@ -586,7 +703,6 @@
 			children = (
 				6C00EEC54B9F840C4B10C27D /* MainPresenterTests.swift */,
 			);
-			name = Presenter;
 			path = Presenter;
 			sourceTree = "<group>";
 		};
@@ -595,7 +711,6 @@
 			children = (
 				0D32F1571531A4E24686A3CC /* MainPresenter.swift */,
 			);
-			name = Presenter;
 			path = Presenter;
 			sourceTree = "<group>";
 		};
@@ -604,7 +719,6 @@
 			children = (
 				2860186CFDCF8AD47860ED9D /* MainRouterTests.swift */,
 			);
-			name = Router;
 			path = Router;
 			sourceTree = "<group>";
 		};
@@ -617,7 +731,6 @@
 				D0010F9117D54C900F06EE97 /* Router */,
 				10DF43F3538DE6CBF6BAE300 /* Entity */,
 			);
-			name = Main;
 			path = Main;
 			sourceTree = "<group>";
 		};
@@ -627,6 +740,23 @@
 				7811C41F5F2B391646ABB9D5 /* RssViewTests.swift */,
 			);
 			path = View;
+			sourceTree = "<group>";
+		};
+		FBD3FC2CD045A66596B47E58 /* Router */ = {
+			isa = PBXGroup;
+			children = (
+				73B0EFC1455553B615B3E3A9 /* VkRouterInput.swift */,
+				E757989B4FE24278FD095550 /* VkRouter.swift */,
+			);
+			path = Router;
+			sourceTree = "<group>";
+		};
+		FCA489B2F627428DC63326BD /* Interactor */ = {
+			isa = PBXGroup;
+			children = (
+				B05135F4E9810814AD2DC6ED /* VkInteractor.swift */,
+			);
+			path = Interactor;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -747,6 +877,7 @@
 			files = (
 				CE9DC2E21FAB5412007D02B5 /* Rss.storyboard in Resources */,
 				2222C7B61FA6416E004F3907 /* Assets.xcassets in Resources */,
+				CE7703C91FFE4DF2008A975C /* Vk.storyboard in Resources */,
 				36EBC8117F3BE7BF7EC0641A /* LaunchScreen.storyboard in Resources */,
 				CEAF6BF21FADCEDF00FA0FB9 /* Login.storyboard in Resources */,
 				36EBCA55CBFD723753735F96 /* Main.storyboard in Resources */,
@@ -929,8 +1060,11 @@
 			files = (
 				CE9DC2E61FAB79B7007D02B5 /* FeedListPresenter.swift in Sources */,
 				CE8F19581FACC8250078CE4A /* ArticlesListPresenter.swift in Sources */,
+				CE7703CD1FFE4EF5008A975C /* VkCell.swift in Sources */,
+				CE95B50A2035811300098A7E /* VkNews.swift in Sources */,
 				CEAF6BF61FADD76700FA0FB9 /* Settings.swift in Sources */,
 				EE3A48E06047788776AFF6DB /* FeedListViewController.swift in Sources */,
+				CE7703CB1FFE4E9E008A975C /* VkTableViewController.swift in Sources */,
 				CEAF6BF41FADD75800FA0FB9 /* User.swift in Sources */,
 				CE8F19561FACC5E30078CE4A /* ArticlesListTableViewController.swift in Sources */,
 				53BFD46F08D20D5A4C6E7F8A /* IFeedListInteractor.swift in Sources */,
@@ -958,6 +1092,12 @@
 				D3FB99C5F85B2687DB20E974 /* MainRouter.swift in Sources */,
 				F17A24AE4F27CBBF1DF216B7 /* MainConfigurator.swift in Sources */,
 				0D604BAF9B3D08B9B0242FF9 /* MainInitializer.swift in Sources */,
+				6E998BC46A5F16FDBEF2A54D /* VkPresenter.swift in Sources */,
+				CE95B50E203582D000098A7E /* VkPage.swift in Sources */,
+				CE95B50C2035827300098A7E /* VkGroup.swift in Sources */,
+				EA5760528F1AC76EE942FE26 /* VkInteractor.swift in Sources */,
+				B186F4DC2F94D2D055B49B4C /* VkRouterInput.swift in Sources */,
+				16EF8BE9FFF42012CA041B00 /* VkRouter.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -981,6 +1121,11 @@
 				205F5F44622B9B01E84B9024 /* MainInteractorTests.swift in Sources */,
 				7EBE938FFFDA1265FE162B7E /* MainPresenterTests.swift in Sources */,
 				FA4B4202017C2715AD9BBA42 /* MainRouterTests.swift in Sources */,
+				CD711810EE5153BD411A17C6 /* VkConfiguratorTests.swift in Sources */,
+				B0046B5451D80E5D6A806A89 /* VkViewTests.swift in Sources */,
+				8AFB82D037045186D18E0421 /* VkInteractorTests.swift in Sources */,
+				CD493BDEC2BC777C2AFCDC09 /* VkPresenterTests.swift in Sources */,
+				A7C6DB68B647145F431603C9 /* VkRouterTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

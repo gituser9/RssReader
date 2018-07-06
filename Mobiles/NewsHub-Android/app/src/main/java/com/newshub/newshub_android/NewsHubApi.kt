@@ -6,6 +6,8 @@ import com.newshub.newshub_android.rss.model.Article
 import com.newshub.newshub_android.rss.model.Articles
 import com.newshub.newshub_android.rss.model.FeedModel
 import com.newshub.newshub_android.settings.model.Settings
+import com.newshub.newshub_android.twitter.model.TweetModel
+import com.newshub.newshub_android.twitter.model.TwitterPage
 import com.newshub.newshub_android.vk.model.VkNews
 import com.newshub.newshub_android.vk.model.VkPage
 import retrofit2.Call
@@ -42,4 +44,11 @@ interface NewsHubApi {
 
     @GET("get-vk-page")
     fun getVkPage(@Query("id") id: Int): Call<VkPage>
+
+    // Twitter
+    @GET("get-twitter-page")
+    fun getTwitterPage(@Query("id") id: Int): Call<TwitterPage>
+
+    @GET("get-twitter-news")
+    fun getTweets(@Query("id") id: Int, @Query("page") page: Int): Call<List<TweetModel>>
 }

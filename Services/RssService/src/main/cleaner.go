@@ -1,14 +1,15 @@
 package main
 
 import (
-	"github.com/jinzhu/gorm"
 	"model"
 	"time"
+
+	"github.com/jinzhu/gorm"
 )
 
 type Cleaner struct {
-	db          *gorm.DB
-	config      *model.Config
+	db             *gorm.DB
+	config         *model.Config
 	queryTimestamp int64
 }
 
@@ -39,17 +40,17 @@ func (service *Cleaner) preHandle() {
 	var feeds []model.Feeds
 	service.db.Find(&feeds)
 
-	for _, feed := range feeds{
+	for _, feed := range feeds {
 		var articlesCount int
 		service.db.Where(&model.Articles{FeedId: feed.Id}).Count(&articlesCount)
 
-		if articlesCount > 1000 {
+		if articlesCount > service.config.ArticlesMaxCount {
 			go service.deleteArticles(feed.Id)
 		}
 	}
 }
 
-func (service *Cleaner) deleteArticles(feedId uint) {
+func (service *Cleaner) deleteArticles(feedId int) {
 	// fixme
 	service.db.
 		Where("Date < ? AND IsBookmark=0 AND IsRead=1 AND FeedId=?", service.queryTimestamp, feedId).

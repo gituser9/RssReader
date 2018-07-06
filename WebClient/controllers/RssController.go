@@ -85,10 +85,10 @@ func (ctrl *RssController) Delete(w http.ResponseWriter, r *http.Request) {
 }
 
 // UpdateAll - get new articles for all feeds
-func (ctrl *RssController) UpdateAll(w http.ResponseWriter, r *http.Request) {
+/*func (ctrl *RssController) UpdateAll(w http.ResponseWriter, r *http.Request) {
 	ctrl.service.UpdateAllFeeds()
 	ctrl.GetAll(w, r)
-}
+}*/
 
 // UploadOpml - upload, parse OPML and update feeds
 func (ctrl *RssController) UploadOpml(w http.ResponseWriter, r *http.Request) {

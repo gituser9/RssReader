@@ -21,8 +21,6 @@ class TwitterCtrl {
     };
 
     getPageData() {
-        console.log(this.$scope.IsSimpleVersion);
-
         this.twitterService.getPageData();
     };
 

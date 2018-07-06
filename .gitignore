@@ -189,3 +189,6 @@ fastlane/screenshots
 fastlane/test_output
 
 Services/RssService/vendor/*
+Services/RssService/pkg/*
+Services/UserService/pkg/*
+Services/UserService/vendor/*

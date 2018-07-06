@@ -89,13 +89,13 @@ class MainActivity : AppCompatActivity() {
             ++sourceNum
         }
         if (settings.isVkNewsEnabled) {
-            tabLayout.addTab(tabLayout.newTab().setText("Vk"));
+            tabLayout.addTab(tabLayout.newTab().setText("Vk"))
             ++sourceNum
         }
-        /*if (settings.isTwitterEnabled()) {
-            tabLayout.addTab(tabLayout.newTab().setText("Twitter"));
+        if (settings.isTwitterEnabled) {
+            tabLayout.addTab(tabLayout.newTab().setText("Twitter"))
             ++sourceNum;
-        }*/
+        }
         if (sourceNum < 2) {
             tabLayout.visibility = View.GONE
         }
