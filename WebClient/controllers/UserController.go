@@ -2,56 +2,133 @@ package controllers
 
 import (
 	"encoding/json"
-	"log"
+	"io/ioutil"
 	"net/http"
-
 	"strconv"
+	"time"
 
-	"crypto/aes"
-	"crypto/cipher"
-	"encoding/hex"
+	"newshub/models"
+	"newshub/services"
 
-	"../models"
-	"../services"
+	"github.com/dgrijalva/jwt-go"
 )
 
 type UserController struct {
-	service *services.UserService
-	config  *models.Config
+	service       *services.UserService
+	config        *models.Config
+	tokenLifeTime time.Duration
 }
 
-// Init - init controller
-func (ctrl *UserController) Init(config *models.Config) *UserController {
-	service := new(services.UserService).Init(config)
+func NewUserCtrl(cfg *models.Config) *UserController {
+	ctrl := new(UserController)
+	ctrl.config = cfg
+	ctrl.tokenLifeTime = 1 * time.Hour
+	ctrl.service = services.NewUserService(cfg)
 
-	return &UserController{service: service, config: config}
+	return ctrl
 }
 
 func (ctrl *UserController) Auth(w http.ResponseWriter, r *http.Request) {
-	authData := postUserData(r)
-	log.Println(authData)
-	user := ctrl.service.Auth(authData.Name, authData.Password)
+	data := make(map[string]string)
+	var login, password string
+	ok := false
 
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(user)
+	if err := json.NewDecoder(r.Body).Decode(&data); err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	if login, ok = data["username"]; !ok {
+		w.WriteHeader(http.StatusUnprocessableEntity)
+		return
+	}
+	if password, ok = data["password"]; !ok {
+		w.WriteHeader(http.StatusUnprocessableEntity)
+		return
+	}
+
+	user := ctrl.service.Auth(login, password)
+
+	if user == nil {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+
+	jsonData, _ := json.Marshal(ctrl.createAuthData(user.Id))
+	w.Write(jsonData)
 }
 
 func (ctrl *UserController) Registration(w http.ResponseWriter, r *http.Request) {
-	authData := postUserData(r)
-	result := ctrl.service.Register(authData.Name, authData.Password)
+	data := make(map[string]string)
+	var login, password string
+	ok := false
 
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(result)
+	if err := json.NewDecoder(r.Body).Decode(&data); err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	if login, ok = data["username"]; !ok {
+		w.WriteHeader(http.StatusUnprocessableEntity)
+		return
+	}
+	if password, ok = data["password"]; !ok {
+		w.WriteHeader(http.StatusUnprocessableEntity)
+		return
+	}
+
+	user, err := ctrl.service.Register(login, password)
+
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	jsonData, _ := json.Marshal(ctrl.createAuthData(user.Id))
+	w.Write(jsonData)
+}
+
+func (ctrl *UserController) RefreshToken(w http.ResponseWriter, r *http.Request) {
+	data := make(map[string]string)
+	var token string
+	ok := false
+
+	if err := json.NewDecoder(r.Body).Decode(&data); err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	if token, ok = data["token"]; !ok {
+		w.WriteHeader(http.StatusUnprocessableEntity)
+		return
+	}
+
+	claims := models.JwtClaims{}
+	_, err := jwt.ParseWithClaims(
+		token,
+		&claims,
+		func(token *jwt.Token) (interface{}, error) {
+			return []byte(ctrl.config.JwtSign), nil
+		},
+	)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	jsonData, _ := json.Marshal(ctrl.createAuthData(claims.Id))
+	w.Write(jsonData)
 }
 
 func (ctrl *UserController) GetUserSettings(w http.ResponseWriter, r *http.Request) {
-	id, _ := strconv.Atoi(r.URL.Query().Get("id"))
-	userId := uint(id)
+	id, err := strconv.ParseInt(r.FormValue("id"), 10, 64)
+
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
 
 	settingsObj := services.SettingsService{}
 	settingService := settingsObj.Init(ctrl.config)
-	settings := settingService.Get(userId)
-	user := ctrl.service.GetUser(userId)
+	settings := settingService.Get(id)
+	user := ctrl.service.GetUser(id)
 
 	/*if user.VkNewsEnabled && len(user.VkPassword) > 0 {
 		user.VkPassword = decryptVkPassword(user.VkPassword)
@@ -67,7 +144,7 @@ func (ctrl *UserController) GetUserSettings(w http.ResponseWriter, r *http.Reque
 		UnreadOnly:           settings.UnreadOnly,
 		VkLogin:              user.VkLogin,
 		VkPassword:           user.VkPassword,
-		UserId:               userId,
+		UserId:               id,
 		TwitterEnabled:       settings.TwitterEnabled,
 		TwitterName:          user.TwitterScreenName,
 		TwitterSimpleVersion: settings.TwitterSimpleVersion,
@@ -80,83 +157,41 @@ func (ctrl *UserController) GetUserSettings(w http.ResponseWriter, r *http.Reque
 }
 
 func (ctrl *UserController) SaveSettings(w http.ResponseWriter, r *http.Request) {
-	settingsData := postSettingsData(r)
-	settings := models.Settings{
-		MarkSameRead:         settingsData.MarkSameRead,
-		RssEnabled:           settingsData.RssEnabled,
-		UnreadOnly:           settingsData.UnreadOnly,
-		VkNewsEnabled:        settingsData.VkNewsEnabled,
-		ShowPreviewButton:    settingsData.ShowPreviewButton,
-		ShowReadButton:       settingsData.ShowReadButton,
-		ShowTabButton:        settingsData.ShowTabButton,
-		UserId:               settingsData.UserId,
-		TwitterEnabled:       settingsData.TwitterEnabled,
-		TwitterSimpleVersion: settingsData.TwitterSimpleVersion,
-		ShowLinkButton:       settingsData.ShowLinkButton,
-		ShowBookmarkButton:   settingsData.ShowBookmarkButton,
+	settings := models.Settings{}
+	body, err := ioutil.ReadAll(r.Body)
+	claims := getClaims(r)
+
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
 	}
+	if err := json.Unmarshal(body, &settings); err != nil {
+		w.WriteHeader(http.StatusUnprocessableEntity)
+		return
+	}
+	if claims.Id != settings.UserId {
+		w.WriteHeader(http.StatusForbidden)
+		return
+	}
+
 	settingsObject := services.SettingsService{}
 	settingService := settingsObject.Init(ctrl.config)
 	settingService.Update(settings)
-
-	appUser := ctrl.service.GetUser(settingsData.UserId)
-
-	if settingsData.VkNewsEnabled {
-		appUser.VkLogin = settingsData.VkLogin
-		appUser.VkPassword = settingsData.VkPassword
-	}
-	if settingsData.TwitterEnabled {
-		appUser.TwitterScreenName = settingsData.TwitterName
-	}
-	ctrl.service.Update(appUser)
 }
 
-func postUserData(r *http.Request) models.AuthData {
-	result := new(models.AuthData)
-	decoder := json.NewDecoder(r.Body)
-	err := decoder.Decode(&result)
+func (ctrl *UserController) createToken(id int64, duration time.Duration) string {
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, models.JwtClaims{
+		Exp: time.Now().Add(duration).Unix(),
+		Id:  id,
+	})
+	tokenString, _ := token.SignedString([]byte(ctrl.config.JwtSign))
 
-	if err != nil {
-		log.Println("decode err: ", err.Error())
-	}
-
-	return *result
+	return tokenString
 }
 
-func postSettingsData(r *http.Request) models.SettingsData {
-	result := new(models.SettingsData)
-	decoder := json.NewDecoder(r.Body)
-	err := decoder.Decode(&result)
-
-	if err != nil {
-		log.Println("decode err: ", err.Error())
+func (ctrl *UserController) createAuthData(id int64) *models.AuthData {
+	return &models.AuthData{
+		Token:        ctrl.createToken(id, ctrl.tokenLifeTime),
+		RefreshToken: ctrl.createToken(id, 336*time.Hour),
 	}
-
-	return *result
-}
-
-func decryptVkPassword(decryptedPassword string) string {
-	//key := []byte("AES256Key-32Characters1234567890")
-	key := []byte("AES128Key-16Char")
-	ciphertext, _ := hex.DecodeString(decryptedPassword)
-	nonce, _ := hex.DecodeString("37b8e8a308c354048d245f6d")
-	block, err := aes.NewCipher(key)
-
-	if err != nil {
-		panic(err.Error())
-	}
-
-	aesgcm, err := cipher.NewGCM(block)
-
-	if err != nil {
-		panic(err.Error())
-	}
-
-	plaintext, err := aesgcm.Open(nil, nonce, ciphertext, nil)
-
-	if err != nil {
-		return decryptedPassword
-	}
-
-	return string(plaintext)
 }

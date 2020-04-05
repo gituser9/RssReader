@@ -3,9 +3,9 @@ package services
 import (
 	"log"
 
-	"github.com/jinzhu/gorm"
+	"newshub/models"
 
-	"../models"
+	"github.com/jinzhu/gorm"
 )
 
 type SettingsService struct {
@@ -27,7 +27,7 @@ func (service *SettingsService) SetDb(db *gorm.DB) {
 	service.db = db
 }
 
-func (service *SettingsService) Create(userId uint) {
+func (service *SettingsService) Create(userId int64) {
 	settings := models.Settings{UserId: userId}
 	service.db.Create(&settings)
 }
@@ -37,7 +37,7 @@ func (service *SettingsService) Update(settings models.Settings) {
 	service.db.Save(&settings)
 }
 
-func (service *SettingsService) Get(userId uint) models.Settings {
+func (service *SettingsService) Get(userId int64) models.Settings {
 	settings := models.Settings{UserId: userId}
 	service.db.Find(&settings)
 

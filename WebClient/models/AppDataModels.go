@@ -33,8 +33,8 @@ type TwitterPageData struct {
 }
 type TwitterNewsView struct {
 	Id          string
-	UserId      int
-	SourceId    int
+	UserId      int64
+	SourceId    int64
 	Text        string
 	ExpandedUrl string
 	Image       string

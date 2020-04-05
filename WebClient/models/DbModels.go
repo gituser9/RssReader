@@ -2,10 +2,10 @@ package models
 
 // Rss - structure for DB
 type Feeds struct {
-	Id       uint       `gorm:"column:Id;primary_key;AUTO_INCREMENT"`
+	Id       int64      `gorm:"column:Id;primary_key;AUTO_INCREMENT"`
 	Name     string     `gorm:"column:Name"`
 	Url      string     `gorm:"column:Url"`
-	UserId   uint       `gorm:"column:UserId"`
+	UserId   int64      `gorm:"column:UserId"`
 	Articles []Articles `gorm:"ForeignKey:FeedId"`
 }
 
@@ -14,8 +14,8 @@ func (Feeds) TableName() string {
 }
 
 type Articles struct {
-	Id         uint   `gorm:"column:Id;primary_key;AUTO_INCREMENT"`
-	FeedId     uint   `gorm:"column:FeedId;index"`
+	Id         int64  `gorm:"column:Id;primary_key;AUTO_INCREMENT"`
+	FeedId     int64  `gorm:"column:FeedId;index"`
 	Title      string `gorm:"column:Title"`
 	Body       string `gorm:"column:Body;size:8192"`
 	Link       string `gorm:"column:Link"`
@@ -30,13 +30,13 @@ func (Articles) TableName() string {
 }
 
 type Users struct {
-	Id                uint   `gorm:"column:Id;primary_key;AUTO_INCREMENT"`
-	Name              string `gorm:"column:Name"`
-	Password          string `gorm:"column:Password"`
-	VkLogin           string `gorm:"column:VkLogin"`
-	VkPassword        string `gorm:"column:VkPassword"`
-	TwitterScreenName string `gorm:"column:TwitterScreenName"`
-	VkNewsEnabled     bool   `gorm:"column:VkNewsEnabled"`
+	Id                int64    `gorm:"column:Id;primary_key;AUTO_INCREMENT"`
+	Name              string   `gorm:"column:Name"`
+	Password          string   `gorm:"column:Password" json:"-"`
+	VkLogin           string   `gorm:"column:VkLogin"`
+	VkPassword        string   `gorm:"column:VkPassword"`
+	TwitterScreenName string   `gorm:"column:TwitterScreenName"`
+	VkNewsEnabled     bool     `gorm:"column:VkNewsEnabled"`
 	Settings          Settings `gorm:"ForeignKey:UserId"`
 }
 
@@ -45,19 +45,19 @@ func (Users) TableName() string {
 }
 
 type Settings struct {
-	Id                uint `gorm:"column:Id;primary_key;AUTO_INCREMENT"`
-	UserId            uint `gorm:"column:UserId;index"`
-	UnreadOnly        bool `gorm:"column:UnreadOnly"`
-	MarkSameRead      bool `gorm:"column:MarkSameRead"`
-	RssEnabled        bool `gorm:"column:RssEnabled"`
-	VkNewsEnabled     bool `gorm:"column:VkNewsEnabled"`
-	TwitterEnabled    bool `gorm:"column:TwitterEnabled"`
-	TwitterSimpleVersion    bool `gorm:"column:TwitterSimpleVersion"`
-	ShowPreviewButton bool `gorm:"column:ShowPreviewButton"`
-	ShowTabButton     bool `gorm:"column:ShowTabButton"`
-	ShowReadButton    bool `gorm:"column:ShowReadButton"`
-	ShowLinkButton    bool `gorm:"column:ShowLinkButton"`
-	ShowBookmarkButton    bool `gorm:"column:ShowBookmarkButton"`
+	Id                   int64 `gorm:"column:Id;primary_key;AUTO_INCREMENT"`
+	UserId               int64 `gorm:"column:UserId;index"`
+	UnreadOnly           bool  `gorm:"column:UnreadOnly"`
+	MarkSameRead         bool  `gorm:"column:MarkSameRead"`
+	RssEnabled           bool  `gorm:"column:RssEnabled"`
+	VkNewsEnabled        bool  `gorm:"column:VkNewsEnabled"`
+	TwitterEnabled       bool  `gorm:"column:TwitterEnabled"`
+	TwitterSimpleVersion bool  `gorm:"column:TwitterSimpleVersion"`
+	ShowPreviewButton    bool  `gorm:"column:ShowPreviewButton"`
+	ShowTabButton        bool  `gorm:"column:ShowTabButton"`
+	ShowReadButton       bool  `gorm:"column:ShowReadButton"`
+	ShowLinkButton       bool  `gorm:"column:ShowLinkButton"`
+	ShowBookmarkButton   bool  `gorm:"column:ShowBookmarkButton"`
 }
 
 func (Settings) TableName() string {
@@ -67,14 +67,14 @@ func (Settings) TableName() string {
 /* Vk Models
 ============================================================================= */
 type VkNews struct {
-	Id        int    `gorm:"column:Id;primary_key;AUTO_INCREMENT"`
-	UserId    int    `gorm:"column:UserId;index"`
-	GroupId   int    `gorm:"column:GroupId;index"`
-	PostId    int    `gorm:"column:PostId;index"`
+	Id        int64  `gorm:"column:Id;primary_key;AUTO_INCREMENT"`
+	UserId    int64  `gorm:"column:UserId;index"`
+	GroupId   int64  `gorm:"column:GroupId;index"`
+	PostId    int64  `gorm:"column:PostId;index"`
+	Timestamp int64  `gorm:"column:Timestamp"`
 	Text      string `gorm:"column:Text"`
 	Image     string `gorm:"column:Image"`
 	Link      string `gorm:"column:Link"`
-	Timestamp int64  `gorm:"column:Timestamp"`
 }
 
 func (VkNews) TableName() string {
@@ -82,9 +82,9 @@ func (VkNews) TableName() string {
 }
 
 type VkGroup struct {
-	Id         int    `gorm:"column:Id;primary_key;AUTO_INCREMENT"`
-	Gid        int    `gorm:"column:Gid;index"`
-	UserId     int    `gorm:"column:UserId;index"`
+	Id         int64  `gorm:"column:Id;primary_key;AUTO_INCREMENT"`
+	Gid        int64  `gorm:"column:Gid;index"`
+	UserId     int64  `gorm:"column:UserId;index"`
 	Name       string `gorm:"column:Name"`
 	LinkedName string `gorm:"column:LinkedName"`
 	Image      string `gorm:"column:Image"`
@@ -97,9 +97,9 @@ func (VkGroup) TableName() string {
 /* Twitter Models
 ============================================================================= */
 type TwitterNews struct {
-	Id          uint64 `gorm:"column:Id;primary_key;AUTO_INCREMENT"`
-	UserId      int    `gorm:"column:UserId;index"`
-	SourceId    int    `gorm:"column:SourceId;index"`
+	Id          int64  `gorm:"column:Id;primary_key;AUTO_INCREMENT"`
+	UserId      int64  `gorm:"column:UserId;index"`
+	SourceId    int64  `gorm:"column:SourceId;index"`
 	Text        string `gorm:"column:Text"`
 	ExpandedUrl string `gorm:"column:ExpandedUrl"`
 	Image       string `gorm:"column:Image"`
@@ -110,8 +110,8 @@ func (TwitterNews) TableName() string {
 }
 
 type TwitterSource struct {
-	Id         int    `gorm:"column:Id;primary_key;AUTO_INCREMENT"`
-	UserId     int    `gorm:"column:UserId;index"`
+	Id         int64  `gorm:"column:Id;primary_key;AUTO_INCREMENT"`
+	UserId     int64  `gorm:"column:UserId;index"`
 	Name       string `gorm:"column:Name"`
 	ScreenName string `gorm:"column:ScreenName"`
 	Url        string `gorm:"column:Url"`

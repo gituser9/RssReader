@@ -22,38 +22,30 @@ class ModalController {
 
     auth() {
         this.mainService.auth(this.$scope.username, this.$scope.password).then((response) => {
-            if (response.data !== null) {
+            if (response.status === 200) {
                 this.cancel();
-                this.mainService.currentUserId = response.data.Id;
-                this.mainService.settings = response.data.Settings;
-                // this.mainService.getAll(this.mainService.currentUserId);
-                this.mainService.updateSettings(response.data.Id);
-
+                
                 let storage = window.localStorage;
-                storage.setItem("RssReaderUser", JSON.stringify(response.data));
+                storage.setItem('rtoken', response.refresh_token)
+                storage.setItem('token', response.token)
 
+                this.mainService.getAll();
+                this.mainService.updateSettings();
             }
         });
     };
 
     registration() {
         this.mainService.registration(this.$scope.username, this.$scope.password).then((response) => {
-            if (response.data !== null) {
+            if (response.status === 200) {
                 let data = response.data;
 
-                if (data.User === null) {
-                    this.$scope.errorMessage = data.Message;
-                    return
-                }
+                let storage = window.localStorage;
+                storage.setItem('rtoken', response.refresh_token)
+                storage.setItem('token', response.token)
 
                 this.$scope.cancel();
-
                 this.$scope.errorMessage = "";
-                this.mainService.currentUserId = data.User.Id;
-                this.mainService.settings = data.User.Settings;
-                
-                let storage = window.localStorage;
-                storage.setItem("RssReaderUser", JSON.stringify(data.User));
 
                 this.mainService.openModal("settingModal.html", ModalController, {});
             }
@@ -64,13 +56,6 @@ class ModalController {
     saveSettings() {
         this.mainService.setSettings(this.$scope.modalData.Settings);
         this.mainService.settings = this.$scope.modalData.Settings;
-        
-        let storage = window.localStorage;
-        let userStr = storage.getItem("RssReaderUser");
-        let user = JSON.parse(userStr);
-        user.Settings = this.$scope.modalData.Settings;
-
-        storage.setItem("RssReaderUser", JSON.stringify(user));
         this.cancel();
     }
 }

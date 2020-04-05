@@ -1,11 +1,10 @@
 package services
 
 import (
-	"../models"
-
 	"log"
-
 	"strconv"
+
+	"newshub/models"
 
 	"github.com/jinzhu/gorm"
 )
@@ -24,7 +23,7 @@ func (service *TwitterService) SetDb(db *gorm.DB) {
 }
 
 // Init - create new struct pointer with collection
-func (service *TwitterService) Init(config *models.Config) *TwitterService {
+func NewTwitterService(config *models.Config) *TwitterService {
 	db, err := gorm.Open(config.Driver, config.ConnectionString)
 
 	if err != nil {
@@ -34,11 +33,16 @@ func (service *TwitterService) Init(config *models.Config) *TwitterService {
 	return &TwitterService{db: db, config: config}
 }
 
-func (service *TwitterService) GetNews(id int, page int) []models.TwitterNewsView {
+func (service *TwitterService) GetNews(id int64, page int, sourceId int64) []models.TwitterNewsView {
 	var dbModels []models.TwitterNews
+	cond := models.TwitterNews{UserId: id}
 	offset := service.config.PageSize * (page - 1)
 
-	service.db.Where(&models.TwitterNews{UserId: id}).
+	if sourceId != 0 {
+		cond.SourceId = sourceId
+	}
+
+	service.db.Where(&cond).
 		Limit(service.config.PageSize).
 		Offset(offset).
 		Order("Id desc").
@@ -47,7 +51,7 @@ func (service *TwitterService) GetNews(id int, page int) []models.TwitterNewsVie
 	return getNewsView(dbModels)
 }
 
-func (service *TwitterService) GetAllSources(id int) []models.TwitterSource {
+func (service *TwitterService) GetAllSources(id int64) []models.TwitterSource {
 	var result []models.TwitterSource
 
 	service.db.Where(&models.TwitterSource{UserId: id}).Find(&result)
@@ -55,23 +59,9 @@ func (service *TwitterService) GetAllSources(id int) []models.TwitterSource {
 	return result
 }
 
-// TODO: userId
-func (service *TwitterService) GetNewsByFilters(filters models.TwitterData) []models.TwitterNewsView {
+func (service *TwitterService) Search(searchString string, sourceId int64, userId int64) []models.TwitterNewsView {
 	var dbModels []models.TwitterNews
-	var conditions models.TwitterNews
-
-	if filters.SourceId != 0 {
-		conditions.SourceId = filters.SourceId
-	}
-
-	service.db.Where(&conditions).Order("Id desc").Find(&dbModels)
-
-	return getNewsView(dbModels)
-}
-
-func (service *TwitterService) Search(searchString string, sourceId int) []models.TwitterNewsView {
-	var dbModels []models.TwitterNews
-	query := service.db.Where("Text LIKE ?", "%"+searchString+"%")
+	query := service.db.Where("Text LIKE ? and UserId = ?", "%"+searchString+"%", userId)
 
 	if sourceId != 0 {
 		query = query.Where(&models.TwitterNews{SourceId: sourceId})
@@ -91,7 +81,7 @@ func getNewsView(dbModels []models.TwitterNews) []models.TwitterNewsView {
 			ExpandedUrl: item.ExpandedUrl,
 			Image:       item.Image,
 			Text:        item.Text,
-			Id:          strconv.FormatUint(item.Id, 10),
+			Id:          strconv.FormatInt(item.Id, 10), // string for js
 		}
 	}
 

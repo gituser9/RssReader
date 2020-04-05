@@ -15,41 +15,38 @@ class MainController {
         this.$scope.isAuth = false;
 
         this.$scope.$watch(() => {
-            this.$scope.userId = mainService.currentUserId;
-            this.$scope.settings = mainService.settings;
+            //  = mainService.currentUserId;
+            // this.$scope.settings = mainService.settings;
         });
     }
 
     setStartedSource(settings) {
-        if (settings.RssEnabled) {
-            this.rssService.getAll(settings.UserId);
+        // if (settings.RssEnabled) {
+        if (true) {
+            this.rssService.getAll();
             return;
         }
 
         if (settings.VkNewsEnabled) {
-            this.vkService.getPageData(settings.UserId);
+            this.vkService.getPageData();
             return;
         }
 
         if (settings.TwitterEnabled) {
-            this.twitterService.getPageData(settings.UserId);
+            this.twitterService.getPageData();
             return;
         }
     };
 
     init() {
         let storage = window.localStorage;
-        let userStr = storage.getItem("RssReaderUser");
+        let token = storage.getItem("token");
 
-        if (userStr) {
-            let user = JSON.parse(userStr);
-
-            this.mainService.updateSettings(user.Id);
+        if (token) {
+            this.mainService.updateSettings();
             this.setStartedSource(user.Settings);
 
-            this.mainService.currentUserId = user.Id;
             this.$scope.isAuth = true;
-            this.$scope.username = user.Name;
         } else {
             // modal for auth
             this.mainService.openModal("authModal.html", ModalController, null);
@@ -58,7 +55,8 @@ class MainController {
 
     logout() {
         let storage = window.localStorage;
-        storage.removeItem("RssReaderUser");
+        storage.removeItem("token");
+        storage.removeItem("rtoken");
 
         // emit event?
         this.mainService.openModal("authModal.html", ModalController, null);
@@ -68,7 +66,7 @@ class MainController {
         this.$scope.currentSource = this.$scope.Sources.Rss;
 
         if (!this.rssService.feeds || this.rssService.feeds.length === 0) {
-            this.rssService.getAll(this.$scope.userId);
+            this.rssService.getAll();
         }
     };
 
@@ -76,7 +74,7 @@ class MainController {
         this.$scope.currentSource = this.$scope.Sources.Vk;
 
         if (this.vkService.model.VkNews.length === 0) {
-            this.vkService.getPageData(this.$scope.userId);
+            this.vkService.getPageData();
         }
     };
 
@@ -84,7 +82,7 @@ class MainController {
         this.$scope.currentSource = this.$scope.Sources.Twitter;
 
         if (this.twitterService.model.News.length === 0) {
-            this.twitterService.getPageData(this.$scope.userId);
+            this.twitterService.getPageData();
         }
     };
 
@@ -93,8 +91,8 @@ class MainController {
     };
 
     openSettings() {
-        this.mainService.getSettings(this.$scope.userId).then((response) => {
-            let modalData = { Settings: response };
+        this.mainService.getSettings().then((response) => {
+            let modalData = { Settings: response.data };
             this.mainService.openModal("settingModal.html", ModalController, modalData);
         });
     }

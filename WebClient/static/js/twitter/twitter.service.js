@@ -11,19 +11,12 @@ class TwitterService {
         };
         let storage = window.localStorage;
         let userStr = storage.getItem("RssReaderUser");
-
-        if (userStr) {
-            let user = JSON.parse(userStr);
-            this.userId = user.Settings.UserId;
-        }
     }
 
     getPageData() {
         this.model.IsLoad = true;
-        let config = {};
-        config.params = { id: this.userId };
 
-        this.$http.get("/get-twitter-page", config).then((response) => {
+        this.$http.get("/twitter/page").then((response) => {
             this.model.News = response.data.News;
             this.model.Sources = response.data.Sources;
             this.model.IsLoad = false;
@@ -46,16 +39,15 @@ class TwitterService {
 
         this.model.IsLoad = true;
         let config = {};
-        config.params = { id: this.userId, page: page };
+        config.params = { page: page };
 
-        this.$http.get("/get-twitter-news", config).then((response) => {
+        this.$http.get("/twitter/news", config).then((response) => {
             this.model.IsLoad = false;
 
             if (response.data.length === 0) {
                 this.model.IsAll = true;
                 return;
             }
-
             for (let item of response.data) {
                 this.model.News.push(item);
             }
@@ -63,10 +55,7 @@ class TwitterService {
     };
 
     getSources() {
-        let config = {};
-        config.params = { id: this.userId };
-
-        this.$http.get("/get-", config).then((response) => {
+        this.$http.get("/twitter/sources").then((response) => {
             this.model.Sources = response.data;
         });
     };
@@ -77,7 +66,7 @@ class TwitterService {
             SearchString: filters.SearchString,
             SourceId: Number(filters.SourceId)
         };
-        this.$http.post('/get-twitter-news-by-filters', data).then((response) => {
+        this.$http.get('/twitter/news', data).then((response) => {
             this.model.News = response.data;
         });
     };
@@ -88,7 +77,7 @@ class TwitterService {
             SearchString: searchString,
             SourceId: sourceId
         };
-        this.$http.post('/search-twitter-news', data).then((response) => {
+        this.$http.get('/twitter/news', data).then((response) => {
             this.model.News = response.data;
         });
     };

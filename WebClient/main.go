@@ -7,11 +7,13 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"strconv"
 
-	"./controllers"
-	"./models"
-	// "./services"
+	"newshub/controllers"
+	"newshub/middleware"
+	"newshub/models"
+	"newshub/services"
+
+	"github.com/gorilla/mux"
 )
 
 var conf models.Config
@@ -47,61 +49,73 @@ func init() {
 	conf.PageSize = 20
 
 	json.Unmarshal(bytes, &conf)
+
+	services.Setup(conf)
+}
+
+func createRouter() http.Handler {
+	rssCtrl := controllers.NewRssCtrl(&conf)
+	userCtrl := controllers.NewUserCtrl(&conf)
+	vkCtrl := controllers.NewVkCtrl(&conf)
+	twitterCtrl := controllers.NewTwitterCtrl(&conf)
+	router := mux.NewRouter()
+
+	// rss
+	router.HandleFunc("/rss", rssCtrl.GetAll).Methods(http.MethodGet)
+	router.HandleFunc("/rss/{id}", rssCtrl.Delete).Methods(http.MethodDelete)
+	router.HandleFunc("/rss/{id}", rssCtrl.SetNewFeedName).Methods(http.MethodPut)
+	router.HandleFunc("/rss/search", rssCtrl.Search).Methods(http.MethodGet)
+	router.HandleFunc("/rss/opml", rssCtrl.UploadOpml).Methods(http.MethodPost)
+	router.HandleFunc("/rss/opml", rssCtrl.CreateOpml).Methods(http.MethodGet)
+
+	// articles
+	router.HandleFunc("/rss/articles", rssCtrl.GetArticles).Methods(http.MethodGet)
+	router.HandleFunc("/rss/articles", rssCtrl.AddFeed).Methods(http.MethodPost)
+	router.HandleFunc("/rss/articles/{id}", rssCtrl.GetArticle).Methods(http.MethodGet)
+	router.HandleFunc("/rss/articles/{id}", rssCtrl.UpdateArticle).Methods(http.MethodPut)
+	router.HandleFunc("/rss/articles/bookmarks", rssCtrl.GetBookmarks)
+
+	// user
+	router.HandleFunc("/auth", userCtrl.Auth).Methods(http.MethodPost)
+	router.HandleFunc("/registration", userCtrl.Registration).Methods(http.MethodPost)
+	router.HandleFunc("/users/settings", userCtrl.GetUserSettings).Methods(http.MethodGet)
+	router.HandleFunc("/users/settings", userCtrl.SaveSettings).Methods(http.MethodPut)
+	router.HandleFunc("/users/refresh", userCtrl.SaveSettings).Methods(http.MethodPut)
+
+	// vk
+	router.HandleFunc("/vk", vkCtrl.GetPageData)
+	router.HandleFunc("/vk/news", vkCtrl.GetNews)
+	router.HandleFunc("/vk/search", vkCtrl.Search)
+
+	// twitter
+	router.HandleFunc("/twitter", twitterCtrl.GetPageData)
+	router.HandleFunc("/twitter/news", twitterCtrl.GetNews)
+	router.HandleFunc("/twitter/search", twitterCtrl.Search)
+
+	// todo: client
+	// static
+	router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./static/"))))
+	router.PathPrefix("/dist/").Handler(http.StripPrefix("/dist/", http.FileServer(http.Dir("./dist/"))))
+	router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "dist/index.html")
+	})
+
+	// middleware
+	amw := middleware.AuthenticationMiddleware{}
+	amw.Populate(conf)
+
+	router.Use(amw.Middleware)
+
+	return router
 }
 
 func main() {
-	rssCtrl := new(controllers.RssController).Init(&conf)
-	userCtrl := new(controllers.UserController).Init(&conf)
-	vkCtrl := new(controllers.VkController).Init(&conf)
-	twitterCtrl := new(controllers.TwitterController).Init(&conf)
-
 	// todo: websocket for update feed list
-	// todo: gorilla mux for REST API
-	// todo: gorilla sessions
 
-	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./static/"))))
-	http.Handle("/dist/", http.StripPrefix("/dist/", http.FileServer(http.Dir("./dist/"))))
-	http.HandleFunc("/", rssCtrl.Index)
+	router := createRouter()
+	log.Println("server start on", conf.Address)
 
-	// rss
-	http.HandleFunc("/get-all", rssCtrl.GetAll)
-	http.HandleFunc("/get-articles", rssCtrl.GetArticles)
-	http.HandleFunc("/get-article", rssCtrl.GetArticle)
-	http.HandleFunc("/add-article", rssCtrl.AddFeed)
-	http.HandleFunc("/delete", rssCtrl.Delete)
-	http.HandleFunc("/set-new-name", rssCtrl.SetNewFeedName)
-	// http.HandleFunc("/update-all", rssCtrl.UpdateAll)
-	http.HandleFunc("/upload-opml", rssCtrl.UploadOpml)
-	http.HandleFunc("/toggle-bookmark", rssCtrl.ToggleBookmark)
-	http.HandleFunc("/get-bookmarks", rssCtrl.GetBookmarks)
-	http.HandleFunc("/mark-read-all", rssCtrl.MarkAllRead)
-	http.HandleFunc("/create-opml", rssCtrl.CreateOpml)
-	http.HandleFunc("/toggle-unread", rssCtrl.ToggleUnread)
-	http.HandleFunc("/search", rssCtrl.Search)
-	http.HandleFunc("/toggle-as-read", rssCtrl.ToggleAsRead)
-
-	// user
-	http.HandleFunc("/auth", userCtrl.Auth)
-	http.HandleFunc("/registration", userCtrl.Registration)
-	http.HandleFunc("/get-settings", userCtrl.GetUserSettings)
-	http.HandleFunc("/set-settings", userCtrl.SaveSettings)
-
-	// vk
-	http.HandleFunc("/get-vk-page", vkCtrl.GetPageData)
-	http.HandleFunc("/get-vk-news", vkCtrl.GetNews)
-	http.HandleFunc("/get-vk-news-by-filters", vkCtrl.GetByFilters)
-	http.HandleFunc("/search-vk-news", vkCtrl.Search)
-
-	// twitter
-	http.HandleFunc("/get-twitter-page", twitterCtrl.GetPageData)
-	http.HandleFunc("/get-twitter-news", twitterCtrl.GetNews)
-	http.HandleFunc("/get-twitter-news-by-filters", twitterCtrl.GetByFilters)
-	http.HandleFunc("/search-twitter-news", twitterCtrl.Search)
-
-	log.Println("server start on port " + strconv.Itoa(conf.Port))
-	err := http.ListenAndServe(":"+strconv.Itoa(conf.Port), nil)
-
-	if err != nil {
-		log.Println("Start rror: ", err.Error())
+	if err := http.ListenAndServe(conf.Address, router); err != nil {
+		panic("start server error: " + err.Error())
 	}
 }

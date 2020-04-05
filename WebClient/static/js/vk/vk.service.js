@@ -11,12 +11,10 @@ class VkService {
         this.http = $http;
     }
 
-    getPageData(id) {
+    getPageData() {
         this.model.IsLoad = true;
-        let config = {};
-        config.params = { id: id };
 
-        this.http.get("/get-vk-page", config).then((response) => {
+        this.http.get("/vk/page").then((response) => {
             this.model.VkNews = response.data.News;
             this.model.VkGroups = response.data.Groups;
             this.model.IsLoad = false;
@@ -31,16 +29,16 @@ class VkService {
         });
     }
 
-    getVkNews(userId, page) {
+    getVkNews(page) {
         if (this.model.IsLoad || this.model.IsAll || this.model.IsSearch) {
             return;
         }
 
         this.model.IsLoad = true;
         let config = {};
-        config.params = { id: userId, page: page };
+        config.params = { page: page };
 
-        this.http.get("/get-vk-news", config).then((response) => {
+        this.http.get("/vk/news", config).then((response) => {
             this.model.IsLoad = false;
 
             if (response.data.length === 0) {
@@ -58,7 +56,7 @@ class VkService {
         let config = {};
         config.params = { id: userId };
 
-        this.http.get("/get-vk-groups", config).then((response) => {
+        this.http.get("/vk/groups", config).then((response) => {
             factory.model.VkGroups = response.data;
         });
     };
@@ -83,7 +81,7 @@ class VkService {
         let data = {
             GroupId: Number(filters.GroupId)
         };
-        this.http.post('/get-vk-news-by-filters', data).then((response) => {
+        this.http.get('/vk/news', data).then((response) => {
             this.model.VkNews = response.data;
         });
     };
@@ -94,7 +92,7 @@ class VkService {
             SearchString: searchString,
             GroupId: groupId
         };
-        this.http.post('/search-vk-news', data).then((response) => {
+        this.http.get('/vk/search', data).then((response) => {
             this.model.VkNews = response.data;
         });
     };

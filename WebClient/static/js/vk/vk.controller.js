@@ -22,11 +22,11 @@ class VkController {
 
     getVkNews() {
         ++this.$scope.filters.Page;  // for scroll
-        this.vkService.getVkNews(this.$scope.userId, this.$scope.filters.Page);
+        this.vkService.getVkNews(this.$scope.filters.Page);
     };
 
     getPageData() {
-        this.vkService.getPageData(this.$scope.userId);
+        this.vkService.getPageData();
     };
 
     loadComments(news) {

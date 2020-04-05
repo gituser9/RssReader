@@ -36,7 +36,7 @@ class RssController {
         /*this.$timeout(() => {
             rssService.getAll($scope.userId);
         }, 3000);*/
-        this.rssService.getAll(this.$scope.userId);
+        this.rssService.getAll();
     };
 
     getArticles(feed) {
@@ -51,7 +51,7 @@ class RssController {
         this.$scope.currentFeedId = feed.Feed.Id;
         this.$scope.currentFeedTitle = feed.Feed.Name;
 
-        this.rssService.getArticles(feed.Feed.Id, this.$scope.currentPage, this.$scope.userId);
+        this.rssService.getArticles(feed.Feed.Id, this.$scope.currentPage);
     };
 
     stepBack() {
@@ -59,7 +59,7 @@ class RssController {
     };
 
     getArticle(article) {
-        this.rssService.getArticle(article.Id);
+        this.rssService.getArticle(article);
         this.setRead();
     };
 
@@ -115,21 +115,21 @@ class RssController {
     };
 
     markReadAll() {
-        this.rssService.markReadAll(this.$scope.currentFeedId, this.$scope.userId);
+        this.rssService.markReadAll(this.$scope.currentFeedId);
 
         this.$scope.currentFeed.ArticlesCount = 0;
         this.$scope.currentFeed.ExistUnread = false;
     };
 
     markReadAllById(id) {
-        this.rssService.markReadAll(id, this.$scope.userId);
+        this.rssService.markReadAll(id);
 
         this.$scope.currentFeed.ArticlesCount = 0;
         this.$scope.currentFeed.ExistUnread = false;
     };
 
     toggleAsRead(id, isRead) {
-        this.rssService.markAsRead(id, this.$scope.currentFeedId, this.$scope.currentPage, isRead, this.$scope.userId);
+        this.rssService.markAsRead(id, this.$scope.currentFeedId, this.$scope.currentPage, isRead);
 
         if (isRead) {
             this.setRead();
@@ -140,10 +140,10 @@ class RssController {
     };
 
     createOpml() {
-        this.rssService.createOpml(this.$scope.userId).then(() => {
+        this.rssService.createOpml().then((response) => {
             let a = document.createElement("a");
             a.download = name;
-            a.href = 'static/rss.opml';
+            a.href = `static/${response.data.name}.opml`;
 
             document.querySelector("#export-link").appendChild(a);
             a.addEventListener("click", function() {
@@ -227,7 +227,7 @@ class RssController {
         }
         article.IsRead = true;
 
-        this.rssService.getArticlePromise(article.Id).then((response) => {
+        this.rssService.getArticlePromise(article).then((response) => {
             article.Body = response.data.Body;
             article.Link = response.data.Link;
         });

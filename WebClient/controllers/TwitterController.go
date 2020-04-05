@@ -2,12 +2,11 @@ package controllers
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
 	"strconv"
 
-	"../models"
-	"../services"
+	"newshub/models"
+	"newshub/services"
 )
 
 type TwitterController struct {
@@ -15,61 +14,62 @@ type TwitterController struct {
 	config  *models.Config
 }
 
-// Init - init controller
-func (ctrl *TwitterController) Init(config *models.Config) *TwitterController {
-	service := new(services.TwitterService).Init(config)
+func NewTwitterCtrl(cfg *models.Config) *TwitterController {
+	ctrl := new(TwitterController)
+	ctrl.config = cfg
+	ctrl.service = services.NewTwitterService(cfg)
 
-	return &TwitterController{service: service, config: config}
+	return ctrl
 }
 
 func (ctrl *TwitterController) GetPageData(w http.ResponseWriter, r *http.Request) {
-	id, _ := strconv.Atoi(r.URL.Query().Get("id"))
+	claims := getClaims(r)
 	pageData := models.TwitterPageData{
-		News:    ctrl.service.GetNews(id, 1),
-		Sources: ctrl.service.GetAllSources(id),
+		News:    ctrl.service.GetNews(claims.Id, 1, 0),
+		Sources: ctrl.service.GetAllSources(claims.Id),
 	}
 
-	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(pageData)
 }
 
 func (ctrl *TwitterController) GetNews(w http.ResponseWriter, r *http.Request) {
-	id, _ := strconv.Atoi(r.URL.Query().Get("id"))
-	page, _ := strconv.Atoi(r.URL.Query().Get("page"))
-	news := ctrl.service.GetNews(id, page)
+	claims := getClaims(r)
+	page, err := strconv.Atoi(r.FormValue("page"))
 
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(news)
-}
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+	}
 
-func (ctrl *TwitterController) GetByFilters(w http.ResponseWriter, r *http.Request) {
-	data := postTwitterData(r)
-	news := ctrl.service.GetNewsByFilters(data)
+	sourceId := int64(0)
 
-	w.Header().Set("Content-Type", "application/json")
+	if r.FormValue("source_id") != "" {
+		sourceId, err = strconv.ParseInt(r.FormValue("source_id"), 10, 64)
+
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+	}
+
+	news := ctrl.service.GetNews(claims.Id, page, sourceId)
 	json.NewEncoder(w).Encode(news)
 }
 
 func (ctrl *TwitterController) Search(w http.ResponseWriter, r *http.Request) {
-	data := postTwitterData(r)
-	news := ctrl.service.Search(data.SearchString, data.SourceId)
+	sourceId := int64(0)
+	var err error
+
+	if r.FormValue("source_id") != "" {
+		sourceId, err = strconv.ParseInt(r.FormValue("source_id"), 10, 64)
+
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+	}
+	claims := getClaims(r)
+	news := ctrl.service.Search(r.FormValue("search_string"), sourceId, claims.Id)
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(news)
-}
-
-/*==============================================================================
-	Private
-==============================================================================*/
-
-func postTwitterData(r *http.Request) models.TwitterData {
-	result := new(models.TwitterData)
-	decoder := json.NewDecoder(r.Body)
-	err := decoder.Decode(&result)
-
-	if err != nil {
-		log.Println("decode err: ", err.Error())
-	}
-
-	return *result
 }

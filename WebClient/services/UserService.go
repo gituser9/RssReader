@@ -3,37 +3,24 @@ package services
 import (
 	"crypto/aes"
 	"crypto/cipher"
+	"encoding/hex"
+	"errors"
+	"fmt"
 	"log"
+
+	"newshub/models"
 
 	"github.com/jinzhu/gorm"
 	"golang.org/x/crypto/bcrypt"
-
-	"fmt"
-
-	"encoding/hex"
-
-	"../models"
 )
 
 // RssService - service
 type UserService struct {
-	db     *gorm.DB
 	config *models.Config
 }
 
-// Init - create new struct pointer with collection
-func (service *UserService) Init(config *models.Config) *UserService {
-	db, err := gorm.Open(config.Driver, config.ConnectionString)
-
-	if err != nil {
-		log.Println(err)
-	}
-
-	return &UserService{db: db, config: config}
-}
-
-func (service *UserService) SetDb(db *gorm.DB) {
-	service.db = db
+func NewUserService(cfg *models.Config) *UserService {
+	return &UserService{config: cfg}
 }
 
 func (service *UserService) SetConfig(cfg *models.Config) {
@@ -42,42 +29,45 @@ func (service *UserService) SetConfig(cfg *models.Config) {
 
 // Auth - authorization an existing user
 func (service *UserService) Auth(name, password string) *models.Users {
-	var user models.Users
-	service.db.Preload("Settings").Where(&models.Users{Name: name}).First(&user)
-	err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
+	user := new(models.Users)
 
-	if err != nil {
-		return nil
+	dbExec(func(db *gorm.DB) {
+		if err := db.Where(models.Users{Name: name}).First(&user).Error; err != nil {
+			log.Println("get user error:", err)
+		}
+	})
+
+	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password)); err == nil {
+		return user
 	}
 
-	user.Password = ""
-	return &user
+	return nil
 }
 
 // Register - create new user
-func (service *UserService) Register(name, password string) models.RegistrationData {
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+func (service *UserService) Register(name, password string) (models.Users, error) {
+	existingUser := models.Users{}
+	user := models.Users{}
+	var userError error = nil
 
-	if err != nil {
-		log.Println("Registration error: ", err.Error())
-		return models.RegistrationData{User: nil, Message: "Create password error"}
-	}
+	dbExec(func(db *gorm.DB) {
+		if err := db.Where(models.Users{Name: name}).First(&existingUser); err == nil {
+			userError = errors.New("Логин уже занят")
+			return
+		}
 
-	user := models.Users{Name: name}
-	service.db.Where(&user).Find(&user)
+		hashedPassword, _ := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+		user := &models.Users{
+			Name:     name,
+			Password: string(hashedPassword),
+		}
+		if err := db.Save(&user).Error; err != nil {
+			log.Println("create user error:", err)
+			userError = errors.New("Произошла неизвестная ошибка")
+		}
+	})
 
-	if user.Id != 0 {
-		return models.RegistrationData{User: nil, Message: "User with this name already exist"}
-	}
-
-	settingsService := new(SettingsService).Init(service.config)
-	user.Password = string(hashedPassword)
-	service.db.Create(&user)
-	service.db.Find(&user) // for get id
-	settingsService.Create(user.Id)
-	user.Password = ""
-
-	return models.RegistrationData{User: &user, Message: ""}
+	return user, userError
 }
 
 func (service *UserService) Update(user *models.Users) {
@@ -91,14 +81,22 @@ func (service *UserService) Update(user *models.Users) {
 		}
 	}*/
 
-	service.db.Save(&user)
+	dbExec(func(db *gorm.DB) {
+		if err := db.Save(&user).Error; err != nil {
+			log.Println("update user error:", err)
+		}
+	})
+
 }
 
-func (service *UserService) GetUser(id uint) *models.Users {
+func (service *UserService) GetUser(id int64) models.Users {
 	user := models.Users{Id: id}
-	service.db.Find(&user)
 
-	return &user
+	dbExec(func(db *gorm.DB) {
+		db.Find(&user)
+	})
+
+	return user
 }
 
 func encryptPassword(password string) string {

@@ -2,13 +2,12 @@ package controllers
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 	"strconv"
 
-	"log"
-
-	"../models"
-	"../services"
+	"newshub/models"
+	"newshub/services"
 )
 
 type VkController struct {
@@ -16,61 +15,74 @@ type VkController struct {
 	config  *models.Config
 }
 
-// Init - init controller
-func (ctrl *VkController) Init(config *models.Config) *VkController {
-	service := new(services.VkService).Init(config)
+func NewVkCtrl(cfg *models.Config) *VkController {
+	ctrl := new(VkController)
+	ctrl.config = cfg
+	ctrl.service = services.NewVkService(cfg)
 
-	return &VkController{service: service, config: config}
+	return ctrl
 }
 
 func (ctrl *VkController) GetPageData(w http.ResponseWriter, r *http.Request) {
-	id, _ := strconv.Atoi(r.URL.Query().Get("id"))
+	claims := getClaims(r)
 	pageData := models.VkPageData{
-		News:   ctrl.service.GetNews(id, 1),
-		Groups: ctrl.service.GetAllGroups(id),
+		News:   ctrl.service.GetNews(claims.Id, 1, 0),
+		Groups: ctrl.service.GetAllGroups(claims.Id),
 	}
 
-	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(pageData)
 }
 
 func (ctrl *VkController) GetNews(w http.ResponseWriter, r *http.Request) {
-	id, _ := strconv.Atoi(r.URL.Query().Get("id"))
-	page, _ := strconv.Atoi(r.URL.Query().Get("page"))
-	news := ctrl.service.GetNews(id, page)
+	claims := getClaims(r)
+	page, err := strconv.Atoi(r.URL.Query().Get("page"))
 
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(news)
-}
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
 
-func (ctrl *VkController) GetByFilters(w http.ResponseWriter, r *http.Request) {
-	data := postVkData(r)
-	news := ctrl.service.GetNewsByFilters(data)
+	groupId := int64(0)
 
-	w.Header().Set("Content-Type", "application/json")
+	if r.FormValue("group_id") != "" {
+		groupId, err = strconv.ParseInt(r.FormValue("group_id"), 10, 64)
+
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+	}
+
+	news := ctrl.service.GetNews(claims.Id, page, groupId)
+
 	json.NewEncoder(w).Encode(news)
 }
 
 func (ctrl *VkController) Search(w http.ResponseWriter, r *http.Request) {
-	data := postVkData(r)
-	news := ctrl.service.Search(data.SearchString, data.GroupId)
+	claims := getClaims(r)
+	groupId := int64(0)
+	var err error
+
+	if r.FormValue("group_id") != "" {
+		groupId, err = strconv.ParseInt(r.FormValue("group_id"), 10, 64)
+
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+	}
+	news := ctrl.service.Search(r.FormValue("q"), groupId, claims.Id)
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(news)
 }
 
-/*==============================================================================
-	Private
-==============================================================================*/
+func getVkFilters(r *http.Request) models.VkData {
+	result := models.VkData{}
 
-func postVkData(r *http.Request) models.VkData {
-	result := new(models.VkData)
-	decoder := json.NewDecoder(r.Body)
-	err := decoder.Decode(&result)
-
-	if err != nil {
-		log.Println("decode err: ", err.Error())
+	if err := json.NewDecoder(r.Body).Decode(&result); err != nil {
+		log.Println("decode err: ", err)
 	}
 
-	return *result
+	return result
 }

@@ -4,17 +4,19 @@ import (
 	"bytes"
 	"encoding/json"
 	"encoding/xml"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
 	"sync"
 
+	"newshub/models"
+
+	"github.com/google/uuid"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	"golang.org/x/net/html/charset"
-
-	"../models"
 )
 
 // RssService - service
@@ -51,9 +53,12 @@ func (service *RssService) SetConfig(cfg *models.Config) {
 }
 
 // GetRss - get all rss
-func (service *RssService) GetRss(id uint) []models.Feed {
+func (service *RssService) GetRss(id int64) []models.Feed {
 	var rss []models.Feeds
-	service.dbp().Preload("Articles", "IsRead=?", "0").Where(&models.Feeds{UserId: id}).Find(&rss)
+	service.dbp().
+		Preload("Articles", "IsRead=?", "0").
+		Where(&models.Feeds{UserId: id}).
+		Find(&rss)
 	feeds := make([]models.Feed, len(rss))
 	var wg sync.WaitGroup
 
@@ -74,7 +79,7 @@ func (service *RssService) GetRss(id uint) []models.Feed {
 }
 
 // GetArticles - get articles for rss by id
-func (service *RssService) GetArticles(id uint, userId uint, page int) *models.ArticlesJSON {
+func (service *RssService) GetArticles(id int64, userId int64, page int) *models.ArticlesJSON {
 	var articles []models.Articles
 	var count int
 	offset := service.config.PageSize * (page - 1)
@@ -103,7 +108,13 @@ func (service *RssService) GetArticles(id uint, userId uint, page int) *models.A
 }
 
 // GetArticle - get one article
-func (service *RssService) GetArticle(id uint, userId uint) *models.Articles {
+func (service *RssService) GetArticle(id int64, userId int64) *models.Articles {
+	rss := service.GetRss(userId)
+
+	if len(rss) == 0 {
+		return nil
+	}
+
 	// get article
 	var article models.Articles
 	service.dbp().First(&article, id)
@@ -123,7 +134,7 @@ func (service *RssService) GetArticle(id uint, userId uint) *models.Articles {
 }
 
 // Import - import OPML file
-func (service *RssService) Import(data []byte, userId uint) {
+func (service *RssService) Import(data []byte, userId int64) {
 	// parse opml
 	var opml models.OPML
 	decoder := xml.NewDecoder(bytes.NewReader(data))
@@ -135,11 +146,20 @@ func (service *RssService) Import(data []byte, userId uint) {
 		return
 	}
 
-	// todo: send message for update
+	dbExec(func(db *gorm.DB) {
+		for _, outline := range opml.Outlines {
+			feed := models.Feeds{
+				Name:   outline.Title,
+				Url:    outline.URL,
+				UserId: userId,
+			}
+			db.Save(&feed)
+		}
+	})
 }
 
 // Export - export feeds to OPML file
-func (service *RssService) Export(userId uint) {
+func (service *RssService) Export(userId int64) {
 	// get data from DB
 	var rss []models.Feeds
 	service.dbp().Where(&models.Feeds{UserId: userId}).Find(&rss)
@@ -168,18 +188,15 @@ func (service *RssService) Export(userId uint) {
 		go ioutil.WriteFile(conf.OPMLPath+"/rss.opml", xmlString, 0777)
 	}
 
-	ioutil.WriteFile("./static/rss.opml", xmlString, 0777)
+	// todo: clean old
+	fileName := uuid.New().String()
+	ioutil.WriteFile(fmt.Sprintf("./static/%s.opml", fileName), xmlString, 0777)
 }
 
 // AddFeed - add new feed
-func (service *RssService) AddFeed(url string, userId uint) {
+func (service *RssService) AddFeed(url string, userId int64) {
 	// get rss xml
 	response, err := http.Get(url)
-
-	if err != nil {
-		log.Println(err.Error())
-		return
-	}
 
 	if err != nil {
 		log.Println("Get XML error: ", err.Error())
@@ -200,7 +217,7 @@ func (service *RssService) AddFeed(url string, userId uint) {
 	}
 
 	// insert in DB
-	service.dbp().Create(&models.Feeds{Url: url, UserId: userId, Name: xmlModel.RssName})
+	err = service.dbp().Create(&models.Feeds{Url: url, UserId: userId, Name: xmlModel.RssName}).Error
 	// todo: send message for update
 
 	if err != nil {
@@ -209,66 +226,62 @@ func (service *RssService) AddFeed(url string, userId uint) {
 }
 
 // Delete - remove feed
-func (service *RssService) Delete(id uint) {
+func (service *RssService) Delete(id int64, userId int64) {
+	feed := service.GetRss(userId)
+
+	if len(feed) == 0 {
+		return
+	}
+
 	service.dbp().Where(models.Articles{FeedId: id}).Delete(models.Articles{})
 	service.dbp().Delete(models.Feeds{Id: id})
 }
 
 // SetNewName - update feed name
-func (service *RssService) SetNewName(newName string, id uint) {
-	var feed models.Feeds
-	service.dbp().Where(models.Feeds{Id: id}).First(&feed)
-	feed.Name = newName
-	service.dbp().Save(&feed)
-}
+func (service *RssService) SetNewName(data models.FeedUpdateData, userId int64) {
+	updateFields := make(map[string]interface{})
 
-// ToggleBookmark - toggle article status as bookmark or not bookmark
-func (service *RssService) ToggleBookmark(id uint, isBookmark bool) {
-	// fixme
-	var article models.Articles
-	service.dbp().Where(&models.Articles{Id: id}).Find(&article)
-	updateArticles := service.dbp().Model(&models.Articles{Id: article.Id}) // fixme: (should be link)
-
-	if isBookmark {
-		updateArticles.UpdateColumn(&models.Articles{IsBookmark: isBookmark})
-	} else {
-		updateArticles.UpdateColumn("IsBookmark", "0")
+	if data.IsReadAll {
+		service.dbp().Model(&models.Articles{}).
+			Joins("join feeds on articles.FeedId = feeds.Id").
+			Where("articles.FeedId = ? and feeds.UserId = ?", data.FeedId, userId).
+			Not(&models.Articles{IsRead: true}).
+			UpdateColumn(models.Articles{IsRead: true})
 	}
+	if data.Name != "" {
+		updateFields["Name"] = data.Name
+	}
+
+	service.dbp().Where(models.Feeds{Id: data.FeedId, UserId: userId}).Updates(updateFields)
 }
 
 // GetBookmarks - get all bookmarks
-func (service *RssService) GetBookmarks(page int64, userId uint) *models.ArticlesJSON {
+func (service *RssService) GetBookmarks(page int, userId int64) *models.ArticlesJSON {
 	var articles []models.Articles
-	//whereObject := models.Articles{IsBookmark: true, Feed: models.Feeds{UserId: userId}}
-	whereObject := models.Articles{IsBookmark: true}
-	offset := service.config.PageSize * (int(page) - 1)
+	whereCond := "articles.IsBookmark = true and feeds.UserId = ?"
+	offset := service.config.PageSize * (page - 1)
 	var count int
 
-	service.dbp().Where(&whereObject).
+	service.dbp().Where(whereCond, userId).
+		Joins("join feeds on articles.FeedId = feeds.Id").
 		Select("Id, Title, IsBookmark, IsRead").
 		Limit(service.config.PageSize).
 		Offset(offset).
 		Order("Id desc").
 		Find(&articles)
-	service.dbp().Model(&models.Articles{}).Where(&whereObject).Count(&count)
+	service.dbp().Model(&models.Articles{}).Where(whereCond, userId).
+		Joins("join feeds on articles.FeedId = feeds.Id").Count(&count)
 
 	return &models.ArticlesJSON{Articles: articles, Count: count}
 }
 
-// MarkReadAll - mark read all articles by feed id
-func (service *RssService) MarkReadAll(id uint) {
-	service.dbp().Model(&models.Articles{}).
-		Where(&models.Articles{FeedId: id}).
-		Not(&models.Articles{IsRead: true}).
-		UpdateColumn(models.Articles{IsRead: true})
-}
-
 // Search - search articles by title or body
-func (service *RssService) Search(searchString string, isBookmark bool, feedId uint) *models.ArticlesJSON {
+func (service *RssService) Search(searchString string, isBookmark bool, feedId int64, userId int64) *models.ArticlesJSON {
 	var articles []models.Articles
 	query := service.dbp().
+		Joins("join feeds on articles.FeedId = feeds.Id").
 		Select("Id, Title, IsBookmark, IsRead, Link").
-		Where("(Title LIKE ? OR Body LIKE ?)", "%"+searchString+"%", "%"+searchString+"%")
+		Where("(articles.Title LIKE ? OR articles.Body LIKE ?) and feeds.UserId = ?", "%"+searchString+"%", "%"+searchString+"%", userId)
 
 	if feedId != 0 {
 		query = query.Where(&models.Articles{Id: feedId})
@@ -282,24 +295,24 @@ func (service *RssService) Search(searchString string, isBookmark bool, feedId u
 	return &models.ArticlesJSON{Articles: articles}
 }
 
-// ToggleAsRead - set read or unread status for article
-func (service *RssService) ToggleAsRead(id uint, isRead bool) {
-	// fixme: begin
-	updateArticle := service.dbp().Model(&models.Articles{Id: id})
+func (service *RssService) ArticleUpdate(userId int64, data models.ArticlesUpdateData) {
+	updateColumns := make(map[string]interface{})
 
-	if isRead {
-		updateArticle.UpdateColumn(models.Articles{IsRead: true})
+	if data.IsRead {
+		updateColumns["IsRead"] = 1
 	} else {
-		updateArticle.UpdateColumn("IsRead", "0")
+		updateColumns["IsRead"] = 0
 	}
-	// fixme: end
+	if data.IsBookmark {
+		updateColumns["IsBookmark"] = 1
+	} else {
+		updateColumns["IsBookmark"] = 0
+	}
+
+	service.dbp().Model(&models.Articles{}).Updates(updateColumns)
 }
 
-/*==============================================================================
-	Private
-==============================================================================*/
-
-func (service *RssService) markSameArticles(url string, feedID uint) {
+func (service *RssService) markSameArticles(url string, feedID int64) {
 	updateModel := models.Articles{IsRead: true}
 	service.dbp().Model(&models.Articles{}).Where(&models.Articles{Link: url}).
 		Not(&models.Articles{Id: feedID}).
