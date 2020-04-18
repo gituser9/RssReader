@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"newshub/models"
+	"newshub-server/models"
 
 	"github.com/dgrijalva/jwt-go"
 )

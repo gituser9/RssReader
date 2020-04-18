@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"strings"
 
-	"newshub/models"
+	"newshub-server/models"
 
 	"github.com/dgrijalva/jwt-go"
 )
@@ -13,7 +13,7 @@ import (
 const authHeader = "Authorization"
 const bearer = "Bearer "
 
-var Config *models.Config
+var Config models.Config
 
 func getClaims(r *http.Request) models.JwtClaims {
 	claims := models.JwtClaims{}

@@ -27,7 +27,6 @@ class RssController {
             this.$scope.showWaitBar = this.rssService.showWaitBar;
             this.$scope.showArticle = this.rssService.showArticle;
             this.$scope.articlesCount = this.rssService.articlesCount;
-            this.$scope.userId = this.mainService.currentUserId;
         });
     }
 
@@ -59,7 +58,7 @@ class RssController {
     };
 
     getArticle(article) {
-        this.rssService.getArticle(article);
+        this.rssService.getArticle(article, this.$scope.currentFeedId);
         this.setRead();
     };
 
@@ -129,7 +128,12 @@ class RssController {
     };
 
     toggleAsRead(id, isRead) {
-        this.rssService.markAsRead(id, this.$scope.currentFeedId, this.$scope.currentPage, isRead);
+        this.rssService.markAsRead(id, this.$scope.currentFeedId, isRead);
+        this.rssService.articles.forEach(article => {
+            if (article.Id === id) {
+                article.IsRead = isRead
+            }
+        });
 
         if (isRead) {
             this.setRead();
@@ -140,13 +144,13 @@ class RssController {
     };
 
     createOpml() {
-        this.rssService.createOpml().then((response) => {
+        this.rssService.createOpml((data) => {
             let a = document.createElement("a");
             a.download = name;
-            a.href = `static/${response.data.name}.opml`;
+            a.href = `static/${data.name}.opml`;
 
             document.querySelector("#export-link").appendChild(a);
-            a.addEventListener("click", function() {
+            a.addEventListener("click", function () {
                 a.parentNode.removeChild(a);
             });
 
@@ -171,8 +175,8 @@ class RssController {
 
         this.$upload.upload({
             url: 'upload-opml',
-            data: { file: file, userId: this.$scope.userId }
-        }).success(function(data) {
+            data: { file: file }
+        }).success(function (data) {
             this.rssService.showWaitBar = false;
             this.rssService.feeds = data;
         });
@@ -197,8 +201,8 @@ class RssController {
         tab.title = title;
         this.$scope.tabs.push(tab);
 
-        this.rssService.getArticlePromise(id).then((response) => {
-            tab.article = response.data;
+        this.rssService.getArticlePromise(id, (data) => {
+            tab.article = data;
 
             for (let article of this.rssService.articles) {
                 if (article.Id === id) {
@@ -227,9 +231,9 @@ class RssController {
         }
         article.IsRead = true;
 
-        this.rssService.getArticlePromise(article).then((response) => {
-            article.Body = response.data.Body;
-            article.Link = response.data.Link;
+        this.rssService.getArticlePromise(article, (data) => {
+            article.Body = data.Body;
+            article.Link = data.Link;
         });
     };
 
@@ -255,22 +259,18 @@ class RssController {
     };
 
     openEditName(rss) {
-        let modalData = {};
-        modalData.Feed = rss;
+        let modalData = {}
+        modalData.Feed = rss
         this.mainService.openModal("editModal.html", RssModalController, modalData);
     };
 
-    /* Private
-    ================================================================================ */
     setRead() {
         if (this.$scope.isBookmark) {
             return;
         }
-
         if (this.$scope.currentFeed.ArticlesCount > 0) {
             --this.$scope.currentFeed.ArticlesCount;
         }
-
         if (this.$scope.currentFeed.ArticlesCount === 0) {
             this.$scope.currentFeed.ExistUnread = false;
         }

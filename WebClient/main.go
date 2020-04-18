@@ -8,10 +8,10 @@ import (
 	"net/http"
 	"os"
 
-	"newshub/controllers"
-	"newshub/middleware"
-	"newshub/models"
-	"newshub/services"
+	"newshub-server/controllers"
+	"newshub-server/middleware"
+	"newshub-server/models"
+	"newshub-server/services"
 
 	"github.com/gorilla/mux"
 )
@@ -43,8 +43,6 @@ func init() {
 	}
 
 	// set default values
-	conf.UpdateMinutes = 30
-	conf.DownLoadThreads = 4
 	conf.OPMLPath, _ = os.Getwd()
 	conf.PageSize = 20
 
@@ -62,6 +60,7 @@ func createRouter() http.Handler {
 
 	// rss
 	router.HandleFunc("/rss", rssCtrl.GetAll).Methods(http.MethodGet)
+	router.HandleFunc("/rss", rssCtrl.AddFeed).Methods(http.MethodPost)
 	router.HandleFunc("/rss/{id}", rssCtrl.Delete).Methods(http.MethodDelete)
 	router.HandleFunc("/rss/{id}", rssCtrl.SetNewFeedName).Methods(http.MethodPut)
 	router.HandleFunc("/rss/search", rssCtrl.Search).Methods(http.MethodGet)
@@ -69,10 +68,9 @@ func createRouter() http.Handler {
 	router.HandleFunc("/rss/opml", rssCtrl.CreateOpml).Methods(http.MethodGet)
 
 	// articles
-	router.HandleFunc("/rss/articles", rssCtrl.GetArticles).Methods(http.MethodGet)
-	router.HandleFunc("/rss/articles", rssCtrl.AddFeed).Methods(http.MethodPost)
-	router.HandleFunc("/rss/articles/{id}", rssCtrl.GetArticle).Methods(http.MethodGet)
-	router.HandleFunc("/rss/articles/{id}", rssCtrl.UpdateArticle).Methods(http.MethodPut)
+	router.HandleFunc("/rss/{feed_id}/articles", rssCtrl.GetArticles).Methods(http.MethodGet)
+	router.HandleFunc("/rss/{feed_id}/articles/{id}", rssCtrl.GetArticle).Methods(http.MethodGet)
+	router.HandleFunc("/rss/{feed_id}/articles/{id}", rssCtrl.UpdateArticle).Methods(http.MethodPut)
 	router.HandleFunc("/rss/articles/bookmarks", rssCtrl.GetBookmarks)
 
 	// user
@@ -80,7 +78,7 @@ func createRouter() http.Handler {
 	router.HandleFunc("/registration", userCtrl.Registration).Methods(http.MethodPost)
 	router.HandleFunc("/users/settings", userCtrl.GetUserSettings).Methods(http.MethodGet)
 	router.HandleFunc("/users/settings", userCtrl.SaveSettings).Methods(http.MethodPut)
-	router.HandleFunc("/users/refresh", userCtrl.SaveSettings).Methods(http.MethodPut)
+	router.HandleFunc("/users/refresh", userCtrl.RefreshToken).Methods(http.MethodPut)
 
 	// vk
 	router.HandleFunc("/vk", vkCtrl.GetPageData)
@@ -90,6 +88,7 @@ func createRouter() http.Handler {
 	// twitter
 	router.HandleFunc("/twitter", twitterCtrl.GetPageData)
 	router.HandleFunc("/twitter/news", twitterCtrl.GetNews)
+	router.HandleFunc("/twitter/sources", twitterCtrl.GetSources)
 	router.HandleFunc("/twitter/search", twitterCtrl.Search)
 
 	// todo: client
@@ -111,6 +110,7 @@ func createRouter() http.Handler {
 
 func main() {
 	// todo: websocket for update feed list
+	controllers.Config = conf
 
 	router := createRouter()
 	log.Println("server start on", conf.Address)

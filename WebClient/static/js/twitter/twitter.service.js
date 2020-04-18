@@ -1,6 +1,6 @@
 class TwitterService {
-    constructor($http) {
-        this.$http = $http;
+    constructor(utilService) {
+        this.utilService = utilService;
         this.model = {
             News: [],
             Sources: [],
@@ -9,16 +9,14 @@ class TwitterService {
             SourceMap: {},
             IsSimpleVersion: false
         };
-        let storage = window.localStorage;
-        let userStr = storage.getItem("RssReaderUser");
     }
 
     getPageData() {
         this.model.IsLoad = true;
 
-        this.$http.get("/twitter/page").then((response) => {
-            this.model.News = response.data.News;
-            this.model.Sources = response.data.Sources;
+        this.utilService.httpGet("/twitter", (data) => {
+            this.model.News = data.News;
+            this.model.Sources = data.Sources;
             this.model.IsLoad = false;
 
             this.model.Sources.forEach((item) => {
@@ -38,50 +36,43 @@ class TwitterService {
         }
 
         this.model.IsLoad = true;
-        let config = {};
-        config.params = { page: page };
-
-        this.$http.get("/twitter/news", config).then((response) => {
+        this.utilService.httpGet(`/twitter/news?page=${page}`, (data) => {
             this.model.IsLoad = false;
 
-            if (response.data.length === 0) {
+            if (data.length === 0) {
                 this.model.IsAll = true;
                 return;
             }
-            for (let item of response.data) {
+            for (let item of data) {
                 this.model.News.push(item);
             }
         });
     };
 
     getSources() {
-        this.$http.get("/twitter/sources").then((response) => {
-            this.model.Sources = response.data;
+        this.utilService.httpGet("/twitter/sources", (data) => {
+            this.model.Sources = data;
         });
     };
 
     getByFilters(filters) {
         this.model.News = [];
-        let data = {
-            SearchString: filters.SearchString,
-            SourceId: Number(filters.SourceId)
-        };
-        this.$http.get('/twitter/news', data).then((response) => {
-            this.model.News = response.data;
+        let requestUrl = `/twitter/search'?search_string=${filters.SearchString}&source_id=${filters.SourceId}`
+
+        this.utilService.httpGet(requestUrl, (data) => {
+            this.model.News = data;
         });
     };
 
     search(searchString, sourceId) {
         this.model.IsSearch = true;
-        let data = {
-            SearchString: searchString,
-            SourceId: sourceId
-        };
-        this.$http.get('/twitter/news', data).then((response) => {
-            this.model.News = response.data;
+        let requestUrl = `/twitter/search'?search_string=${searchString}&source_id=${sourceId}`
+
+        this.utilService.httpGet(requestUrl, (data) => {
+            this.model.News = data;
         });
     };
 }
-TwitterService.$inject = ['$http'];
+TwitterService.$inject = ['utilService'];
 
 angular.module('app').service('twitterService', TwitterService);

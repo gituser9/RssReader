@@ -3,7 +3,7 @@ package services
 import (
 	"log"
 
-	"newshub/models"
+	"newshub-server/models"
 
 	"github.com/jinzhu/gorm"
 )

@@ -1,19 +1,22 @@
-package main
+package service
 
 import (
-	"model"
+	"newshub-rss-service/model"
 	"time"
 
 	"github.com/jinzhu/gorm"
+	_ "github.com/jinzhu/gorm/dialects/postgres"
+	_ "github.com/jinzhu/gorm/dialects/sqlite"
 )
 
 type Cleaner struct {
 	db             *gorm.DB
-	config         *model.Config
+	config         model.Config
 	queryTimestamp int64
 }
 
-func CreateCleaner(cfg *model.Config) *Cleaner {
+func CreateCleaner(cfg model.Config) *Cleaner {
+	// fixme: держать соединение постоянно ненужно
 	db, err := gorm.Open(cfg.Driver, cfg.ConnectionString)
 
 	if err != nil {
@@ -25,6 +28,12 @@ func CreateCleaner(cfg *model.Config) *Cleaner {
 	service.config = cfg
 
 	return service
+}
+
+func (service *Cleaner) Close() {
+	if service.db != nil {
+		service.db.Close()
+	}
 }
 
 // CleanOldArticles - remove articles where create date less month
@@ -42,7 +51,7 @@ func (service *Cleaner) preHandle() {
 
 	for _, feed := range feeds {
 		var articlesCount int
-		service.db.Where(&model.Articles{FeedId: feed.Id}).Count(&articlesCount)
+		service.db.Model(&model.Articles{}).Where(&model.Articles{FeedId: feed.Id}).Count(&articlesCount)
 
 		if articlesCount > service.config.ArticlesMaxCount {
 			go service.deleteArticles(feed.Id)
@@ -50,7 +59,7 @@ func (service *Cleaner) preHandle() {
 	}
 }
 
-func (service *Cleaner) deleteArticles(feedId int) {
+func (service *Cleaner) deleteArticles(feedId int64) {
 	// fixme
 	service.db.
 		Where("Date < ? AND IsBookmark=0 AND IsRead=1 AND FeedId=?", service.queryTimestamp, feedId).

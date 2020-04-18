@@ -24,12 +24,12 @@ class ModalController {
         this.mainService.auth(this.$scope.username, this.$scope.password).then((response) => {
             if (response.status === 200) {
                 this.cancel();
-                
+                let data = response.data;
                 let storage = window.localStorage;
-                storage.setItem('rtoken', response.refresh_token)
-                storage.setItem('token', response.token)
+                storage.setItem('rtoken', data.refresh_token)
+                storage.setItem('token', data.token)
 
-                this.mainService.getAll();
+                // this.mainService.getAll();
                 this.mainService.updateSettings();
             }
         });
@@ -41,10 +41,10 @@ class ModalController {
                 let data = response.data;
 
                 let storage = window.localStorage;
-                storage.setItem('rtoken', response.refresh_token)
-                storage.setItem('token', response.token)
+                storage.setItem('rtoken', data.refresh_token)
+                storage.setItem('token', data.token)
 
-                this.$scope.cancel();
+                this.cancel();
                 this.$scope.errorMessage = "";
 
                 this.mainService.openModal("settingModal.html", ModalController, {});

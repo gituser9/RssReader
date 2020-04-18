@@ -7,8 +7,8 @@ import (
 	"net/http"
 	"strconv"
 
-	"newshub/models"
-	"newshub/services"
+	"newshub-server/models"
+	"newshub-server/services"
 
 	"github.com/gorilla/mux"
 )
@@ -19,10 +19,11 @@ type RssController struct {
 	config  *models.Config
 }
 
+// NewRssCtrl - init service
 func NewRssCtrl(cfg *models.Config) *RssController {
 	ctrl := new(RssController)
 	ctrl.config = cfg
-	ctrl.service = new(services.RssService).Init(cfg)
+	ctrl.service = services.NewRssService(cfg)
 
 	return ctrl
 }
@@ -45,8 +46,15 @@ func (ctrl *RssController) GetArticles(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	page, err := strconv.Atoi(r.FormValue("page"))
+
+	if err != nil {
+		log.Println("page is invalid:", err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
 	claims := getClaims(r)
-	page, _ := strconv.Atoi(r.FormValue("page"))
 	feed := ctrl.service.GetArticles(id, claims.Id, page)
 
 	json.NewEncoder(w).Encode(feed)
@@ -62,8 +70,15 @@ func (ctrl *RssController) GetArticle(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	feedId, err := strconv.ParseInt(vars["feed_id"], 10, 64)
+
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
 	claims := getClaims(r)
-	article := ctrl.service.GetArticle(id, claims.Id)
+	article := ctrl.service.GetArticle(id, feedId, claims.Id)
 
 	if article == nil {
 		w.WriteHeader(http.StatusNotFound)
@@ -72,12 +87,6 @@ func (ctrl *RssController) GetArticle(w http.ResponseWriter, r *http.Request) {
 
 	json.NewEncoder(w).Encode(article)
 }
-
-// GetSettings - get app settings
-/*func (ctrl *RssController) GetSettings(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(ctrl.config)
-}*/
 
 // AddFeed - add feed
 func (ctrl *RssController) AddFeed(w http.ResponseWriter, r *http.Request) {
@@ -112,12 +121,6 @@ func (ctrl *RssController) Delete(w http.ResponseWriter, r *http.Request) {
 	ctrl.GetAll(w, r)
 }
 
-// UpdateAll - get new articles for all feeds
-/*func (ctrl *RssController) UpdateAll(w http.ResponseWriter, r *http.Request) {
-	ctrl.service.UpdateAllFeeds()
-	ctrl.GetAll(w, r)
-}*/
-
 // UploadOpml - upload, parse OPML and update feeds
 func (ctrl *RssController) UploadOpml(w http.ResponseWriter, r *http.Request) {
 	claims := getClaims(r)
@@ -141,6 +144,7 @@ func (ctrl *RssController) UploadOpml(w http.ResponseWriter, r *http.Request) {
 	ctrl.GetAll(w, r)
 }
 
+// CreateOpml - create OPML file
 func (ctrl *RssController) CreateOpml(w http.ResponseWriter, r *http.Request) {
 	claims := getClaims(r)
 	ctrl.service.Export(claims.Id)
@@ -148,6 +152,14 @@ func (ctrl *RssController) CreateOpml(w http.ResponseWriter, r *http.Request) {
 
 // SetNewFeedName - set new feed name
 func (ctrl *RssController) SetNewFeedName(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	feedId, err := strconv.ParseInt(vars["id"], 10, 64)
+
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
 	feeds := models.FeedUpdateData{}
 
 	if err := json.NewDecoder(r.Body).Decode(&feeds); err != nil {
@@ -155,22 +167,12 @@ func (ctrl *RssController) SetNewFeedName(w http.ResponseWriter, r *http.Request
 		return
 	}
 
+	feeds.FeedId = feedId
 	claims := getClaims(r)
 	ctrl.service.SetNewName(feeds, claims.Id)
-	ctrl.GetAll(w, r)
 }
 
-// SetBookmark - set article is bookmark
-func (ctrl *RssController) ToggleBookmark(w http.ResponseWriter, r *http.Request) {
-	/*data := postClientData(r)
-	ctrl.service.ToggleBookmark(data.ArticleId, data.IsBookmark)
-
-	w.Header().Set("Content-Type", "application/json")
-	success := make(map[string]bool, 1) // todo: to structure (field)
-	success["success"] = true
-	json.NewEncoder(w).Encode(success)*/
-}
-
+// GetBookmarks - get bookmark list
 func (ctrl *RssController) GetBookmarks(w http.ResponseWriter, r *http.Request) {
 	claims := getClaims(r)
 	page, err := strconv.Atoi(r.FormValue("page"))
@@ -185,43 +187,24 @@ func (ctrl *RssController) GetBookmarks(w http.ResponseWriter, r *http.Request) 
 	json.NewEncoder(w).Encode(articles)
 }
 
-/*func (ctrl *RssController) MarkAllRead(w http.ResponseWriter, r *http.Request) {
-	id64, _ := strconv.ParseUint(r.FormValue("id"), 10, 32)
-	userId, _ := strconv.ParseUint(r.FormValue("userId"), 10, 32)
-	id := uint(id64)
-	ctrl.service.MarkReadAll(id)
-	feed := ctrl.service.GetArticles(id, uint(userId), 1)
-
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(feed)
-}*/
-
-// fixme: remove
-func (ctrl *RssController) ToggleUnread(w http.ResponseWriter, r *http.Request) {
-	//data := postClientData(r)
-	//ctrl.service.AppSettings.UnreadOnly = data.IsUnread // todo: auth and user setiings
-}
-
+// Search - search by articles
 func (ctrl *RssController) Search(w http.ResponseWriter, r *http.Request) {
 	searchString := r.FormValue("searchString")
 	isBookmark, _ := strconv.ParseBool(r.FormValue("isBookmark"))
-	feedId, _ := strconv.ParseInt(r.FormValue("feedId"), 10, 64)
+	feedId, err := strconv.ParseInt(r.FormValue("feedId"), 10, 64)
+
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
 	claims := getClaims(r)
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(ctrl.service.Search(searchString, isBookmark, feedId, claims.Id))
 }
 
-func (ctrl *RssController) ToggleAsRead(w http.ResponseWriter, r *http.Request) {
-	/*data := postClientData(r)
-
-	ctrl.service.ToggleAsRead(data.ArticleId, data.IsRead)
-	articles := ctrl.service.GetArticles(uint(data.FeedId), uint(data.UserId), data.Page)
-
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(articles)*/
-}
-
+// UpdateArticle - update by id
 func (ctrl *RssController) UpdateArticle(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, err := strconv.ParseInt(vars["id"], 10, 64)
@@ -238,7 +221,7 @@ func (ctrl *RssController) UpdateArticle(w http.ResponseWriter, r *http.Request)
 		return
 	}
 	if id != data.ArticleId {
-		w.WriteHeader(http.StatusForbidden)
+		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 

@@ -4,11 +4,15 @@ import (
 	"encoding/json"
 	"flag"
 	"io/ioutil"
-	"model"
+	"newshub-rss-service/model"
+	"newshub-rss-service/service"
+	"os"
+	"os/signal"
+	"syscall"
 	"time"
 )
 
-var conf *model.Config
+var conf model.Config
 
 const defaultConfigPath = "./cfg.json"
 
@@ -30,15 +34,20 @@ func init() {
 	// set default values
 	conf.UpdateMinutes = 30
 
-	json.Unmarshal(bytes, conf)
+	if err := json.Unmarshal(bytes, &conf); err != nil {
+		panic(err.Error())
+	}
 }
 
 func main() {
-	updater := CreateUpdater(conf)
-	cleaner := CreateCleaner(conf)
+	updater := service.CreateUpdater(conf)
+	cleaner := service.CreateCleaner(conf)
 
 	updateTimer := time.Tick(time.Duration(conf.UpdateMinutes) * time.Minute)
 	weekTimer := time.Tick(time.Hour * 168) // week
+
+	sigs := make(chan os.Signal, 1)
+	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
 
 	go updater.Update()
 	go cleaner.Clean()
@@ -49,6 +58,9 @@ func main() {
 			updater.Update()
 		case <-weekTimer:
 			cleaner.Clean()
+		case _ = <-sigs:
+			updater.Close()
+			cleaner.Close()
 		}
 	}
 }

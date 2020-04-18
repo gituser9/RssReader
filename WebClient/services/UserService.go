@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"log"
 
-	"newshub/models"
+	"newshub-server/models"
 
 	"github.com/jinzhu/gorm"
 	"golang.org/x/crypto/bcrypt"
@@ -64,7 +64,14 @@ func (service *UserService) Register(name, password string) (models.Users, error
 		if err := db.Save(&user).Error; err != nil {
 			log.Println("create user error:", err)
 			userError = errors.New("Произошла неизвестная ошибка")
+			return
 		}
+
+		settings := models.Settings{
+			UserId:       user.Id,
+			MarkSameRead: true,
+		}
+		db.Save(&settings)
 	})
 
 	return user, userError

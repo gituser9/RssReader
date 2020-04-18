@@ -1,22 +1,28 @@
 class MainService {
-    constructor($http, $mdDialog) {
+    constructor($http, $mdDialog, utilService) {
         this.$http = $http;
         this.$mdDialog = $mdDialog;
+        this.utilService = utilService
         this.modalUrl = "static/html/modals/";
         this.settings = {};
     }
 
     getSettings() {
-        return this.$http.get("/users/settings").then((response) => {
-            this.settings = response.data;
-            return response.data;
+        return this.utilService.httpGet("/users/settings", (data) => {
+            this.settings = data;
+            return data;
         });
     };
 
+    getSettingsPromise() {
+        return this.$http.get("/users/settings")
+    };
+
     updateSettings() {
-        this.$http.get("/users/settings").then((response) => {
-            this.settings = response.data;
-            // let storage = window.localStorage;
+        this.utilService.httpGet("/users/settings", (data) => {
+            this.settings = data;
+            let storage = window.localStorage;
+            storage.setItem('settings', JSON.stringify(this.settings))
             // let userStr = storage.getItem("RssReaderUser");
             // let user = JSON.parse(userStr);
             // user.Settings = response.data;
@@ -44,52 +50,10 @@ class MainService {
     };
 
     setSettings(settings) {
-        this.$http.post('/users/settings', settings);
+        this.settings = settings
+        this.utilService.httpPut('/users/settings', settings);
     };
 }
-MainService.$inject = ["$http", "$mdDialog"];
+MainService.$inject = ["$http", "$mdDialog", "utilService"];
 
-angular.module('app').factory('myInterceptor', ['$log', function($log) {
-    return {
-        'response': function(response) {
-           // same as above
-           console.log("RESPONSE");
-           console.log(response.status);
-           console.log(response);
-
-           if (response.status == 403) {
-                let rtoken = localStorage.getItem('rtoken')
-
-                if (rtoken === null || rtoken === '') {
-                    return response;
-                }
-
-                localStorage.setItem('rtoken', '')
-                let xhr = new XMLHttpRequest();
-                xhr.open('PUT', '/users/refresh', false);
-                xhr.send({ 'token': rtoken });
-
-                if (xhr.status != 200) {
-                    return response;
-                } else {
-                    let data = JSON.parse(xhr.responseText)
-                    localStorage.setItem('rtoken', data.refresh_token)
-                    localStorage.setItem('token', data.token)
-                }
-           }
-
-           return response;
-        },
-        'request': function(config) {
-            config.headers['Authorization'] = 'Bearer ' localStorage.getItem('token')
-            // console.log('REQUEST');
-            console.log(config);
-            
-            return config;
-        },
-      };
-}]);
-angular.module('app').config(['$httpProvider', function($httpProvider) {
-    $httpProvider.interceptors.push('myInterceptor');
-}]);
 angular.module('app').service('mainService', MainService);

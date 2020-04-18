@@ -16,7 +16,7 @@ class MainController {
 
         this.$scope.$watch(() => {
             //  = mainService.currentUserId;
-            // this.$scope.settings = mainService.settings;
+            this.$scope.settings = mainService.settings;
         });
     }
 
@@ -44,7 +44,7 @@ class MainController {
 
         if (token) {
             this.mainService.updateSettings();
-            this.setStartedSource(user.Settings);
+            this.setStartedSource(JSON.parse(localStorage.getItem('settings')));
 
             this.$scope.isAuth = true;
         } else {
@@ -91,7 +91,7 @@ class MainController {
     };
 
     openSettings() {
-        this.mainService.getSettings().then((response) => {
+        this.mainService.getSettingsPromise().then((response) => {
             let modalData = { Settings: response.data };
             this.mainService.openModal("settingModal.html", ModalController, modalData);
         });

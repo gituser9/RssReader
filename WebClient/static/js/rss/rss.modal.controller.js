@@ -1,43 +1,55 @@
-function RssModalController ($scope, $mdDialog, rssService, modalData, mainService){
-    $scope.vm = this;
-    $scope.feedUrl = "";
-    $scope.modalData = modalData;
+class RssModalController {
+    constructor($scope, $mdDialog, rssService, modalData) {
+        this.$scope = $scope
+        this.$mdDialog = $mdDialog
+        this.rssService = rssService
+        this.modalData = modalData
+        this.$scope.vm = this;
+        this.$scope.feedUrl = "";
 
-    $scope.updateFeedName = function() {
-        rssService.setNewFeedName($scope.modalData.Feed.Id, $scope.modalData.Feed.Name);
-        $scope.cancel();
-    };
+        if (modalData !== null) {
+            this.$scope.modalData = modalData;
+        }
+    }
 
-    $scope.hide = function() {
-        $mdDialog.hide();
-    };
-
-    $scope.cancel = function() {
-        $mdDialog.cancel();
-    };
-
-    $scope.addFeed = function() {
-        if (!$scope.feedUrl || !$scope.feedUrl.trim().length) {
+    updateFeedName() {
+        if (!this.$scope.modalData.Feed.Name || !this.$scope.modalData.Feed.Name.trim().length) {
             return;
         }
-        rssService.addFeed($scope.feedUrl, mainService.currentUserId);
-        $scope.cancel();
+        this.rssService.setNewFeedName(this.$scope.modalData.Feed.Id, this.$scope.modalData.Feed.Name);
+        this.cancel();
+        this.rssService.getAll()
     };
 
-    $scope.delete = function() {
-        rssService.delete($scope.modalData.Feed.Id);
-        $scope.cancel();
+    hide() {
+        this.$mdDialog.hide();
     };
 
-    $scope.toggleUnread = function() {
-        rssService.setUnread($scope.modalData.Settings.UnreadOnly);
-        $scope.cancel();
+    cancel() {
+        this.$mdDialog.cancel();
+    };
+
+    addFeed() {
+        if (!this.$scope.feedUrl || !this.$scope.feedUrl.trim().length) {
+            return;
+        }
+        this.rssService.addFeed(this.$scope.feedUrl);
+        this.cancel();
+    };
+
+    delete() {
+        this.rssService.delete(this.$scope.modalData.Feed.Id);
+        this.$scope.cancel();
+    };
+
+    toggleUnread() {
+        this.rssService.setUnread(this.$scope.modalData.Settings.UnreadOnly);
+        this.$scope.cancel();
     };
 }
 RssModalController.$inject = [
     "$scope",
     "$mdDialog",
     "rssService",
-    "modalData",
-    "mainService"
+    "modalData"
 ];

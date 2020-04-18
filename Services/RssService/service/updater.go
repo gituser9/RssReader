@@ -1,28 +1,26 @@
-package main
+package service
 
 import (
-	"github.com/jinzhu/gorm"
-	_ "github.com/jinzhu/gorm/dialects/mysql"
-
 	"encoding/xml"
 	"io"
 	"log"
-	"model"
 	"net/http"
+	"newshub-rss-service/model"
 	"time"
 
-	"encoding/json"
-
+	"github.com/jinzhu/gorm"
+	_ "github.com/jinzhu/gorm/dialects/postgres"
+	_ "github.com/jinzhu/gorm/dialects/sqlite"
 	"golang.org/x/net/html/charset"
 )
 
-const saveChanBufferSize = 10
-const getChanBufferSize = 10
+const saveChanBufferSize = 20
+const getChanBufferSize = 20
 
 // Updater - service
 type Updater struct {
 	db       *gorm.DB
-	config   *model.Config
+	config   model.Config
 	getChan  chan getData
 	saveChan chan model.Articles
 }
@@ -33,8 +31,16 @@ type getData struct {
 }
 
 // CreateUpdater - create and configure Updater struct
-func CreateUpdater(cfg *model.Config) *Updater {
+func CreateUpdater(cfg model.Config) *Updater {
+	// fixme: держать соединение постоянно ненужно
+	db, err := gorm.Open(cfg.Driver, cfg.ConnectionString)
+
+	if err != nil {
+		panic(err)
+	}
+
 	service := new(Updater)
+	service.db = db
 	service.config = cfg
 	service.getChan = make(chan getData, getChanBufferSize)
 	service.saveChan = make(chan model.Articles, saveChanBufferSize)
@@ -45,28 +51,28 @@ func CreateUpdater(cfg *model.Config) *Updater {
 	return service
 }
 
+func (service *Updater) Close() {
+	if service.db != nil {
+		service.db.Close()
+	}
+}
+
 // Update - get new feeds for users
 func (service *Updater) Update() {
-	userIds, err := getUserIds(service.config.UserServiceAddress)
+	userIds, err := getUserIds(service.db)
 
 	if err != nil {
 		return
 	}
-
-	db, err := gorm.Open(service.config.Driver, service.config.ConnectionString)
-
-	if err != nil {
-		log.Println("open db error:", err.Error())
-		return
-	}
-
-	defer db.Close()
-	service.db = db
 
 	for _, id := range userIds {
 		var feeds []model.Feeds
-		service.db.Where(&model.Feeds{UserId: id}).Find(&feeds)
 
+		// todo: preload articles
+		if err := service.db.Where(&model.Feeds{UserId: id}).Find(&feeds).Error; err != nil {
+			log.Printf("get feeds for user %d error: %s", id, err)
+			continue
+		}
 		if feeds == nil || len(feeds) == 0 {
 			continue
 		}
@@ -108,25 +114,28 @@ func (service *Updater) updateFeedRunner() {
 			var xmlModel model.XMLFeed
 			decoder := xml.NewDecoder(data.Body)
 			decoder.CharsetReader = charset.NewReaderLabel
-			err := decoder.Decode(&xmlModel)
 
-			if err != nil {
+			if err := decoder.Decode(&xmlModel); err != nil {
 				data.Body.Close()
 				continue
 			}
 
 			// update DB
 			go service.updateArticles(data.Rss, xmlModel)
-
 			data.Body.Close()
 		}
 	}
 }
 
 func (service *Updater) updateArticles(rss model.Feeds, xmlModel model.XMLFeed) {
-	links := make(map[string]bool, len(rss.Articles))
+	articles := []model.Articles{}
+	service.db.
+		Where(&model.Articles{FeedId: rss.Id}).
+		Select("Link").
+		Find(&articles)
+	links := make(map[string]bool, len(articles))
 
-	for _, article := range rss.Articles {
+	for _, article := range articles {
 		links[article.Link] = true
 	}
 	for _, article := range xmlModel.Articles {
@@ -163,16 +172,17 @@ func (service *Updater) saveArticle() {
 	}
 }
 
-func getUserIds(address string) ([]int, error) {
-	result := make([]int, 0)
-	response, err := http.Get(address)
+func getUserIds(db *gorm.DB) ([]int64, error) {
+	ids := make([]int64, 0)
+	err := db.
+		Model(&model.Settings{}).
+		Where(&model.Settings{RssEnabled: true}).
+		Pluck("UserId", &ids).
+		Error
 
 	if err != nil {
-		log.Println("request rss enabled users error:", err.Error())
 		return nil, err
 	}
 
-	json.NewDecoder(response.Body).Decode(&result)
-
-	return result, nil
+	return ids, nil
 }

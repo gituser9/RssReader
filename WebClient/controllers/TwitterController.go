@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"strconv"
 
-	"newshub/models"
-	"newshub/services"
+	"newshub-server/models"
+	"newshub-server/services"
 )
 
 type TwitterController struct {
@@ -53,6 +53,12 @@ func (ctrl *TwitterController) GetNews(w http.ResponseWriter, r *http.Request) {
 
 	news := ctrl.service.GetNews(claims.Id, page, sourceId)
 	json.NewEncoder(w).Encode(news)
+}
+
+func (ctrl *TwitterController) GetSources(w http.ResponseWriter, r *http.Request) {
+	claims := getClaims(r)
+	sources := ctrl.service.GetAllSources(claims.Id)
+	json.NewEncoder(w).Encode(sources)
 }
 
 func (ctrl *TwitterController) Search(w http.ResponseWriter, r *http.Request) {

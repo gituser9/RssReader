@@ -1,10 +1,8 @@
-package services
+package service
 
 import (
 	"log"
-	"time"
-
-	"newshub-server/models"
+	"newshub-vk-service/model"
 
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
@@ -15,7 +13,7 @@ var db *gorm.DB
 var driver = ""
 var connectionString = ""
 
-func Setup(cfg models.Config) {
+func Setup(cfg model.Config) {
 	driver = cfg.Driver
 	connectionString = cfg.ConnectionString
 }
@@ -41,20 +39,6 @@ func getDb() *gorm.DB {
 		log.Println("open db error:", err.Error())
 		return nil
 	}
-	if driver != "sqlite3" {
-		db.DB().SetMaxIdleConns(10)
-		db.DB().SetMaxOpenConns(100)
-		db.DB().SetConnMaxLifetime(time.Hour)
-	}
-
-	db.AutoMigrate(&models.Users{})
-	db.AutoMigrate(&models.Feeds{})
-	db.AutoMigrate(&models.Articles{})
-	db.AutoMigrate(&models.Settings{})
-	db.AutoMigrate(&models.VkNews{})
-	db.AutoMigrate(&models.VkGroup{})
-	db.AutoMigrate(&models.TwitterNews{})
-	db.AutoMigrate(&models.TwitterSource{})
 
 	return db
 }

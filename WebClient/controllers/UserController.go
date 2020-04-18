@@ -3,12 +3,12 @@ package controllers
 import (
 	"encoding/json"
 	"io/ioutil"
+	"log"
 	"net/http"
-	"strconv"
 	"time"
 
-	"newshub/models"
-	"newshub/services"
+	"newshub-server/models"
+	"newshub-server/services"
 
 	"github.com/dgrijalva/jwt-go"
 )
@@ -88,10 +88,11 @@ func (ctrl *UserController) Registration(w http.ResponseWriter, r *http.Request)
 
 func (ctrl *UserController) RefreshToken(w http.ResponseWriter, r *http.Request) {
 	data := make(map[string]string)
-	var token string
 	ok := false
+	var token string
 
 	if err := json.NewDecoder(r.Body).Decode(&data); err != nil {
+		log.Println("decode json err:", err)
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
@@ -108,6 +109,7 @@ func (ctrl *UserController) RefreshToken(w http.ResponseWriter, r *http.Request)
 			return []byte(ctrl.config.JwtSign), nil
 		},
 	)
+
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return
@@ -118,17 +120,11 @@ func (ctrl *UserController) RefreshToken(w http.ResponseWriter, r *http.Request)
 }
 
 func (ctrl *UserController) GetUserSettings(w http.ResponseWriter, r *http.Request) {
-	id, err := strconv.ParseInt(r.FormValue("id"), 10, 64)
-
-	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-
+	claims := getClaims(r)
 	settingsObj := services.SettingsService{}
 	settingService := settingsObj.Init(ctrl.config)
-	settings := settingService.Get(id)
-	user := ctrl.service.GetUser(id)
+	settings := settingService.Get(claims.Id)
+	user := ctrl.service.GetUser(claims.Id)
 
 	/*if user.VkNewsEnabled && len(user.VkPassword) > 0 {
 		user.VkPassword = decryptVkPassword(user.VkPassword)
@@ -144,7 +140,7 @@ func (ctrl *UserController) GetUserSettings(w http.ResponseWriter, r *http.Reque
 		UnreadOnly:           settings.UnreadOnly,
 		VkLogin:              user.VkLogin,
 		VkPassword:           user.VkPassword,
-		UserId:               id,
+		UserId:               claims.Id,
 		TwitterEnabled:       settings.TwitterEnabled,
 		TwitterName:          user.TwitterScreenName,
 		TwitterSimpleVersion: settings.TwitterSimpleVersion,

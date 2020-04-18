@@ -11,7 +11,7 @@ import (
 	"os"
 	"sync"
 
-	"newshub/models"
+	"newshub-server/models"
 
 	"github.com/google/uuid"
 	"github.com/jinzhu/gorm"
@@ -21,27 +21,19 @@ import (
 
 // RssService - service
 type RssService struct {
-	db          *gorm.DB
-	config      *models.Config
-	UnreadOnly  bool
-	AppSettings models.AppSettings
+	db         *gorm.DB
+	config     *models.Config
+	UnreadOnly bool
 }
 
-// Init - create new struct pointer with collection
-func (service *RssService) Init(config *models.Config) *RssService {
+func NewRssService(config *models.Config) *RssService {
 	db, err := gorm.Open(config.Driver, config.ConnectionString)
 
 	if err != nil {
 		log.Println(err)
 	}
 
-	// set default settings
-	settings := models.AppSettings{
-		MarkSameRead:  true,
-		UpdateMinutes: config.UpdateMinutes,
-	}
-
-	return &RssService{db: db, config: config, AppSettings: settings}
+	return &RssService{db: db, config: config}
 }
 
 func (service *RssService) SetDb(db *gorm.DB) {
@@ -108,8 +100,9 @@ func (service *RssService) GetArticles(id int64, userId int64, page int) *models
 }
 
 // GetArticle - get one article
-func (service *RssService) GetArticle(id int64, userId int64) *models.Articles {
+func (service *RssService) GetArticle(id int64, feedId int64, userId int64) *models.Articles {
 	rss := service.GetRss(userId)
+	log.Println(rss)
 
 	if len(rss) == 0 {
 		return nil
@@ -117,9 +110,9 @@ func (service *RssService) GetArticle(id int64, userId int64) *models.Articles {
 
 	// get article
 	var article models.Articles
-	service.dbp().First(&article, id)
+	service.dbp().Where(&models.Articles{Id: id, FeedId: feedId}).First(&article)
 
-	var settings models.Settings
+	var settings models.Settings // todo: to func
 	service.dbp().Where(models.Settings{UserId: userId}).Find(&settings)
 
 	// update state
@@ -239,20 +232,23 @@ func (service *RssService) Delete(id int64, userId int64) {
 
 // SetNewName - update feed name
 func (service *RssService) SetNewName(data models.FeedUpdateData, userId int64) {
-	updateFields := make(map[string]interface{})
+	feed := models.Feeds{}
+	service.dbp().Where(&models.Feeds{Id: data.FeedId, UserId: userId}).First(&feed)
+
+	if feed.Id == 0 {
+		return
+	}
 
 	if data.IsReadAll {
 		service.dbp().Model(&models.Articles{}).
-			Joins("join feeds on articles.FeedId = feeds.Id").
-			Where("articles.FeedId = ? and feeds.UserId = ?", data.FeedId, userId).
+			Where(&models.Articles{FeedId: feed.Id}).
 			Not(&models.Articles{IsRead: true}).
 			UpdateColumn(models.Articles{IsRead: true})
 	}
 	if data.Name != "" {
-		updateFields["Name"] = data.Name
+		feed.Name = data.Name
+		service.dbp().Save(&feed)
 	}
-
-	service.dbp().Where(models.Feeds{Id: data.FeedId, UserId: userId}).Updates(updateFields)
 }
 
 // GetBookmarks - get all bookmarks
@@ -296,20 +292,17 @@ func (service *RssService) Search(searchString string, isBookmark bool, feedId i
 }
 
 func (service *RssService) ArticleUpdate(userId int64, data models.ArticlesUpdateData) {
-	updateColumns := make(map[string]interface{})
-
-	if data.IsRead {
-		updateColumns["IsRead"] = 1
-	} else {
-		updateColumns["IsRead"] = 0
+	whereCond := "articles.Id = ? and feeds.UserId = ?"
+	article := models.Articles{}
+	service.dbp().
+		Joins("join feeds on articles.FeedId = feeds.Id").
+		Where(whereCond, data.ArticleId, userId).
+		First(&article)
+	if article.Id != 0 {
+		article.IsBookmark = data.IsBookmark
+		article.IsRead = data.IsRead
+		service.dbp().Save(&article)
 	}
-	if data.IsBookmark {
-		updateColumns["IsBookmark"] = 1
-	} else {
-		updateColumns["IsBookmark"] = 0
-	}
-
-	service.dbp().Model(&models.Articles{}).Updates(updateColumns)
 }
 
 func (service *RssService) markSameArticles(url string, feedID int64) {

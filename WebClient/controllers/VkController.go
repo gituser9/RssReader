@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"strconv"
 
-	"newshub/models"
-	"newshub/services"
+	"newshub-server/models"
+	"newshub-server/services"
 )
 
 type VkController struct {
@@ -73,7 +73,6 @@ func (ctrl *VkController) Search(w http.ResponseWriter, r *http.Request) {
 	}
 	news := ctrl.service.Search(r.FormValue("q"), groupId, claims.Id)
 
-	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(news)
 }
 

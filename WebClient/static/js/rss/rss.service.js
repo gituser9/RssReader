@@ -1,19 +1,17 @@
 class RssService {
-    constructor($http) {
+    constructor($http, utilService) {
         this.articles = [];
         this.articlesCount = 0;
         this.showWaitBar = false;
 
         this.http = $http;
+        this.utilService = utilService
     }
 
     getArticles(feedId, page) {
-        let config = {};
-        config.params = { "page": page };
-
-        this.http.get(`/rss/${feedId}/articles`, config).then((response) => {
-            this.articles = response.data.Articles;
-            this.articlesCount = response.data.Count;
+        this.utilService.httpGet(`/rss/${feedId}/articles?page=${page}`, (data) => {
+            this.articles = data.Articles;
+            this.articlesCount = data.Count;
             this.showArticle = false;
         });
     };
@@ -26,70 +24,71 @@ class RssService {
             feedId: filters.searchFeed
         };
 
-        this.http.get("/rss/search", config).then((response) => {
-            this.articles = response.data.Articles;
-            this.articlesCount = response.data.Count;
+        let url = `/rss/search?search_string=${filters.searchText}&feed_id=${filters.searchFeed}&is_bookmark=${filters.searchInBookmark}`
+        this.utilService.httpGet(url, (data) => {
+            this.articles = data.Articles;
+            this.articlesCount = data.Count;
             this.showArticle = false;
         });
     };
 
-    getArticle(article) {
-        this.http.get(`/rss/${article.FeedId}/articles/${article.Id}`).then((response) => {
-            this.article = response.data;
+    getArticle(article, feedId) {
+        console.log(article)
+        this.utilService.httpGet(`/rss/${feedId}/articles/${article.Id}`, (data) => {
+            this.article = data;
             this.showArticle = true;
 
             if (this.article) {
-                this.articles.forEach(function(item) {
-                    if (item.Id === this.article.Id) {
+                this.articles.forEach((item) => {
+                    if (item.Id === article.Id) {
                         item.IsRead = true;
                     }
                 });
             }
-
         });
     };
 
-    getArticlePromise(article) {
-        return this.http.get(`/rss/${article.FeedId}/articles/${article.Id}`);
+    getArticlePromise(article, callback) {
+        this.utilService.httpGet(`/rss/${article.FeedId}/articles/${article.Id}`, (data) => {
+            callback(data)
+        });
     };
 
     getAll() {
-        this.http.get("/rss").then((response) => {
-            this.feeds = response.data;
+        this.utilService.httpGet('/rss', (data) => {
+            this.feeds = data;
             this.showWaitBar = false;
+        })
+    };
+
+    addFeed(url) {
+        this.utilService.httpPost("/rss", { url: url }, (data) => {
+            this.feeds = data;
         });
     };
 
-    addFeed(url, userId) {
-        this.http.post("/rss", { url: url, userId: userId }).then((response) => {
-            this.feeds = response.data;
-        });
-    };
-
-    deleteFeed(id){
-        this.http.delete(`/rss/${id}`, { feedId: id }).then((response) => {
-            this.feeds = response.data;
+    deleteFeed(id) {
+        this.utilService.httpDelete(`/rss/${id}`, (data) => {
+            this.feeds = data;
         });
     };
 
     setNewFeedName(id, name) {
-        this.http.put(`/rss/${id}`, { feedId: id, name: name }).then((response) => {
-            this.feeds = response.data;
-        });
+        this.utilService.httpPut(`/rss/${id}`, { name: name }, null);
     };
 
     updateAll() {
         this.showWaitbar = true;
 
-        this.http.get('/rss').then((response) => {
-            this.feeds = response.data;
+        this.utilService.httpGet('/rss', (data) => {
+            this.feeds = data;
             this.showWaitbar = false;
         });
     };
 
     toggleBookmark(articleId, page, isBookmark, isBookmarkPage, feedId) {
-        this.http.put(`/rss/${feedId}/articles/${articleId}`, { isBookmark: isBookmark }).then((response) => {
-            if (!response.data) {
+        this.utilService.httpPut(`/rss/${feedId}/articles/${articleId}`, { isBookmark: isBookmark, page: page }, (data) => {
+            if (!data) {
                 return;
             }
             if (isBookmarkPage) {
@@ -101,44 +100,39 @@ class RssService {
     };
 
     getBookmarks(page) {
-        let config = {};
-        config.params = { page: page };
-
-        this.http.get(`/rss/articles/bookmarks`, config).then((response) => {
-            this.articles = response.data.Articles;
-            this.articlesCount = response.data.Count;
+        let url = `/rss/articles/bookmarks?page=${page}`
+        this.utilService.httpGet(url, (data) => {
+            this.articles = data.Articles;
+            this.articlesCount = data.Count;
             this.showArticle = false;
         });
     };
 
     markReadAll(feedId) {
-        let config = {};
-        config.params = { isReadAll: true };
+        let config = { is_read_all: true };
 
-        this.http.put(`/rss/${feedId}`, config).then((response) => {
-            this.articles = response.data.Articles;
-            this.articlesCount = response.data.Count;
+        this.utilService.httpPut(`/rss/${feedId}`, config, (data) => {
+            this.articles = data.Articles;
+            this.articlesCount = data.Count;
         });
     };
 
-    createOpml() {
-
-        return this.http.get('/rss/opml');
-    };
-
-    markAsRead(id, feedId, page, isRead, userId) {
-        let params = { articleId: id, feedId: feedId, page: page, isRead: isRead, userId: userId };
-
-        this.http.put(`/rss/${feedId}/articles/${id}`, params).then((response) => {
-            this.articles = response.data.Articles;
-            this.articlesCount = response.data.Count;
+    createOpml(callback) {
+        this.utilService.httpGet('/rss/opml', (data) => {
+            callback(data)
         });
     };
 
-    setUnread(id, feedId, page, isRead) {
-        this.http.put(`/rss/${feedId}/articles/${id}`, { isUnread: isUnread });
+    markAsRead(id, feedId, isRead) {
+        let params = { article_id: id, is_read: isRead };
+
+        this.utilService.httpPut(`/rss/${feedId}/articles/${id}`, params, null);
+    };
+
+    setUnread(id, feedId) {
+        this.utilService.httpPut(`/rss/${feedId}/articles/${id}`, { is_read: false, article_id: id }, null);
     };
 }
-RssService.$inject = ['$http'];
+RssService.$inject = ['$http', 'utilService'];
 
 angular.module('app').service('rssService', RssService);

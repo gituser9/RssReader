@@ -4,7 +4,7 @@ import (
 	"log"
 	"strconv"
 
-	"newshub/models"
+	"newshub-server/models"
 
 	"github.com/jinzhu/gorm"
 )
