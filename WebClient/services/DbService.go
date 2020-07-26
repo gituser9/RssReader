@@ -18,6 +18,8 @@ var connectionString = ""
 func Setup(cfg models.Config) {
 	driver = cfg.Driver
 	connectionString = cfg.ConnectionString
+
+	migrate()
 }
 
 func dbExec(closure func(db *gorm.DB)) {
@@ -47,6 +49,11 @@ func getDb() *gorm.DB {
 		db.DB().SetConnMaxLifetime(time.Hour)
 	}
 
+	return db
+}
+
+func migrate() {
+	db := getDb()
 	db.AutoMigrate(&models.Users{})
 	db.AutoMigrate(&models.Feeds{})
 	db.AutoMigrate(&models.Articles{})
@@ -55,6 +62,4 @@ func getDb() *gorm.DB {
 	db.AutoMigrate(&models.VkGroup{})
 	db.AutoMigrate(&models.TwitterNews{})
 	db.AutoMigrate(&models.TwitterSource{})
-
-	return db
 }

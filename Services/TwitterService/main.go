@@ -57,6 +57,7 @@ func main() {
 			go service.Clean()
 		case <-sigs:
 			service.Close()
+			return
 		}
 	}
 }

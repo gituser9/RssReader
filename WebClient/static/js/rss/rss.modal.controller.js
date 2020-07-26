@@ -18,7 +18,6 @@ class RssModalController {
         }
         this.rssService.setNewFeedName(this.$scope.modalData.Feed.Id, this.$scope.modalData.Feed.Name);
         this.cancel();
-        this.rssService.getAll()
     };
 
     hide() {

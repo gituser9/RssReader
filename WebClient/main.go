@@ -57,6 +57,7 @@ func createRouter() http.Handler {
 	vkCtrl := controllers.NewVkCtrl(&conf)
 	twitterCtrl := controllers.NewTwitterCtrl(&conf)
 	router := mux.NewRouter()
+	router.StrictSlash(true)
 
 	// rss
 	router.HandleFunc("/rss", rssCtrl.GetAll).Methods(http.MethodGet)

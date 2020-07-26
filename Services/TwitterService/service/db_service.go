@@ -20,6 +20,7 @@ func dbExec(closure func(db *gorm.DB)) {
 	}
 
 	closure(db)
+	db.Close()
 }
 
 func getDb() *gorm.DB {

@@ -1,7 +1,7 @@
 {
   "name": "RssReader",
   "dependencies": {
-    "angular": "^1.5.7",
+    "angular": "^1.7.9",
     "bootstrap-material-design": "^4.0.2",
     "angular-sanitize": "^1.5.7",
     "angular-bootstrap": "^2.5.0",

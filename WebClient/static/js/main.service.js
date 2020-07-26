@@ -54,6 +54,7 @@ class MainService {
         this.utilService.httpPut('/users/settings', settings);
     };
 }
+
 MainService.$inject = ["$http", "$mdDialog", "utilService"];
 
 angular.module('app').service('mainService', MainService);

@@ -116,13 +116,11 @@ func getUsers() []dao.User {
 	dbExec(func(db *gorm.DB) {
 		ids := []int64{}
 
-		err := db.
-			Model(&dao.Settings{}).
+		db.Model(&dao.Settings{}).
 			Where(&dao.Settings{TwitterEnabled: true}).
-			Pluck("UserId", &ids).
-			Error
-		if err != nil {
-			log.Println("get vk users err:", err)
+			Pluck("UserId", &ids)
+
+		if len(ids) == 0 {
 			return
 		}
 

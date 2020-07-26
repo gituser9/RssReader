@@ -15,40 +15,40 @@ class UtilService {
             }
 
             localStorage.setItem('rtoken', '')
-            let xhr = new XMLHttpRequest();
-            xhr.open('PUT', '/users/refresh', false);
-            xhr.send(JSON.stringify({ 'token': rtoken }));
 
-            if (xhr.status !== 200) {
-                this.logout()
-                return
-            }
+            fetch('/users/refresh', {
+                    method: 'PUT',
+                    body: JSON.stringify({ 'token': rtoken })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    localStorage.setItem('rtoken', data.refresh_token)
+                    localStorage.setItem('token', data.token)
 
-            let data = JSON.parse(xhr.responseText)
-            localStorage.setItem('rtoken', data.refresh_token)
-            localStorage.setItem('token', data.token)
+                    let cfg = response.config
 
-            let cfg = response.config
-            let rxhr = new XMLHttpRequest();
-            rxhr.open(cfg.method, cfg.url, false);
-            rxhr.onreadystatechange = () => {
-                if (rxhr.readyState !== 4) {
-                    return;
-                }
-                if (rxhr.status >= 400) {
-                    this.logout()
-                } else {
-                    if (callback !== null && callback !== undefined) {
-                        try {
-                            callback(JSON.parse(rxhr.responseText));
-                        } catch (e) {
-                            callback(null);
-                        }
-                    }
-                }
-            }
-            rxhr.send(rdata === null ? null : JSON.stringify(rdata))
-
+                    fetch(cfg.url, {
+                            method: cfg.method,
+                            headers: {
+                                'Authorization': 'Bearer ' + data.token
+                            },
+                            body: rdata === null ? null : JSON.stringify(rdata)
+                        })
+                        .then(response => {
+                            if (response.ok) {
+                                if (callback !== null && callback !== undefined) {
+                                    try {
+                                        response.json()
+                                            .then(jsonData => callback(jsonData))
+                                    } catch (e) {
+                                        callback(null);
+                                    }
+                                }
+                            } else {
+                                this.logout()
+                            }
+                        })
+                })
         }
         if (callback !== null) {
             callback(response.data)

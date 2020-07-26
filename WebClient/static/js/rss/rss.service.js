@@ -74,7 +74,9 @@ class RssService {
     };
 
     setNewFeedName(id, name) {
-        this.utilService.httpPut(`/rss/${id}`, { name: name }, null);
+        this.utilService.httpPut(`/rss/${id}`, { name: name }, () => {
+            this.getAll()
+        });
     };
 
     updateAll() {

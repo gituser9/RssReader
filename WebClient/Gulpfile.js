@@ -1,24 +1,13 @@
-var gulp = require('gulp');
-var concat = require('gulp-concat');
-var cleanCSS = require('gulp-clean-css');
-var uglify = require('gulp-uglify');
-var rev = require('gulp-rev-simple-hash');
-var sourcemaps = require('gulp-sourcemaps');
+const gulp = require('gulp');
+const concat = require('gulp-concat');
+const cleanCSS = require('gulp-clean-css');
+const rev = require('gulp-rev-simple-hash');
+const babel = require('gulp-babel');
+const uglify      = require('gulp-uglify');
+const sourcemaps  = require('gulp-sourcemaps');
 
 
-
-var babel = require('gulp-babel');
-// var browserify = require('gulp-browserify');
-var browserify  = require('browserify');
-var babelify    = require('babelify');
-var source      = require('vinyl-source-stream');
-var buffer      = require('vinyl-buffer');
-var uglify      = require('gulp-uglify');
-var sourcemaps  = require('gulp-sourcemaps');
-var livereload  = require('gulp-livereload');
-
-
-var bc = './bower_components/';
+const bc = './bower_components/';
 
 gulp.task('jslibs', gulp.series(function(done) {
     gulp.src([
@@ -70,12 +59,12 @@ gulp.task('minifycss', gulp.series(function(done) {
         .pipe(gulp.dest('dist'));
     done();
 }));
-gulp.task('dist', gulp.series('minifycss', 'csslibs', 'jslibs', 'compile', 'revts', function (done) {
+gulp.task('dist', gulp.series( 'compile','minifycss', 'csslibs', 'jslibs', 'revts', function (done) {
     done();
 }));
 gulp.task('watch', function(){
-    gulp.watch('static/js/**/*.js', gulp.series('jslibs', 'compile')),
-    gulp.watch('static/html/index.html', gulp.series('revts')),
-    gulp.watch('static/css/*.css', gulp.series('minifycss'));
+    gulp.watch('static/js/**/*.js', gulp.series('jslibs', 'compile'))
+    gulp.watch('static/html/index.html', gulp.series('revts'))
+    gulp.watch('static/css/*.css', gulp.series('minifycss'))
     return;
 });
